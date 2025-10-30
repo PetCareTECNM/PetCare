@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Care - Calendario de Citas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #008080, #00a3a3);
+      min-height: 100vh;
+      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      0% { 
+        opacity: 0; 
+        transform: translateY(20px); 
+      }
+      100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    .header {
+      background: #006666;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideDown {
+      0% { 
+        transform: translateY(-100%); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateY(0); 
+        opacity: 1; 
+      }
+    }
+
+    .header h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      font-size: 28px;
+    }
+
+    .header .info {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      display: flex;
+      min-height: calc(100vh - 120px);
+    }
+
+    @keyframes slideInLeft {
+      0% { 
+        transform: translateX(-50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    @keyframes slideInRight {
+      0% { 
+        transform: translateX(50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #004d4d;
+      padding: 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .menu-section {
+      margin-bottom: 30px;
+    }
+
+    .menu-title {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 20px;
+      color: #b3d9d9;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      will-change: transform;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background: #006666;
+      color: white;
+      border-left-color: #00e6e6;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      margin: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      overflow: auto;
+      animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+    }
+
+    .page-title {
+      color: #006666;
+      margin-bottom: 20px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-box {
+      background: #e7f3f3;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #006666;
+    }
+
+    .info-box p {
+      margin: 0;
+      color: #004d4d;
+    }
+
+    /* Estilos específicos para el calendario */
+    .calendar-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    #calendar {
+      margin-top: 20px;
+      height: 600px;
+    }
+
+    .fc-event {
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 4px;
+    }
+
+    .event-type-consulta {
+      background-color: #4CAF50;
+      border-color: #4CAF50;
+    }
+
+    .event-type-bano {
+      background-color: #2196F3;
+      border-color: #2196F3;
+    }
+
+    .event-type-hospedaje {
+      background-color: #9C27B0;
+      border-color: #9C27B0;
+    }
+
+    .btn-info {
+      background: #17a2b8;
+      color: white;
+    }
+
+    .btn-info:hover {
+      background: #138496;
+    }
+
+    .color-box {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 5px;
+      border-radius: 4px;
+      vertical-align: middle;
+    }
+
+    .legend {
+      margin-top: 20px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>
+      <i class="fas fa-paw"></i>
+      Pet Care - Sistema Veterinario
+    </h1>
+    <div class="info">
+      Calzada del Tecnológico S/N, Unidad Tomas Aquino
+      <br>
+      C.P. 22414, Tijuana, Baja California
+      <br>
+      664-623-4054
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-home"></i>
+          Inicio
+        </div>
+        <a href="inicio.html" class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-users"></i>
+          Pacientes
+        </div>
+        <a href="registro.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_mascota.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-stethoscope"></i>
+          Consulta
+        </div>
+        <a href="consulta.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_consulta.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-calendar-alt"></i>
+          Gestión
+        </div>
+        <a href="calendario.html" class="menu-item active">
+          <i class="fas fa-calendar-check"></i>
+          Calendario
+        </a>
+        <a href="recordatorios.html" class="menu-item">
+          <i class="fas fa-bell"></i>
+          Recordatorios
+        </a>
+        <a href="expediente.html" class="menu-item">
+          <i class="fas fa-file-medical"></i>
+          Expedientes
+        </a>
+        <a href="inventario.html" class="menu-item">
+          <i class="fas fa-boxes"></i>
+          Inventario
+        </a>
+        <a href="facturacion.html" class="menu-item">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Facturación
+        </a>
+        <a href="estadisticas.html" class="menu-item">
+          <i class="fas fa-chart-bar"></i>
+          Estadísticas
+        </a>
+        <a href="fotos.html" class="menu-item">
+          <i class="fas fa-images"></i>
+          Fotos
+        </a>
+        <a href="exportar.html" class="menu-item">
+          <i class="fas fa-file-export"></i>
+          Exportar
+        </a>
+        <a href="fidelizacion.html" class="menu-item">
+          <i class="fas fa-award"></i>
+          Fidelización
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-ellipsis-h"></i>
+          Otros
+        </div>
+        <a href="bano.html" class="menu-item">
+          <i class="fas fa-shower"></i>
+          Baño
+        </a>
+        <a href="hospedaje.html" class="menu-item">
+          <i class="fas fa-hotel"></i>
+          Hospedaje
+        </a>
+      </div>
+
+      <a href="login.html" class="menu-item">
+        <i class="fas fa-sign-out-alt"></i>
+        Cerrar sesión
+      </a>
+    </div>
+
+    <div class="main-content">
+      <h2 class="page-title">
+        <i class="fas fa-calendar-alt"></i>
+        Calendario de Citas
+      </h2>
+
+      <div class="info-box">
+        <p>
+          <i class="fas fa-info-circle"></i> 
+          <strong>Vista de calendario:</strong> Visualice y reorganice citas arrastrándolas. 
+          Las citas se crean automáticamente al usar: <strong>Consulta → Registrar</strong> (incluye fecha y hora para agendar), 
+          <strong>Baño y Estética</strong>, o <strong>Hospedaje</strong>. Cada servicio agenda automáticamente su cita en el calendario.
+        </p>
+      </div>
+
+      <div class="calendar-container">
+        <div class="legend">
+          <div class="legend-item">
+            <span class="color-box event-type-consulta"></span> Consultas
+          </div>
+          <div class="legend-item">
+            <span class="color-box event-type-bano"></span> Baños
+          </div>
+          <div class="legend-item">
+            <span class="color-box event-type-hospedaje"></span> Hospedajes
+          </div>
+        </div>
+
+        <div id="calendar"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/locales/es.js"></script>
+  <script>
+    // Verificar si hay sesión activa
+    window.onload = function() {
+      if(!localStorage.getItem('petCareSessionActive') || localStorage.getItem('petCareSessionActive') !== 'true') {
+        window.location.href = 'login.html';
+      }
+    };
+
+    // Inicializar el calendario
+    document.addEventListener('DOMContentLoaded', function() {
+      // Obtener citas del localStorage o inicializar con datos de ejemplo
+      let appointments = JSON.parse(localStorage.getItem('petCareAppointments')) || [];
+      
+      // Si no hay citas, añadir datos de ejemplo
+      if (appointments.length === 0) {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const nextWeek = new Date(today);
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        const inTwoDays = new Date(today);
+        inTwoDays.setDate(inTwoDays.getDate() + 2);
+        const inFiveDays = new Date(today);
+        inFiveDays.setDate(inFiveDays.getDate() + 5);
+        
+        appointments = [
+          {
+            id: 'APT001',
+            type: 'consulta',
+            petName: 'Max',
+            ownerName: 'Juan Pérez',
+            date: today.toISOString().split('T')[0],
+            time: '10:00',
+            notes: 'Revisión general y vacuna antirrábica'
+          },
+          {
+            id: 'APT002',
+            type: 'bano',
+            petName: 'Luna',
+            ownerName: 'María García',
+            date: today.toISOString().split('T')[0],
+            time: '14:00',
+            notes: 'Baño completo con corte de uñas'
+          },
+          {
+            id: 'APT003',
+            type: 'consulta',
+            petName: 'Rocky',
+            ownerName: 'Carlos Rodríguez',
+            date: tomorrow.toISOString().split('T')[0],
+            time: '09:00',
+            notes: 'Revisión de herida en pata'
+          },
+          {
+            id: 'APT004',
+            type: 'hospedaje',
+            petName: 'Bella',
+            ownerName: 'Ana Martínez',
+            date: inTwoDays.toISOString().split('T')[0],
+            time: '08:00',
+            notes: 'Hospedaje por 3 días'
+          },
+          {
+            id: 'APT005',
+            type: 'consulta',
+            petName: 'Toby',
+            ownerName: 'Luis Fernández',
+            date: inFiveDays.toISOString().split('T')[0],
+            time: '11:00',
+            notes: 'Vacuna triple felina'
+          },
+          {
+            id: 'APT006',
+            type: 'bano',
+            petName: 'Coco',
+            ownerName: 'Patricia Sánchez',
+            date: nextWeek.toISOString().split('T')[0],
+            time: '15:00',
+            notes: 'Baño medicado para tratamiento de piel'
+          }
+        ];
+        
+        localStorage.setItem('petCareAppointments', JSON.stringify(appointments));
+      }
+
+      const calendarEl = document.getElementById('calendar');
+      
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        navLinks: true,
+        selectable: false,
+        editable: true,
+        events: appointments.map(appointment => ({
+          id: appointment.id,
+          title: `${appointment.petName} - ${appointment.type}`,
+          start: `${appointment.date}T${appointment.time}`,
+          extendedProps: {
+            type: appointment.type,
+            petName: appointment.petName,
+            ownerName: appointment.ownerName,
+            notes: appointment.notes
+          },
+          classNames: `event-type-${appointment.type}`
+        })),
+        eventClick: function(info) {
+          // Mostrar detalles del evento (solo lectura)
+          showEventDetails(info.event);
+        },
+        eventDrop: function(info) {
+          // Actualizar fecha cuando se arrastra a una nueva fecha
+          updateAppointmentDate(info.event);
+        }
+      });
+      
+      calendar.render();
+
+      // Función para mostrar detalles del evento (solo lectura)
+      function showEventDetails(event) {
+        const { type, petName, ownerName, notes } = event.extendedProps;
+        const startDate = event.start;
+        const dateStr = startDate.toLocaleDateString('es-ES', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+        const timeStr = startDate.toLocaleTimeString('es-ES', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+
+        let typeText = type === 'consulta' ? 'Consulta' : 
+                       type === 'bano' ? 'Baño' : 
+                       type === 'hospedaje' ? 'Hospedaje' : type;
+
+        const message = `
+📅 Cita: ${typeText}
+🐾 Mascota: ${petName}
+👤 Dueño: ${ownerName}
+📆 Fecha: ${dateStr}
+⏰ Hora: ${timeStr}
+${notes ? `📝 Notas: ${notes}` : ''}
+
+ℹ️ Para editar o eliminar esta cita, debe hacerlo desde:
+• Consultas → Buscar
+• Baño y Estética
+• Hospedaje
+        `;
+
+        alert(message.trim());
+      }
+
+      // Función para actualizar fecha de cita después de arrastrar
+      function updateAppointmentDate(event) {
+        const appointmentIndex = appointments.findIndex(appointment => appointment.id === event.id);
+        
+        if (appointmentIndex !== -1) {
+          const startDate = event.start;
+          const dateStr = startDate.toISOString().split('T')[0];
+          const timeStr = startDate.toTimeString().slice(0, 5);
+          
+          appointments[appointmentIndex].date = dateStr;
+          appointments[appointmentIndex].time = timeStr;
+          
+          localStorage.setItem('petCareAppointments', JSON.stringify(appointments));
+          
+          alert(`✅ Cita movida correctamente a: ${startDate.toLocaleDateString('es-ES')} ${timeStr}`);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

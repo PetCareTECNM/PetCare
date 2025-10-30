@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Care - Baño</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #008080, #00a3a3);
+      min-height: 100vh;
+      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      0% { 
+        opacity: 0; 
+        transform: translateY(20px); 
+      }
+      100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    .header {
+      background: #006666;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @keyframes slideDown {
+      0% { 
+        transform: translateY(-100%); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateY(0); 
+        opacity: 1; 
+      }
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-left h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+
+    .header-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .header-center .info {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .header-right {
+      font-size: 36px;
+      font-weight: bold;
+    }
+
+    .container {
+      display: flex;
+      min-height: calc(100vh - 120px);
+    }
+
+    @keyframes slideInLeft {
+      0% { 
+        transform: translateX(-50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    @keyframes slideInRight {
+      0% { 
+        transform: translateX(50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #004d4d;
+      padding: 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .menu-section {
+      margin-bottom: 30px;
+    }
+
+    .menu-title {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 20px;
+      color: #b3d9d9;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      will-change: transform;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background: #006666;
+      color: white;
+      border-left-color: #00cccc;
+      transform: translateX(5px);
+    }
+
+    .menu-item i {
+      width: 20px;
+      text-align: center;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      background: rgba(255,255,255,0.95);
+      animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+      display: flex;
+      gap: 30px;
+    }
+
+    .form-section {
+      flex: 1;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      animation: slideUp 1s ease-out 0.7s both;
+      height: fit-content;
+    }
+
+    .table-section {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      animation: slideUp 1s ease-out 0.9s both;
+    }
+
+    @keyframes slideUp {
+      0% { transform: translateY(50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 25px;
+      outline: none;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: #008080;
+      box-shadow: 0 0 10px rgba(0,128,128,0.2);
+      transform: scale(1.02);
+    }
+
+    .checkbox-group {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: auto;
+      transform: scale(1.2);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transform: translateY(0);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .btn:active {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #28a745, #34d058);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #34d058, #28a745);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d, #868e96);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #868e96, #6c757d);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .data-table th {
+      background: #008080;
+      color: white;
+      padding: 12px 8px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .data-table td {
+      padding: 8px;
+      border-bottom: 1px solid #e0e0e0;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .data-table tr:hover {
+      background: #f8f9fa;
+      transform: scale(1.01);
+      transition: all 0.3s ease;
+    }
+
+    .data-table tr.selected {
+      background-color: #007acc;
+      color: white;
+    }
+
+    /* Animaciones de carga */
+    .loading {
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+      }
+      
+      .main-content {
+        flex-direction: column;
+      }
+      
+      .button-group {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <i class="fa-solid fa-paw"></i>
+      <h1>Pet Care</h1>
+    </div>
+    <div class="header-center">
+      <div class="info">
+        Calzada del Tecnológico S/N, Unidad Tomás Aquino<br>
+        C.P. 22414, Tijuana, Baja California<br>
+        664-623-4043
+      </div>
+    </div>
+    <div class="header-right">
+      Baño
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-home"></i>
+          Inicio
+        </div>
+        <a href="inicio.html" class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-users"></i>
+          Pacientes
+        </div>
+        <a href="registro.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_mascota.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-stethoscope"></i>
+          Consulta
+        </div>
+        <a href="consulta.html" class="menu-item">
+          <i class="fas fa-notes-medical"></i>
+          Registrar
+        </a>
+        <a href="buscar_consulta.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-calendar-alt"></i>
+          Gestión
+        </div>
+        <a href="calendario.html" class="menu-item">
+          <i class="fas fa-calendar-check"></i>
+          Calendario
+        </a>
+        <a href="recordatorios.html" class="menu-item">
+          <i class="fas fa-bell"></i>
+          Recordatorios
+        </a>
+        <a href="expediente.html" class="menu-item">
+          <i class="fas fa-file-medical"></i>
+          Expedientes
+        </a>
+        <a href="inventario.html" class="menu-item">
+          <i class="fas fa-boxes"></i>
+          Inventario
+        </a>
+        <a href="facturacion.html" class="menu-item">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Facturación
+        </a>
+        <a href="estadisticas.html" class="menu-item">
+          <i class="fas fa-chart-bar"></i>
+          Estadísticas
+        </a>
+        <a href="fotos.html" class="menu-item">
+          <i class="fas fa-images"></i>
+          Fotos
+        </a>
+        <a href="exportar.html" class="menu-item">
+          <i class="fas fa-file-export"></i>
+          Exportar
+        </a>
+        <a href="fidelizacion.html" class="menu-item">
+          <i class="fas fa-award"></i>
+          Fidelización
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-ellipsis-h"></i>
+          Otros
+        </div>
+        <a href="bano.html" class="menu-item active">
+          <i class="fas fa-bath"></i>
+          Baño
+        </a>
+        <a href="hospedaje.html" class="menu-item">
+          <i class="fas fa-bed"></i>
+          Hospedaje
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <a href="#" class="menu-item" onclick="cerrarSesion()">
+          <i class="fas fa-sign-out-alt"></i>
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="form-section loading">
+        <form id="banoForm">
+          <div class="form-group">
+            <label for="aseo">Aseo</label>
+            <input type="text" id="aseo" name="aseo" placeholder="ID del aseo" required>
+          </div>
+
+          <div class="form-group">
+            <label for="idBano">ID de baño</label>
+            <input type="text" id="idBano" name="idBano" placeholder="ID automático" readonly>
+          </div>
+
+          <div class="form-group">
+            <label for="idMascota">ID Mascota</label>
+            <input type="text" id="idMascota" name="idMascota" placeholder="Ingrese ID de la mascota" required>
+          </div>
+
+          <div class="form-group">
+            <label for="tipoBano">Tipo de baño</label>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="higiene" name="tipoBano" value="Higiene">
+                <label for="higiene">Higiene</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="medico" name="tipoBano" value="Médico">
+                <label for="medico">Médico</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="agresivo">¿Es agresivo?</label>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="si" name="agresivo" value="Si">
+                <label for="si">Sí</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="no" name="agresivo" value="No">
+                <label for="no">No</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="aveces" name="agresivo" value="A veces">
+                <label for="aveces">A veces</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="fechaBano">Fecha de baño</label>
+            <input type="date" id="fechaBano" name="fechaBano" required>
+          </div>
+
+          <div class="form-group">
+            <label for="horaBano">Hora de baño</label>
+            <input type="time" id="horaBano" name="horaBano" value="09:00" required>
+          </div>
+
+          <div class="form-group">
+            <label for="propietario">Propietario</label>
+            <input type="text" id="propietario" name="propietario" placeholder="Nombre del propietario" required>
+          </div>
+
+          <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+              Crear
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="regresarMenu()">
+              Regresar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="table-section loading">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID de Aseo</th>
+              <th>ID de Mascota</th>
+              <th>Tipo del baño</th>
+              <th>Agresividad</th>
+              <th>Fecha del baño</th>
+              <th>Propietario</th>
+            </tr>
+          </thead>
+          <tbody id="tablaBanos">
+            <tr>
+              <td>1</td>
+              <td>3</td>
+              <td>Higiene</td>
+              <td>No</td>
+              <td>23-Oct-24</td>
+              <td>alex</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>3</td>
+              <td>Higiene</td>
+              <td>No</td>
+              <td>13-Nov-24</td>
+              <td>yo</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>90</td>
+              <td>Médico</td>
+              <td>No</td>
+              <td>13-Nov-24</td>
+              <td>maya</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Verificar si el usuario ha iniciado sesión
+      if (localStorage.getItem('petCareSessionActive') !== 'true') {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Configurar la fecha actual
+      const hoy = new Date();
+      const fechaHoyISO = hoy.toISOString().split('T')[0];
+      document.getElementById('fechaBano').value = fechaHoyISO;
+      
+      // Establecer la fecha máxima como la fecha actual
+      document.getElementById('fechaBano').setAttribute('max', fechaHoyISO);
+      
+      // Generar ID automático
+      document.getElementById('idBano').value = generarID();
+      
+      // Manejar checkboxes para que solo uno pueda estar seleccionado por grupo
+      setupCheckboxGroups();
+      
+      // Animaciones escalonadas
+      setTimeout(() => {
+        document.querySelectorAll('.loading').forEach(el => {
+          el.style.opacity = '1';
+        });
+      }, 100);
+
+      // Marcar elemento activo en el menú
+      document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+          // Remover clase activa de todos
+          document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
+          // Agregar clase activa al clickeado
+          this.classList.add('active');
+        });
+      });
+      
+      // Hacer filas de tabla seleccionables
+      document.querySelectorAll('.data-table tbody tr').forEach(row => {
+        row.addEventListener('click', function() {
+          document.querySelectorAll('.data-table tbody tr').forEach(r => {
+            r.classList.remove('selected');
+          });
+          this.classList.add('selected');
+          
+          // Cargar datos de la fila seleccionada en el formulario
+          const cells = this.cells;
+          document.getElementById('aseo').value = cells[0].textContent;
+          document.getElementById('idBano').value = cells[0].textContent;
+          document.getElementById('idMascota').value = cells[1].textContent;
+          
+          // Limpiar checkboxes primero
+          document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+          
+          // Marcar tipo de baño
+          const tipoBano = cells[2].textContent;
+          if (tipoBano === 'Higiene') {
+            document.getElementById('higiene').checked = true;
+          } else if (tipoBano === 'Médico') {
+            document.getElementById('medico').checked = true;
+          }
+          
+          // Marcar agresividad
+          const agresividad = cells[3].textContent;
+          if (agresividad === 'Sí') {
+            document.getElementById('si').checked = true;
+          } else if (agresividad === 'No') {
+            document.getElementById('no').checked = true;
+          } else if (agresividad === 'A veces') {
+            document.getElementById('aveces').checked = true;
+          }
+          
+          // Convertir fecha
+          const fechaParts = cells[4].textContent.split('-');
+          if (fechaParts.length === 3) {
+            let year = fechaParts[2];
+            if (year.length === 2) year = '20' + year;
+            const month = fechaParts[1];
+            const day = fechaParts[0];
+            
+            const meses = {
+              'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06',
+              'Jul': '07', 'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+            };
+            
+            const monthNum = meses[month] || month;
+            document.getElementById('fechaBano').value = `${year}-${monthNum.padStart(2, '0')}-${day.padStart(2, '0')}`;
+          }
+          
+          document.getElementById('propietario').value = cells[5].textContent;
+        });
+      });
+      
+      // Manejar el envío del formulario
+      document.getElementById('banoForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Obtener datos del formulario
+        const aseo = document.getElementById('aseo').value.trim();
+        const idMascota = document.getElementById('idMascota').value.trim();
+        const fechaBano = document.getElementById('fechaBano').value;
+        const horaBano = document.getElementById('horaBano').value;
+        const propietario = document.getElementById('propietario').value.trim();
+        
+        // Obtener tipo de baño seleccionado
+        let tipoBano = '';
+        document.querySelectorAll('input[name="tipoBano"]:checked').forEach(cb => {
+          tipoBano = cb.value;
+        });
+        
+        // Obtener agresividad seleccionada
+        let agresividad = '';
+        document.querySelectorAll('input[name="agresivo"]:checked').forEach(cb => {
+          agresividad = cb.value;
+        });
+        
+        // Validar datos
+        if (!aseo || !idMascota || !tipoBano || !agresividad || !fechaBano || !horaBano || !propietario) {
+          alert('Por favor, completa todos los campos');
+          return;
+        }
+        
+        // Agregar fila a la tabla
+        const tabla = document.getElementById('tablaBanos');
+        const newRow = tabla.insertRow(0);
+        
+        newRow.innerHTML = `
+          <td>${aseo}</td>
+          <td>${idMascota}</td>
+          <td>${tipoBano}</td>
+          <td>${agresividad}</td>
+          <td>${new Date(fechaBano).toLocaleDateString('es-ES')} ${horaBano}</td>
+          <td>${propietario}</td>
+        `;
+        
+        // Animación de la nueva fila
+        newRow.style.backgroundColor = '#d4edda';
+        setTimeout(() => {
+          newRow.style.backgroundColor = '';
+        }, 2000);
+        
+        // Guardar cita en el calendario
+        let appointments = JSON.parse(localStorage.getItem('petCareAppointments')) || [];
+        const newAppointment = {
+          id: 'BATH-' + Date.now(),
+          type: 'bano',
+          petName: idMascota,
+          ownerName: propietario,
+          date: fechaBano,
+          time: horaBano,
+          notes: `${tipoBano} - Agresividad: ${agresividad}`
+        };
+        appointments.push(newAppointment);
+        localStorage.setItem('petCareAppointments', JSON.stringify(appointments));
+        
+        // Limpiar formulario
+        document.getElementById('banoForm').reset();
+        document.getElementById('idBano').value = generarID();
+        document.getElementById('fechaBano').value = new Date().toISOString().split('T')[0];
+        document.getElementById('horaBano').value = '09:00';
+        
+        alert('✅ Registro de baño creado y cita agendada en el calendario');
+      });
+    });
+
+    // Generar ID automático
+    function generarID() {
+      return Math.floor(Math.random() * 1000) + 1;
+    }
+
+    // Configurar grupos de checkboxes
+    function setupCheckboxGroups() {
+      // Tipo de baño - solo uno puede estar seleccionado
+      document.querySelectorAll('input[name="tipoBano"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          if (this.checked) {
+            document.querySelectorAll('input[name="tipoBano"]').forEach(cb => {
+              if (cb !== this) cb.checked = false;
+            });
+          }
+        });
+      });
+      
+      // Agresividad - solo uno puede estar seleccionado
+      document.querySelectorAll('input[name="agresivo"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          if (this.checked) {
+            document.querySelectorAll('input[name="agresivo"]').forEach(cb => {
+              if (cb !== this) cb.checked = false;
+            });
+          }
+        });
+      });
+    }
+
+    // Función para cerrar sesión
+    window.cerrarSesion = function() {
+      localStorage.removeItem('petCareSessionActive');
+      localStorage.removeItem('petCareUsername');
+      window.location.href = 'login.html';
+    }
+
+    // Función para regresar al menú
+    function regresarMenu() {
+      window.location.href = 'registro.html';
+    }
+  </script>
+</body>
+</html>

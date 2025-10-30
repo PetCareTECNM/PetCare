@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Care - Gestión de Inventario</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #008080, #00a3a3);
+      min-height: 100vh;
+      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .header {
+      background: #006666;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideDown {
+      0% { transform: translateY(-100%); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .header h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      font-size: 28px;
+    }
+
+    .header .info {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      display: flex;
+      min-height: calc(100vh - 120px);
+    }
+
+    @keyframes slideInLeft {
+      0% { transform: translateX(-50px); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideInRight {
+      0% { transform: translateX(50px); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #004d4d;
+      padding: 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .menu-section {
+      margin-bottom: 30px;
+    }
+
+    .menu-title {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 20px;
+      color: #b3d9d9;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      will-change: transform;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background: #006666;
+      color: white;
+      border-left-color: #00e6e6;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+      margin: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      overflow: auto;
+    }
+
+    .page-title {
+      color: #006666;
+      margin-bottom: 20px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Estilos específicos para inventario */
+    .inventory-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .search-container {
+      flex: 1;
+      max-width: 500px;
+      display: flex;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 5px 0 0 5px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      border-color: #008080;
+      outline: none;
+    }
+
+    .search-btn {
+      background: #008080;
+      color: white;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      padding: 0 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+      background: #006666;
+    }
+
+    .action-btn {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .btn-primary {
+      background: #008080;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #006666;
+    }
+
+    .inventory-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .stat-icon {
+      font-size: 30px;
+      color: #008080;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .inventory-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .inventory-table th,
+    .inventory-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .inventory-table th {
+      background-color: #f5f5f5;
+      color: #333;
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+    }
+
+    .inventory-table tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    .category-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .category-medicamento {
+      background-color: #4CAF50;
+    }
+
+    .category-vacuna {
+      background-color: #2196F3;
+    }
+
+    .category-alimento {
+      background-color: #FF9800;
+    }
+
+    .category-accesorio {
+      background-color: #9C27B0;
+    }
+
+    .category-limpieza {
+      background-color: #607D8B;
+    }
+
+    .stock-status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .status-ok {
+      background-color: #e8f5e9;
+      color: #4CAF50;
+    }
+
+    .status-low {
+      background-color: #fff8e1;
+      color: #ff9800;
+    }
+
+    .status-critical {
+      background-color: #ffebee;
+      color: #f44336;
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 5px;
+    }
+
+    .table-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.3s ease;
+    }
+
+    .table-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .edit-btn {
+      color: #2196F3;
+    }
+
+    .delete-btn {
+      color: #f44336;
+    }
+
+    .add-stock-btn {
+      color: #4CAF50;
+    }
+
+    .expiry-warning {
+      color: #f44336;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      background-color: #f0f0f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      background: #e0e0e0;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .tab.active {
+      background: #006666;
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    .filter-select {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: white;
+      min-width: 150px;
+    }
+
+    /* Estilos para modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 70%;
+      max-width: 600px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .modal-title {
+      color: #006666;
+      margin-bottom: 20px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>
+      <i class="fas fa-paw"></i>
+      Pet Care - Sistema Veterinario
+    </h1>
+    <div class="info">
+      Calzada del Tecnológico S/N, Unidad Tomas Aquino
+      <br>
+      C.P. 22414, Tijuana, Baja California
+      <br>
+      664-623-4054
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-home"></i>
+          Inicio
+        </div>
+        <a href="inicio.html" class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-users"></i>
+          Pacientes
+        </div>
+        <a href="registro.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_mascota.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-stethoscope"></i>
+          Consulta
+        </div>
+        <a href="consulta.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_consulta.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-calendar-alt"></i>
+          Gestión
+        </div>
+        <a href="calendario.html" class="menu-item">
+          <i class="fas fa-calendar-check"></i>
+          Calendario
+        </a>
+        <a href="recordatorios.html" class="menu-item">
+          <i class="fas fa-bell"></i>
+          Recordatorios
+        </a>
+        <a href="expediente.html" class="menu-item">
+          <i class="fas fa-file-medical"></i>
+          Expedientes
+        </a>
+        <a href="inventario.html" class="menu-item active">
+          <i class="fas fa-boxes"></i>
+          Inventario
+        </a>
+        <a href="facturacion.html" class="menu-item">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Facturación
+        </a>
+        <a href="estadisticas.html" class="menu-item">
+          <i class="fas fa-chart-bar"></i>
+          Estadísticas
+        </a>
+        <a href="fotos.html" class="menu-item">
+          <i class="fas fa-images"></i>
+          Fotos
+        </a>
+        <a href="exportar.html" class="menu-item">
+          <i class="fas fa-file-export"></i>
+          Exportar
+        </a>
+        <a href="fidelizacion.html" class="menu-item">
+          <i class="fas fa-award"></i>
+          Fidelización
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-ellipsis-h"></i>
+          Otros
+        </div>
+        <a href="bano.html" class="menu-item">
+          <i class="fas fa-shower"></i>
+          Baño
+        </a>
+        <a href="hospedaje.html" class="menu-item">
+          <i class="fas fa-hotel"></i>
+          Hospedaje
+        </a>
+      </div>
+
+      <a href="login.html" class="menu-item">
+        <i class="fas fa-sign-out-alt"></i>
+        Cerrar sesión
+      </a>
+    </div>
+
+    <div class="main-content">
+      <h2 class="page-title">
+        <i class="fas fa-boxes"></i>
+        Gestión de Inventario
+      </h2>
+
+      <div class="inventory-header">
+        <div class="search-container">
+          <input type="text" class="search-input" id="search-inventory" placeholder="Buscar producto...">
+          <button class="search-btn" id="search-btn" title="Buscar" aria-label="Buscar producto">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+        <button class="action-btn btn-primary" id="add-product-btn">
+          <i class="fas fa-plus"></i> Nuevo Producto
+        </button>
+      </div>
+
+      <div class="inventory-stats">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-boxes"></i>
+          </div>
+          <div class="stat-value" id="total-products">0</div>
+          <div class="stat-label">Productos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-pills"></i>
+          </div>
+          <div class="stat-value" id="total-medicines">0</div>
+          <div class="stat-label">Medicamentos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="stat-value" id="low-stock">0</div>
+          <div class="stat-label">Stock Bajo</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-calendar-times"></i>
+          </div>
+          <div class="stat-value" id="expiring-soon">0</div>
+          <div class="stat-label">Por Vencer</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="all">Todos los productos</div>
+        <div class="tab" data-tab="medicines">Medicamentos</div>
+        <div class="tab" data-tab="low-stock">Stock bajo</div>
+        <div class="tab" data-tab="expiring">Por vencer</div>
+      </div>
+
+      <div id="all-tab" class="tab-content active">
+        <div class="filters">
+          <div class="filter-group">
+            <span class="filter-label">Categoría:</span>
+            <select class="filter-select" id="category-filter" title="Filtrar por categoría" aria-label="Filtrar por categoría">
+              <option value="all">Todas</option>
+              <option value="medicamento">Medicamentos</option>
+              <option value="vacuna">Vacunas</option>
+              <option value="alimento">Alimentos</option>
+              <option value="accesorio">Accesorios</option>
+              <option value="limpieza">Limpieza</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Ordenar por:</span>
+            <select class="filter-select" id="sort-filter" title="Ordenar resultados" aria-label="Ordenar resultados">
+              <option value="name-asc">Nombre (A-Z)</option>
+              <option value="name-desc">Nombre (Z-A)</option>
+              <option value="stock-asc">Stock (menor primero)</option>
+              <option value="stock-desc">Stock (mayor primero)</option>
+              <option value="expiry-asc">Fecha de caducidad</option>
+            </select>
+          </div>
+          <button class="action-btn btn-primary" id="apply-filters">
+            <i class="fas fa-filter"></i> Aplicar
+          </button>
+        </div>
+
+        <div class="inventory-table-container">
+          <table class="inventory-table" id="inventory-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Stock</th>
+                <th>Stock Min.</th>
+                <th>Precio</th>
+                <th>Caducidad</th>
+                <th>Lote</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-body">
+              <!-- Datos se cargarán dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="medicines-tab" class="tab-content">
+        <!-- Contenido se cargará dinámicamente -->
+      </div>
+
+      <div id="low-stock-tab" class="tab-content">
+        <!-- Contenido se cargará dinámicamente -->
+      </div>
+
+      <div id="expiring-tab" class="tab-content">
+        <!-- Contenido se cargará dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para añadir/editar producto -->
+  <div id="product-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="close-product-modal">&times;</span>
+      <h3 class="modal-title" id="modal-title">
+        <i class="fas fa-plus-circle"></i>
+        Nuevo Producto
+      </h3>
+      <form id="product-form">
+        <input type="hidden" id="product-id">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="product-name">Nombre del Producto</label>
+            <input type="text" id="product-name" class="form-control" required placeholder="Nombre del producto">
+          </div>
+
+          <div class="form-group">
+            <label for="product-category">Categoría</label>
+            <select id="product-category" class="form-control" required>
+              <option value="">Seleccionar categoría</option>
+              <option value="medicamento">Medicamento</option>
+              <option value="vacuna">Vacuna</option>
+              <option value="alimento">Alimento</option>
+              <option value="accesorio">Accesorio</option>
+              <option value="limpieza">Limpieza</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="product-stock">Stock Actual</label>
+            <input type="number" id="product-stock" class="form-control" required placeholder="Cantidad disponible" min="0">
+          </div>
+
+          <div class="form-group">
+            <label for="product-min-stock">Stock Mínimo</label>
+            <input type="number" id="product-min-stock" class="form-control" required placeholder="Cantidad mínima" min="0">
+          </div>
+
+          <div class="form-group">
+            <label for="product-price">Precio (MXN)</label>
+            <input type="number" id="product-price" class="form-control" required placeholder="Precio en MXN" min="0" step="0.01">
+          </div>
+
+          <div class="form-group">
+            <label for="product-expiry">Fecha de Caducidad</label>
+            <input type="date" id="product-expiry" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="product-batch">Lote</label>
+            <input type="text" id="product-batch" class="form-control" placeholder="Número de lote">
+          </div>
+
+          <div class="form-group">
+            <label for="product-location">Ubicación</label>
+            <input type="text" id="product-location" class="form-control" placeholder="Ubicación en almacén">
+          </div>
+
+          <div class="form-group full-width">
+            <label for="product-description">Descripción</label>
+            <textarea id="product-description" class="form-control" rows="3" placeholder="Descripción del producto"></textarea>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="button" class="action-btn btn-primary" id="cancel-product">Cancelar</button>
+          <button type="submit" class="action-btn btn-primary" id="save-product">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para añadir stock -->
+  <div id="stock-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="close-stock-modal">&times;</span>
+      <h3 class="modal-title">
+        <i class="fas fa-plus-circle"></i>
+        Añadir Stock
+      </h3>
+      <form id="stock-form">
+        <input type="hidden" id="stock-product-id">
+        <div class="form-group">
+          <label for="product-name-display">Producto</label>
+          <input type="text" id="product-name-display" class="form-control" readonly>
+        </div>
+
+        <div class="form-group">
+          <label for="current-stock-display">Stock Actual</label>
+          <input type="number" id="current-stock-display" class="form-control" readonly>
+        </div>
+
+        <div class="form-group">
+          <label for="stock-to-add">Cantidad a Añadir</label>
+          <input type="number" id="stock-to-add" class="form-control" required min="1" value="1">
+        </div>
+
+        <div class="form-group">
+          <label for="new-expiry">Nueva Fecha de Caducidad (si aplica)</label>
+          <input type="date" id="new-expiry" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="new-batch">Nuevo Lote (si aplica)</label>
+          <input type="text" id="new-batch" class="form-control" placeholder="Número de lote">
+        </div>
+
+        <div class="button-group">
+          <button type="button" class="action-btn btn-primary" id="cancel-stock">Cancelar</button>
+          <button type="submit" class="action-btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Verificar si hay sesión activa
+    window.onload = function() {
+      if(!localStorage.getItem('petCareSessionActive') || localStorage.getItem('petCareSessionActive') !== 'true') {
+        window.location.href = 'login.html';
+      } else {
+        loadInventory();
+      }
+    };
+
+    // Configuración de pestañas
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        const tabId = this.getAttribute('data-tab');
+        
+        tabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        tabContents.forEach(content => content.classList.remove('active'));
+        document.getElementById(`${tabId}-tab`).classList.add('active');
+        
+        // Cargar datos específicos según la pestaña
+        if (tabId === 'medicines') {
+          loadMedicines();
+        } else if (tabId === 'low-stock') {
+          loadLowStock();
+        } else if (tabId === 'expiring') {
+          loadExpiring();
+        }
+      });
+    });
+
+    // Cargar inventario completo
+    function loadInventory() {
+      // Obtener productos del localStorage o inicializar con datos de ejemplo
+      let inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+      
+      // Si no hay productos, crear datos de ejemplo
+      if (inventory.length === 0) {
+        const today = new Date();
+        const nextMonth = new Date(today);
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        const inTwoMonths = new Date(today);
+        inTwoMonths.setMonth(inTwoMonths.getMonth() + 2);
+        const inSixMonths = new Date(today);
+        inSixMonths.setMonth(inSixMonths.getMonth() + 6);
+        const nextYear = new Date(today);
+        nextYear.setFullYear(nextYear.getFullYear() + 1);
+        
+        inventory = [
+          {
+            id: 'PRD001',
+            name: 'Rimadyl 50mg',
+            category: 'medicamento',
+            stock: 45,
+            minStock: 20,
+            price: 350.00,
+            expiryDate: nextYear.toISOString().split('T')[0],
+            batch: 'LOT2024-001',
+            location: 'Estante A1',
+            description: 'Antiinflamatorio no esteroideo para perros',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'PRD002',
+            name: 'Amoxicilina 500mg',
+            category: 'medicamento',
+            stock: 8,
+            minStock: 15,
+            price: 180.00,
+            expiryDate: inSixMonths.toISOString().split('T')[0],
+            batch: 'LOT2024-045',
+            location: 'Estante A2',
+            description: 'Antibiótico de amplio espectro',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'PRD003',
+            name: 'Vacuna Antirrábica',
+            category: 'vacuna',
+            stock: 25,
+            minStock: 10,
+            price: 250.00,
+            expiryDate: inSixMonths.toISOString().split('T')[0],
+            batch: 'VAC2024-012',
+            location: 'Refrigerador 1',
+            description: 'Vacuna antirrábica para perros y gatos',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'PRD004',
+            name: 'Vacuna Triple Felina',
+            category: 'vacuna',
+            stock: 12,
+            minStock: 8,
+            price: 320.00,
+            expiryDate: nextMonth.toISOString().split('T')[0],
+            batch: 'VAC2024-089',
+            location: 'Refrigerador 1',
+            description: 'Vacuna contra rinotraqueítis, calicivirus y panleucopenia',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'PRD005',
+            name: 'Alimento Pro Plan Adulto',
+            category: 'alimento',
+            stock: 35,
+            minStock: 15,
+            price: 850.00,
+            expiryDate: nextYear.toISOString().split('T')[0],
+            batch: 'ALI2024-234',
+            location: 'Bodega B',
+            description: 'Alimento premium para perros adultos 15kg',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'PRD006',
+            name: 'Alimento Royal Canin Gatitos',
+            category: 'alimento',
+            stock: 5,
+            minStock: 10,
+            price: 650.00,
+            expiryDate: inSixMonths.toISOString().split('T')[0],
+            batch: 'ALI2024-567',
+            location: 'Bodega B',
+            description: 'Alimento para gatitos hasta 12 meses 7.5kg',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'PRD007',
+            name: 'Collar Antipulgas',
+            category: 'accesorio',
+            stock: 28,
+            minStock: 15,
+            price: 280.00,
+            expiryDate: nextYear.toISOString().split('T')[0],
+            batch: 'ACC2024-123',
+            location: 'Estante C3',
+            description: 'Collar antipulgas y garrapatas 8 meses de protección',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'PRD008',
+            name: 'Shampoo Medicado',
+            category: 'limpieza',
+            stock: 18,
+            minStock: 10,
+            price: 185.00,
+            expiryDate: inTwoMonths.toISOString().split('T')[0],
+            batch: 'SH2024-456',
+            location: 'Estante D1',
+            description: 'Shampoo medicado con clorhexidina 500ml',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'PRD009',
+            name: 'Desparasitante Drontal',
+            category: 'medicamento',
+            stock: 3,
+            minStock: 12,
+            price: 95.00,
+            expiryDate: inSixMonths.toISOString().split('T')[0],
+            batch: 'LOT2024-789',
+            location: 'Estante A3',
+            description: 'Desparasitante interno de amplio espectro',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'PRD010',
+            name: 'Ivermectina',
+            category: 'medicamento',
+            stock: 0,
+            minStock: 10,
+            price: 125.00,
+            expiryDate: nextYear.toISOString().split('T')[0],
+            batch: 'LOT2024-321',
+            location: 'Estante A3',
+            description: 'Antiparasitario inyectable',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'PRD011',
+            name: 'Juguete Interactivo',
+            category: 'accesorio',
+            stock: 42,
+            minStock: 20,
+            price: 150.00,
+            expiryDate: null,
+            batch: 'JUG2024-111',
+            location: 'Estante C1',
+            description: 'Juguete interactivo para perros',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'PRD012',
+            name: 'Cama para Mascotas',
+            category: 'accesorio',
+            stock: 15,
+            minStock: 8,
+            price: 450.00,
+            expiryDate: null,
+            batch: 'CAM2024-222',
+            location: 'Bodega C',
+            description: 'Cama acolchada para mascotas medianas',
+            createdAt: new Date().toISOString()
+          }
+        ];
+        
+        localStorage.setItem('petCareInventory', JSON.stringify(inventory));
+      }
+      
+      // Actualizar estadísticas
+      updateStats(inventory);
+      
+      // Renderizar tabla de inventario
+      renderInventoryTable(inventory);
+    }
+
+    // Cargar medicamentos
+    function loadMedicines() {
+      const inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+      const medicines = inventory.filter(product => 
+        product.category === 'medicamento' || product.category === 'vacuna'
+      );
+      
+      renderTabContent('medicines-tab', medicines);
+    }
+
+    // Cargar productos con stock bajo
+    function loadLowStock() {
+      const inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+      const lowStock = inventory.filter(product => product.stock <= product.minStock);
+      
+      renderTabContent('low-stock-tab', lowStock);
+    }
+
+    // Cargar productos próximos a vencer
+    function loadExpiring() {
+      const inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+      const today = new Date();
+      
+      // Productos que vencen en los próximos 30 días
+      const expiring = inventory.filter(product => {
+        if (!product.expiryDate) return false;
+        
+        const expiryDate = new Date(product.expiryDate);
+        const daysUntilExpiry = Math.floor((expiryDate - today) / (1000 * 60 * 60 * 24));
+        
+        return daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
+      });
+      
+      renderTabContent('expiring-tab', expiring);
+    }
+
+    // Renderizar contenido de pestaña
+    function renderTabContent(tabId, products) {
+      const tabElement = document.getElementById(tabId);
+      
+      if (products.length === 0) {
+        tabElement.innerHTML = '<div style="text-align: center; padding: 30px; color: #666;">No hay productos en esta categoría</div>';
+        return;
+      }
+      
+      let html = `
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Stock</th>
+              <th>Stock Min.</th>
+              <th>Precio</th>
+              <th>Caducidad</th>
+              <th>Lote</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      products.forEach(product => {
+        const expiryWarning = isExpiringSoon(product.expiryDate);
+        const stockStatus = getStockStatus(product.stock, product.minStock);
+        
+        html += `
+          <tr>
+            <td>${product.id}</td>
+            <td>${product.name}</td>
+            <td><span class="category-badge category-${product.category}">${getCategoryText(product.category)}</span></td>
+            <td>
+              <span class="stock-status ${stockStatus.class}">${product.stock}</span>
+            </td>
+            <td>${product.minStock}</td>
+            <td>$${product.price.toFixed(2)}</td>
+            <td>
+              ${product.expiryDate ? new Date(product.expiryDate).toLocaleDateString('es-MX') : 'N/A'}
+              ${expiryWarning ? `<div class="expiry-warning">${expiryWarning}</div>` : ''}
+            </td>
+            <td>${product.batch || 'N/A'}</td>
+            <td class="actions-cell">
+              <button class="table-btn edit-btn" data-id="${product.id}" title="Editar">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="table-btn add-stock-btn" data-id="${product.id}" title="Añadir stock">
+                <i class="fas fa-plus-circle"></i>
+              </button>
+              <button class="table-btn delete-btn" data-id="${product.id}" title="Eliminar">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      
+      html += '</tbody></table>';
+      
+      tabElement.innerHTML = html;
+      
+      // Añadir event listeners a los botones
+      addTableButtonListeners();
+    }
+
+    // Actualizar estadísticas
+    function updateStats(inventory) {
+      const totalProducts = inventory.length;
+      const totalMedicines = inventory.filter(product => 
+        product.category === 'medicamento' || product.category === 'vacuna'
+      ).length;
+      
+      const lowStock = inventory.filter(product => product.stock <= product.minStock).length;
+      
+      const today = new Date();
+      const expiringSoon = inventory.filter(product => {
+        if (!product.expiryDate) return false;
+        
+        const expiryDate = new Date(product.expiryDate);
+        const daysUntilExpiry = Math.floor((expiryDate - today) / (1000 * 60 * 60 * 24));
+        
+        return daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
+      }).length;
+      
+      document.getElementById('total-products').textContent = totalProducts;
+      document.getElementById('total-medicines').textContent = totalMedicines;
+      document.getElementById('low-stock').textContent = lowStock;
+      document.getElementById('expiring-soon').textContent = expiringSoon;
+    }
+
+    // Renderizar tabla de inventario
+    function renderInventoryTable(inventory) {
+      const tableBody = document.getElementById('inventory-body');
+      tableBody.innerHTML = '';
+      
+      if (inventory.length === 0) {
+        const emptyRow = document.createElement('tr');
+        emptyRow.innerHTML = '<td colspan="9" style="text-align: center; padding: 30px; color: #666;">No hay productos en el inventario</td>';
+        tableBody.appendChild(emptyRow);
+        return;
+      }
+      
+      inventory.forEach(product => {
+        const row = document.createElement('tr');
+        
+        const expiryWarning = isExpiringSoon(product.expiryDate);
+        const stockStatus = getStockStatus(product.stock, product.minStock);
+        
+        row.innerHTML = `
+          <td>${product.id}</td>
+          <td>${product.name}</td>
+          <td><span class="category-badge category-${product.category}">${getCategoryText(product.category)}</span></td>
+          <td>
+            <span class="stock-status ${stockStatus.class}">${product.stock}</span>
+          </td>
+          <td>${product.minStock}</td>
+          <td>$${product.price.toFixed(2)}</td>
+          <td>
+            ${product.expiryDate ? new Date(product.expiryDate).toLocaleDateString('es-MX') : 'N/A'}
+            ${expiryWarning ? `<div class="expiry-warning">${expiryWarning}</div>` : ''}
+          </td>
+          <td>${product.batch || 'N/A'}</td>
+          <td class="actions-cell">
+            <button class="table-btn edit-btn" data-id="${product.id}" title="Editar">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="table-btn add-stock-btn" data-id="${product.id}" title="Añadir stock">
+              <i class="fas fa-plus-circle"></i>
+            </button>
+            <button class="table-btn delete-btn" data-id="${product.id}" title="Eliminar">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        `;
+        
+        tableBody.appendChild(row);
+      });
+      
+      // Añadir event listeners a los botones
+      addTableButtonListeners();
+    }
+
+    // Añadir event listeners a los botones de la tabla
+    function addTableButtonListeners() {
+      // Botones de editar
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const productId = this.getAttribute('data-id');
+          editProduct(productId);
+        });
+      });
+      
+      // Botones de añadir stock
+      document.querySelectorAll('.add-stock-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const productId = this.getAttribute('data-id');
+          showAddStockModal(productId);
+        });
+      });
+      
+      // Botones de eliminar
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const productId = this.getAttribute('data-id');
+          deleteProduct(productId);
+        });
+      });
+    }
+
+    // Verificar si un producto está próximo a vencer
+    function isExpiringSoon(expiryDate) {
+      if (!expiryDate) return null;
+      
+      const today = new Date();
+      const expiry = new Date(expiryDate);
+      
+      if (expiry < today) {
+        return '¡VENCIDO!';
+      }
+      
+      const daysUntilExpiry = Math.floor((expiry - today) / (1000 * 60 * 60 * 24));
+      
+      if (daysUntilExpiry <= 30) {
+        return `Vence en ${daysUntilExpiry} días`;
+      }
+      
+      return null;
+    }
+
+    // Obtener estado del stock
+    function getStockStatus(stock, minStock) {
+      if (stock === 0) {
+        return {
+          class: 'status-critical',
+          text: 'Sin stock'
+        };
+      }
+      
+      if (stock <= minStock) {
+        return {
+          class: 'status-low',
+          text: 'Stock bajo'
+        };
+      }
+      
+      return {
+        class: 'status-ok',
+        text: 'OK'
+      };
+    }
+
+    // Obtener texto de la categoría
+    function getCategoryText(category) {
+      switch (category) {
+        case 'medicamento':
+          return 'Medicamento';
+        case 'vacuna':
+          return 'Vacuna';
+        case 'alimento':
+          return 'Alimento';
+        case 'accesorio':
+          return 'Accesorio';
+        case 'limpieza':
+          return 'Limpieza';
+        default:
+          return 'Otro';
+      }
+    }
+
+    // Modal de producto
+    const productModal = document.getElementById('product-modal');
+    const closeProductModal = document.getElementById('close-product-modal');
+    const cancelProduct = document.getElementById('cancel-product');
+    const productForm = document.getElementById('product-form');
+    const addProductBtn = document.getElementById('add-product-btn');
+    const modalTitle = document.getElementById('modal-title');
+
+    // Modal de añadir stock
+    const stockModal = document.getElementById('stock-modal');
+    const closeStockModal = document.getElementById('close-stock-modal');
+    const cancelStock = document.getElementById('cancel-stock');
+    const stockForm = document.getElementById('stock-form');
+
+    // Botón de añadir producto
+    addProductBtn.addEventListener('click', function() {
+      showProductModal();
+    });
+
+    // Cerrar modal de producto
+    closeProductModal.addEventListener('click', function() {
+      productModal.style.display = 'none';
+    });
+
+    cancelProduct.addEventListener('click', function() {
+      productModal.style.display = 'none';
+    });
+
+    // Cerrar modal de stock
+    closeStockModal.addEventListener('click', function() {
+      stockModal.style.display = 'none';
+    });
+
+    cancelStock.addEventListener('click', function() {
+      stockModal.style.display = 'none';
+    });
+
+    // Formulario de producto
+    productForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const productId = document.getElementById('product-id').value;
+      const name = document.getElementById('product-name').value;
+      const category = document.getElementById('product-category').value;
+      const stock = parseInt(document.getElementById('product-stock').value);
+      const minStock = parseInt(document.getElementById('product-min-stock').value);
+      const price = parseFloat(document.getElementById('product-price').value);
+      const expiryDate = document.getElementById('product-expiry').value;
+      const batch = document.getElementById('product-batch').value;
+      const location = document.getElementById('product-location').value;
+      const description = document.getElementById('product-description').value;
+
+      if (!name || !category || isNaN(stock) || isNaN(minStock) || isNaN(price)) {
+        alert('Por favor complete todos los campos obligatorios');
+        return;
+      }
+
+      // Obtener inventario existente
+      let inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+
+      if (productId) {
+        // Editar producto existente
+        const productIndex = inventory.findIndex(product => product.id === productId);
+        
+        if (productIndex !== -1) {
+          inventory[productIndex] = {
+            ...inventory[productIndex],
+            name,
+            category,
+            stock,
+            minStock,
+            price,
+            expiryDate: expiryDate || null,
+            batch,
+            location,
+            description
+          };
+        }
+      } else {
+        // Crear nuevo producto
+        const newProduct = {
+          id: 'PRD' + Date.now().toString().slice(-6),
+          name,
+          category,
+          stock,
+          minStock,
+          price,
+          expiryDate: expiryDate || null,
+          batch,
+          location,
+          description,
+          createdAt: new Date().toISOString()
+        };
+
+        inventory.push(newProduct);
+      }
+
+      // Guardar inventario actualizado
+      localStorage.setItem('petCareInventory', JSON.stringify(inventory));
+      
+      // Cerrar modal y actualizar tabla
+      productModal.style.display = 'none';
+      loadInventory();
+    });
+
+    // Formulario de añadir stock
+    stockForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const productId = document.getElementById('stock-product-id').value;
+      const stockToAdd = parseInt(document.getElementById('stock-to-add').value);
+      const newExpiry = document.getElementById('new-expiry').value;
+      const newBatch = document.getElementById('new-batch').value;
+
+      if (!productId || isNaN(stockToAdd) || stockToAdd <= 0) {
+        alert('Por favor ingrese una cantidad válida');
+        return;
+      }
+
+      // Obtener inventario existente
+      let inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+      const productIndex = inventory.findIndex(product => product.id === productId);
+      
+      if (productIndex !== -1) {
+        // Actualizar stock
+        inventory[productIndex].stock += stockToAdd;
+        
+        // Actualizar fecha de caducidad y lote si se proporcionan
+        if (newExpiry) inventory[productIndex].expiryDate = newExpiry;
+        if (newBatch) inventory[productIndex].batch = newBatch;
+        
+        // Guardar inventario actualizado
+        localStorage.setItem('petCareInventory', JSON.stringify(inventory));
+        
+        // Cerrar modal y actualizar tabla
+        stockModal.style.display = 'none';
+        loadInventory();
+      }
+    });
+
+    // Mostrar modal de producto
+    function showProductModal(product = null) {
+      // Resetear formulario
+      productForm.reset();
+      document.getElementById('product-id').value = '';
+      
+      if (product) {
+        // Editar producto existente
+        modalTitle.innerHTML = '<i class="fas fa-edit"></i> Editar Producto';
+        
+        document.getElementById('product-id').value = product.id;
+        document.getElementById('product-name').value = product.name;
+        document.getElementById('product-category').value = product.category;
+        document.getElementById('product-stock').value = product.stock;
+        document.getElementById('product-min-stock').value = product.minStock;
+        document.getElementById('product-price').value = product.price;
+        document.getElementById('product-expiry').value = product.expiryDate || '';
+        document.getElementById('product-batch').value = product.batch || '';
+        document.getElementById('product-location').value = product.location || '';
+        document.getElementById('product-description').value = product.description || '';
+      } else {
+        // Nuevo producto
+        modalTitle.innerHTML = '<i class="fas fa-plus-circle"></i> Nuevo Producto';
+      }
+      
+      productModal.style.display = 'block';
+    }
+
+    // Mostrar modal de añadir stock
+    function showAddStockModal(productId) {
+      const inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+      const product = inventory.find(p => p.id === productId);
+      
+      if (!product) return;
+      
+      document.getElementById('stock-product-id').value = product.id;
+      document.getElementById('product-name-display').value = product.name;
+      document.getElementById('current-stock-display').value = product.stock;
+      document.getElementById('stock-to-add').value = 1;
+      document.getElementById('new-expiry').value = '';
+      document.getElementById('new-batch').value = '';
+      
+      stockModal.style.display = 'block';
+    }
+
+    // Editar producto
+    function editProduct(productId) {
+      const inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+      const product = inventory.find(p => p.id === productId);
+      
+      if (product) {
+        showProductModal(product);
+      }
+    }
+
+    // Eliminar producto
+    function deleteProduct(productId) {
+      if (confirm('¿Estás seguro de que deseas eliminar este producto del inventario?')) {
+        let inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+        inventory = inventory.filter(product => product.id !== productId);
+        
+        localStorage.setItem('petCareInventory', JSON.stringify(inventory));
+        loadInventory();
+      }
+    }
+
+    // Buscar en el inventario
+    document.getElementById('search-btn').addEventListener('click', function() {
+      const searchTerm = document.getElementById('search-inventory').value.toLowerCase().trim();
+      
+      if (!searchTerm) {
+        loadInventory();
+        return;
+      }
+      
+      const inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+      const results = inventory.filter(product => 
+        product.id.toLowerCase().includes(searchTerm) || 
+        product.name.toLowerCase().includes(searchTerm) ||
+        product.batch?.toLowerCase().includes(searchTerm)
+      );
+      
+      renderInventoryTable(results);
+    });
+
+    // Aplicar filtros
+    document.getElementById('apply-filters').addEventListener('click', function() {
+      const categoryFilter = document.getElementById('category-filter').value;
+      const sortFilter = document.getElementById('sort-filter').value;
+      
+      let inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+      
+      // Filtrar por categoría
+      if (categoryFilter !== 'all') {
+        inventory = inventory.filter(product => product.category === categoryFilter);
+      }
+      
+      // Ordenar
+      switch (sortFilter) {
+        case 'name-asc':
+          inventory.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case 'name-desc':
+          inventory.sort((a, b) => b.name.localeCompare(a.name));
+          break;
+        case 'stock-asc':
+          inventory.sort((a, b) => a.stock - b.stock);
+          break;
+        case 'stock-desc':
+          inventory.sort((a, b) => b.stock - a.stock);
+          break;
+        case 'expiry-asc':
+          inventory.sort((a, b) => {
+            if (!a.expiryDate) return 1;
+            if (!b.expiryDate) return -1;
+            return new Date(a.expiryDate) - new Date(b.expiryDate);
+          });
+          break;
+      }
+      
+      renderInventoryTable(inventory);
+    });
+
+    // Cerrar modales al hacer clic fuera
+    window.addEventListener('click', function(e) {
+      if (e.target === productModal) productModal.style.display = 'none';
+      if (e.target === stockModal) stockModal.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

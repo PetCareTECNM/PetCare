@@ -1,0 +1,12 @@
+{
+  "name": "petcare-server",
+  "version": "1.0.0",
+  "description": "Servidor para Pet Care con conexión a SQL Server",
+  "main": "server-simple.js",
+  "scripts": {
+    "start": "node server-simple.js"
+  },
+  "dependencies": {
+    "mssql": "^9.1.1"
+  }
+}

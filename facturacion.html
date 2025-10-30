@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Care - Facturación</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #008080, #00a3a3);
+      min-height: 100vh;
+      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .header {
+      background: #006666;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideDown {
+      0% { transform: translateY(-100%); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .header h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      font-size: 28px;
+    }
+
+    .header .info {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      display: flex;
+      min-height: calc(100vh - 120px);
+    }
+
+    @keyframes slideInLeft {
+      0% { transform: translateX(-50px); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideInRight {
+      0% { transform: translateX(50px); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #004d4d;
+      padding: 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .menu-section {
+      margin-bottom: 30px;
+    }
+
+    .menu-title {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 20px;
+      color: #b3d9d9;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      will-change: transform;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background: #006666;
+      color: white;
+      border-left-color: #00e6e6;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+      margin: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      overflow: auto;
+    }
+
+    .page-title {
+      color: #006666;
+      margin-bottom: 20px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .billing-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .search-container {
+      flex: 1;
+      max-width: 500px;
+      display: flex;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 5px 0 0 5px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      border-color: #008080;
+      outline: none;
+    }
+
+    .search-btn {
+      background: #008080;
+      color: white;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      padding: 0 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+      background: #006666;
+    }
+
+    .action-btn {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .btn-primary {
+      background: #008080;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #006666;
+    }
+
+    .billing-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .stat-icon {
+      font-size: 30px;
+      color: #008080;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      background-color: #f0f0f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      background: #e0e0e0;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .tab.active {
+      background: #006666;
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    .filter-select {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: white;
+      min-width: 150px;
+    }
+
+    .invoices-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .invoices-table th,
+    .invoices-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .invoices-table th {
+      background-color: #f5f5f5;
+      color: #333;
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+    }
+
+    .invoices-table tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .status-pagada {
+      background-color: #4CAF50;
+    }
+
+    .status-pendiente {
+      background-color: #ff9800;
+    }
+
+    .status-cancelada {
+      background-color: #f44336;
+    }
+
+    .status-parcial {
+      background-color: #2196F3;
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 5px;
+    }
+
+    .table-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.3s ease;
+    }
+
+    .table-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .view-btn {
+      color: #2196F3;
+    }
+
+    .edit-btn {
+      color: #ff9800;
+    }
+
+    .delete-btn {
+      color: #f44336;
+    }
+
+    .print-btn {
+      color: #4CAF50;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      overflow-y: auto;
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 3% auto;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 900px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .modal-title {
+      color: #006666;
+      margin-bottom: 20px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .close {
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #555;
+    }
+
+    .invoice-form {
+      display: grid;
+      gap: 20px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .items-section {
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      background: #f9f9f9;
+    }
+
+    .items-section h4 {
+      color: #006666;
+      margin-bottom: 15px;
+    }
+
+    .item-row {
+      display: grid;
+      grid-template-columns: 3fr 1fr 1fr 1fr 50px;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    .remove-item-btn {
+      background: #f44336;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .add-item-btn {
+      margin-top: 10px;
+      padding: 8px 15px;
+      background: #008080;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .totals-section {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f0f0f0;
+      border-radius: 5px;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 16px;
+    }
+
+    .total-row.grand-total {
+      font-size: 20px;
+      font-weight: bold;
+      color: #006666;
+      border-top: 2px solid #006666;
+      padding-top: 15px;
+      margin-top: 10px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    /* Invoice preview */
+    .invoice-preview {
+      background: white;
+      padding: 40px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #006666;
+      padding-bottom: 20px;
+    }
+
+    .clinic-info {
+      flex: 1;
+    }
+
+    .clinic-info h2 {
+      color: #006666;
+      margin-bottom: 10px;
+    }
+
+    .invoice-info {
+      text-align: right;
+    }
+
+    .invoice-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: #006666;
+    }
+
+    .client-info {
+      margin-bottom: 30px;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    .items-table th,
+    .items-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .items-table th {
+      background: #f5f5f5;
+      font-weight: bold;
+    }
+
+    .items-table tfoot {
+      font-weight: bold;
+    }
+
+    .print-section {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    @media print {
+      .sidebar, .billing-header, .tabs, .print-section, .modal-title .close {
+        display: none !important;
+      }
+      
+      .main-content {
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+      }
+      
+      .invoice-preview {
+        border: none;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>
+      <i class="fas fa-paw"></i>
+      Pet Care - Sistema Veterinario
+    </h1>
+    <div class="info">
+      Calzada del Tecnológico S/N, Unidad Tomas Aquino
+      <br>
+      C.P. 22414, Tijuana, Baja California
+      <br>
+      664-623-4054
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-home"></i>
+          Inicio
+        </div>
+        <a href="inicio.html" class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-users"></i>
+          Pacientes
+        </div>
+        <a href="registro.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_mascota.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-stethoscope"></i>
+          Consulta
+        </div>
+        <a href="consulta.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_consulta.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-calendar-alt"></i>
+          Gestión
+        </div>
+        <a href="calendario.html" class="menu-item">
+          <i class="fas fa-calendar-check"></i>
+          Calendario
+        </a>
+        <a href="recordatorios.html" class="menu-item">
+          <i class="fas fa-bell"></i>
+          Recordatorios
+        </a>
+        <a href="expediente.html" class="menu-item">
+          <i class="fas fa-file-medical"></i>
+          Expedientes
+        </a>
+        <a href="inventario.html" class="menu-item">
+          <i class="fas fa-boxes"></i>
+          Inventario
+        </a>
+        <a href="facturacion.html" class="menu-item active">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Facturación
+        </a>
+        <a href="estadisticas.html" class="menu-item">
+          <i class="fas fa-chart-bar"></i>
+          Estadísticas
+        </a>
+        <a href="fotos.html" class="menu-item">
+          <i class="fas fa-images"></i>
+          Fotos
+        </a>
+        <a href="exportar.html" class="menu-item">
+          <i class="fas fa-file-export"></i>
+          Exportar
+        </a>
+        <a href="fidelizacion.html" class="menu-item">
+          <i class="fas fa-award"></i>
+          Fidelización
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-ellipsis-h"></i>
+          Otros
+        </div>
+        <a href="bano.html" class="menu-item">
+          <i class="fas fa-shower"></i>
+          Baño
+        </a>
+        <a href="hospedaje.html" class="menu-item">
+          <i class="fas fa-hotel"></i>
+          Hospedaje
+        </a>
+      </div>
+
+      <a href="login.html" class="menu-item">
+        <i class="fas fa-sign-out-alt"></i>
+        Cerrar sesión
+      </a>
+    </div>
+
+    <div class="main-content">
+      <h2 class="page-title">
+        <i class="fas fa-file-invoice-dollar"></i>
+        Sistema de Facturación
+      </h2>
+
+      <div class="billing-header">
+        <div class="search-container">
+          <input type="text" class="search-input" id="search-invoice" placeholder="Buscar factura...">
+          <button class="search-btn" id="search-btn" title="Buscar" aria-label="Buscar factura">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+        <button class="action-btn btn-primary" id="new-invoice-btn">
+          <i class="fas fa-plus"></i> Nueva Factura
+        </button>
+      </div>
+
+      <div class="billing-stats">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-file-invoice-dollar"></i>
+          </div>
+          <div class="stat-value" id="total-invoices">0</div>
+          <div class="stat-label">Facturas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <div class="stat-value" id="total-income">$0</div>
+          <div class="stat-label">Ingresos Totales</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-value" id="pending-invoices">0</div>
+          <div class="stat-label">Pendientes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-calendar-day"></i>
+          </div>
+          <div class="stat-value" id="monthly-income">$0</div>
+          <div class="stat-label">Ingresos del Mes</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="all">Todas las Facturas</div>
+        <div class="tab" data-tab="paid">Pagadas</div>
+        <div class="tab" data-tab="pending">Pendientes</div>
+        <div class="tab" data-tab="cancelled">Canceladas</div>
+      </div>
+
+      <div id="all-tab" class="tab-content active">
+        <div class="filters">
+          <div class="filter-group">
+            <span class="filter-label">Período:</span>
+            <select class="filter-select" id="period-filter" title="Filtrar por período" aria-label="Filtrar por período">
+              <option value="all">Todos</option>
+              <option value="today">Hoy</option>
+              <option value="week">Esta semana</option>
+              <option value="month">Este mes</option>
+              <option value="year">Este año</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Ordenar por:</span>
+            <select class="filter-select" id="sort-filter" title="Ordenar resultados" aria-label="Ordenar resultados">
+              <option value="date-desc">Fecha (más reciente)</option>
+              <option value="date-asc">Fecha (más antigua)</option>
+              <option value="amount-desc">Monto (mayor)</option>
+              <option value="amount-asc">Monto (menor)</option>
+            </select>
+          </div>
+          <button class="action-btn btn-primary" id="apply-filters">
+            <i class="fas fa-filter"></i> Aplicar
+          </button>
+        </div>
+
+        <table class="invoices-table" id="invoices-table">
+          <thead>
+            <tr>
+              <th>Folio</th>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Mascota</th>
+              <th>Monto</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="invoices-body">
+            <!-- Facturas se cargarán dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="paid-tab" class="tab-content">
+        <!-- Contenido se cargará dinámicamente -->
+      </div>
+
+      <div id="pending-tab" class="tab-content">
+        <!-- Contenido se cargará dinámicamente -->
+      </div>
+
+      <div id="cancelled-tab" class="tab-content">
+        <!-- Contenido se cargará dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para crear/editar factura -->
+  <div id="invoice-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">
+        <span id="modal-title-text">
+          <i class="fas fa-file-invoice"></i> Nueva Factura
+        </span>
+        <span class="close" id="close-invoice-modal">&times;</span>
+      </div>
+
+      <form id="invoice-form" class="invoice-form">
+        <input type="hidden" id="invoice-id">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="invoice-date">Fecha</label>
+            <input type="date" id="invoice-date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="invoice-status">Estado</label>
+            <select id="invoice-status" class="form-control" required>
+              <option value="pendiente">Pendiente</option>
+              <option value="pagada">Pagada</option>
+              <option value="parcial">Pago Parcial</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="client-name">Nombre del Cliente</label>
+            <input type="text" id="client-name" class="form-control" required placeholder="Nombre completo">
+          </div>
+          <div class="form-group">
+            <label for="pet-name">Nombre de la Mascota</label>
+            <input type="text" id="pet-name" class="form-control" required placeholder="Nombre de la mascota">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="client-phone">Teléfono</label>
+            <input type="tel" id="client-phone" class="form-control" placeholder="664-123-4567">
+          </div>
+          <div class="form-group">
+            <label for="payment-method">Método de Pago</label>
+            <select id="payment-method" class="form-control">
+              <option value="efectivo">Efectivo</option>
+              <option value="tarjeta">Tarjeta</option>
+              <option value="transferencia">Transferencia</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="items-section">
+          <h4>Servicios/Productos</h4>
+          <div id="items-container">
+            <div class="item-row">
+              <input type="text" class="form-control item-description" placeholder="Descripción" required>
+              <input type="number" class="form-control item-quantity" placeholder="Cant." min="1" value="1" required>
+              <input type="number" class="form-control item-price" placeholder="Precio" min="0" step="0.01" required>
+              <input type="number" class="form-control item-total" placeholder="Total" readonly>
+              <button type="button" class="remove-item-btn" title="Eliminar">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <button type="button" class="add-item-btn" id="add-item-btn">
+            <i class="fas fa-plus"></i> Añadir Item
+          </button>
+        </div>
+
+        <div class="totals-section">
+          <div class="total-row">
+            <span>Subtotal:</span>
+            <span id="subtotal">$0.00</span>
+          </div>
+          <div class="total-row">
+            <span>IVA (16%):</span>
+            <span id="iva">$0.00</span>
+          </div>
+          <div class="total-row grand-total">
+            <span>TOTAL:</span>
+            <span id="grand-total">$0.00</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="invoice-notes">Notas</label>
+          <textarea id="invoice-notes" class="form-control" rows="3" placeholder="Notas adicionales..."></textarea>
+        </div>
+
+        <div class="button-group">
+          <button type="button" class="action-btn btn-primary" id="cancel-invoice">Cancelar</button>
+          <button type="submit" class="action-btn btn-primary">
+            <i class="fas fa-save"></i> Guardar Factura
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para ver/imprimir factura -->
+  <div id="preview-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">
+        <span>
+          <i class="fas fa-file-invoice"></i> Factura
+        </span>
+        <span class="close" id="close-preview-modal">&times;</span>
+      </div>
+
+      <div class="invoice-preview" id="invoice-preview">
+        <!-- Contenido de la factura se generará dinámicamente -->
+      </div>
+
+      <div class="print-section">
+        <button class="action-btn btn-primary" id="print-invoice">
+          <i class="fas fa-print"></i> Imprimir Factura
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Verificar sesión
+    window.onload = function() {
+      if(!localStorage.getItem('petCareSessionActive') || localStorage.getItem('petCareSessionActive') !== 'true') {
+        window.location.href = 'login.html';
+      } else {
+        loadInvoices();
+      }
+    };
+
+    // Configuración de pestañas
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        const tabId = this.getAttribute('data-tab');
+        
+        tabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        tabContents.forEach(content => content.classList.remove('active'));
+        document.getElementById(`${tabId}-tab`).classList.add('active');
+        
+        if (tabId === 'paid') loadPaidInvoices();
+        else if (tabId === 'pending') loadPendingInvoices();
+        else if (tabId === 'cancelled') loadCancelledInvoices();
+      });
+    });
+
+    // Cargar facturas
+    function loadInvoices() {
+      let invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+      
+      // Datos de ejemplo si no hay facturas
+      if (invoices.length === 0) {
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const lastWeek = new Date(today);
+        lastWeek.setDate(lastWeek.getDate() - 7);
+        const lastMonth = new Date(today);
+        lastMonth.setMonth(lastMonth.getMonth() - 1);
+        
+        invoices = [
+          {
+            id: 'FAC001',
+            date: today.toISOString().split('T')[0],
+            clientName: 'Juan Pérez',
+            petName: 'Max',
+            phone: '664-123-4567',
+            status: 'pagada',
+            paymentMethod: 'efectivo',
+            items: [
+              { description: 'Consulta General', quantity: 1, price: 350.00 },
+              { description: 'Vacuna Antirrábica', quantity: 1, price: 250.00 }
+            ],
+            subtotal: 600.00,
+            iva: 96.00,
+            total: 696.00,
+            notes: 'Próxima cita en 1 mes'
+          },
+          {
+            id: 'FAC002',
+            date: yesterday.toISOString().split('T')[0],
+            clientName: 'María García',
+            petName: 'Luna',
+            phone: '664-234-5678',
+            status: 'pendiente',
+            paymentMethod: 'tarjeta',
+            items: [
+              { description: 'Baño Completo', quantity: 1, price: 400.00 },
+              { description: 'Corte de Uñas', quantity: 1, price: 100.00 }
+            ],
+            subtotal: 500.00,
+            iva: 80.00,
+            total: 580.00,
+            notes: ''
+          },
+          {
+            id: 'FAC003',
+            date: lastWeek.toISOString().split('T')[0],
+            clientName: 'Carlos Rodríguez',
+            petName: 'Rocky',
+            phone: '664-345-6789',
+            status: 'pagada',
+            paymentMethod: 'transferencia',
+            items: [
+              { description: 'Cirugía Menor', quantity: 1, price: 2500.00 },
+              { description: 'Medicamentos', quantity: 1, price: 450.00 },
+              { description: 'Consulta Post-operatoria', quantity: 1, price: 350.00 }
+            ],
+            subtotal: 3300.00,
+            iva: 528.00,
+            total: 3828.00,
+            notes: 'Retirar puntos en 10 días'
+          },
+          {
+            id: 'FAC004',
+            date: lastWeek.toISOString().split('T')[0],
+            clientName: 'Ana Martínez',
+            petName: 'Bella',
+            phone: '664-456-7890',
+            status: 'parcial',
+            paymentMethod: 'efectivo',
+            items: [
+              { description: 'Hospedaje 3 días', quantity: 3, price: 300.00 }
+            ],
+            subtotal: 900.00,
+            iva: 144.00,
+            total: 1044.00,
+            notes: 'Anticipo de $500'
+          },
+          {
+            id: 'FAC005',
+            date: lastMonth.toISOString().split('T')[0],
+            clientName: 'Luis Fernández',
+            petName: 'Toby',
+            phone: '664-567-8901',
+            status: 'pagada',
+            paymentMethod: 'tarjeta',
+            items: [
+              { description: 'Limpieza Dental', quantity: 1, price: 1200.00 },
+              { description: 'Extracción de Molar', quantity: 1, price: 800.00 }
+            ],
+            subtotal: 2000.00,
+            iva: 320.00,
+            total: 2320.00,
+            notes: 'Control en 15 días'
+          }
+        ];
+        
+        localStorage.setItem('petCareInvoices', JSON.stringify(invoices));
+      }
+      
+      updateStats(invoices);
+      renderInvoicesTable(invoices);
+    }
+
+    // Actualizar estadísticas
+    function updateStats(invoices) {
+      const totalInvoices = invoices.length;
+      const totalIncome = invoices
+        .filter(inv => inv.status === 'pagada')
+        .reduce((sum, inv) => sum + inv.total, 0);
+      const pendingInvoices = invoices.filter(inv => inv.status === 'pendiente' || inv.status === 'parcial').length;
+      
+      const today = new Date();
+      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      const monthlyIncome = invoices
+        .filter(inv => {
+          const invDate = new Date(inv.date);
+          return invDate >= firstDayOfMonth && inv.status === 'pagada';
+        })
+        .reduce((sum, inv) => sum + inv.total, 0);
+      
+      document.getElementById('total-invoices').textContent = totalInvoices;
+      document.getElementById('total-income').textContent = `$${totalIncome.toFixed(2)}`;
+      document.getElementById('pending-invoices').textContent = pendingInvoices;
+      document.getElementById('monthly-income').textContent = `$${monthlyIncome.toFixed(2)}`;
+    }
+
+    // Renderizar tabla de facturas
+    function renderInvoicesTable(invoices) {
+      const tableBody = document.getElementById('invoices-body');
+      tableBody.innerHTML = '';
+      
+      if (invoices.length === 0) {
+        const emptyRow = document.createElement('tr');
+        emptyRow.innerHTML = '<td colspan="7" style="text-align: center; padding: 30px; color: #666;">No hay facturas registradas</td>';
+        tableBody.appendChild(emptyRow);
+        return;
+      }
+      
+      invoices.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      invoices.forEach(invoice => {
+        const row = document.createElement('tr');
+        
+        const statusClass = `status-${invoice.status}`;
+        const statusText = {
+          'pagada': 'Pagada',
+          'pendiente': 'Pendiente',
+          'parcial': 'Pago Parcial',
+          'cancelada': 'Cancelada'
+        }[invoice.status];
+        
+        const formattedDate = new Date(invoice.date).toLocaleDateString('es-MX');
+        
+        row.innerHTML = `
+          <td>${invoice.id}</td>
+          <td>${formattedDate}</td>
+          <td>${invoice.clientName}</td>
+          <td>${invoice.petName}</td>
+          <td>$${invoice.total.toFixed(2)}</td>
+          <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+          <td class="actions-cell">
+            <button class="table-btn view-btn" data-id="${invoice.id}" title="Ver">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="table-btn print-btn" data-id="${invoice.id}" title="Imprimir">
+              <i class="fas fa-print"></i>
+            </button>
+            <button class="table-btn edit-btn" data-id="${invoice.id}" title="Editar">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="table-btn delete-btn" data-id="${invoice.id}" title="Eliminar">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        `;
+        
+        tableBody.appendChild(row);
+      });
+      
+      addTableButtonListeners();
+    }
+
+    // Event listeners para botones de tabla
+    function addTableButtonListeners() {
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          viewInvoice(this.getAttribute('data-id'));
+        });
+      });
+      
+      document.querySelectorAll('.print-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          printInvoice(this.getAttribute('data-id'));
+        });
+      });
+      
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          editInvoice(this.getAttribute('data-id'));
+        });
+      });
+      
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          deleteInvoice(this.getAttribute('data-id'));
+        });
+      });
+    }
+
+    // Cargar facturas pagadas
+    function loadPaidInvoices() {
+      const invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+      const paidInvoices = invoices.filter(inv => inv.status === 'pagada');
+      renderTabContent('paid-tab', paidInvoices);
+    }
+
+    // Cargar facturas pendientes
+    function loadPendingInvoices() {
+      const invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+      const pendingInvoices = invoices.filter(inv => inv.status === 'pendiente' || inv.status === 'parcial');
+      renderTabContent('pending-tab', pendingInvoices);
+    }
+
+    // Cargar facturas canceladas
+    function loadCancelledInvoices() {
+      const invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+      const cancelledInvoices = invoices.filter(inv => inv.status === 'cancelada');
+      renderTabContent('cancelled-tab', cancelledInvoices);
+    }
+
+    // Renderizar contenido de pestaña
+    function renderTabContent(tabId, invoices) {
+      const tabElement = document.getElementById(tabId);
+      
+      if (invoices.length === 0) {
+        tabElement.innerHTML = '<div style="text-align: center; padding: 30px; color: #666;">No hay facturas en esta categoría</div>';
+        return;
+      }
+      
+      let html = `
+        <table class="invoices-table">
+          <thead>
+            <tr>
+              <th>Folio</th>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Mascota</th>
+              <th>Monto</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      invoices.forEach(invoice => {
+        const statusClass = `status-${invoice.status}`;
+        const statusText = {
+          'pagada': 'Pagada',
+          'pendiente': 'Pendiente',
+          'parcial': 'Pago Parcial',
+          'cancelada': 'Cancelada'
+        }[invoice.status];
+        
+        const formattedDate = new Date(invoice.date).toLocaleDateString('es-MX');
+        
+        html += `
+          <tr>
+            <td>${invoice.id}</td>
+            <td>${formattedDate}</td>
+            <td>${invoice.clientName}</td>
+            <td>${invoice.petName}</td>
+            <td>$${invoice.total.toFixed(2)}</td>
+            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+            <td class="actions-cell">
+              <button class="table-btn view-btn" data-id="${invoice.id}" title="Ver">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="table-btn print-btn" data-id="${invoice.id}" title="Imprimir">
+                <i class="fas fa-print"></i>
+              </button>
+              <button class="table-btn edit-btn" data-id="${invoice.id}" title="Editar">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="table-btn delete-btn" data-id="${invoice.id}" title="Eliminar">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      
+      html += '</tbody></table>';
+      tabElement.innerHTML = html;
+      
+      addTableButtonListeners();
+    }
+
+    // Modales
+    const invoiceModal = document.getElementById('invoice-modal');
+    const previewModal = document.getElementById('preview-modal');
+    const newInvoiceBtn = document.getElementById('new-invoice-btn');
+    const closeInvoiceModal = document.getElementById('close-invoice-modal');
+    const closePreviewModal = document.getElementById('close-preview-modal');
+    const cancelInvoice = document.getElementById('cancel-invoice');
+
+    newInvoiceBtn.addEventListener('click', () => {
+      showInvoiceModal();
+    });
+
+    closeInvoiceModal.addEventListener('click', () => {
+      invoiceModal.style.display = 'none';
+    });
+
+    closePreviewModal.addEventListener('click', () => {
+      previewModal.style.display = 'none';
+    });
+
+    cancelInvoice.addEventListener('click', () => {
+      invoiceModal.style.display = 'none';
+    });
+
+    // Mostrar modal de factura
+    function showInvoiceModal(invoice = null) {
+      const form = document.getElementById('invoice-form');
+      form.reset();
+      
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('invoice-date').value = today;
+      
+      if (invoice) {
+        document.getElementById('modal-title-text').innerHTML = '<i class="fas fa-edit"></i> Editar Factura';
+        document.getElementById('invoice-id').value = invoice.id;
+        document.getElementById('invoice-date').value = invoice.date;
+        document.getElementById('invoice-status').value = invoice.status;
+        document.getElementById('client-name').value = invoice.clientName;
+        document.getElementById('pet-name').value = invoice.petName;
+        document.getElementById('client-phone').value = invoice.phone;
+        document.getElementById('payment-method').value = invoice.paymentMethod;
+        document.getElementById('invoice-notes').value = invoice.notes;
+        
+        // Cargar items
+        const container = document.getElementById('items-container');
+        container.innerHTML = '';
+        invoice.items.forEach(item => {
+          addItemRow(item);
+        });
+      } else {
+        document.getElementById('modal-title-text').innerHTML = '<i class="fas fa-file-invoice"></i> Nueva Factura';
+        const container = document.getElementById('items-container');
+        container.innerHTML = '';
+        addItemRow();
+      }
+      
+      invoiceModal.style.display = 'block';
+    }
+
+    // Añadir fila de item
+    function addItemRow(item = null) {
+      const container = document.getElementById('items-container');
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      
+      row.innerHTML = `
+        <input type="text" class="form-control item-description" placeholder="Descripción" required value="${item ? item.description : ''}">
+        <input type="number" class="form-control item-quantity" placeholder="Cant." min="1" value="${item ? item.quantity : 1}" required>
+        <input type="number" class="form-control item-price" placeholder="Precio" min="0" step="0.01" value="${item ? item.price : ''}" required>
+        <input type="number" class="form-control item-total" placeholder="Total" readonly value="${item ? (item.quantity * item.price).toFixed(2) : ''}">
+        <button type="button" class="remove-item-btn" title="Eliminar">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      container.appendChild(row);
+      
+      // Event listeners para calcular total
+      const quantityInput = row.querySelector('.item-quantity');
+      const priceInput = row.querySelector('.item-price');
+      const totalInput = row.querySelector('.item-total');
+      
+      function updateItemTotal() {
+        const quantity = parseFloat(quantityInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
+        totalInput.value = (quantity * price).toFixed(2);
+        calculateTotals();
+      }
+      
+      quantityInput.addEventListener('input', updateItemTotal);
+      priceInput.addEventListener('input', updateItemTotal);
+      
+      // Botón eliminar
+      row.querySelector('.remove-item-btn').addEventListener('click', function() {
+        if (container.children.length > 1) {
+          row.remove();
+          calculateTotals();
+        } else {
+          alert('Debe haber al menos un item en la factura');
+        }
+      });
+    }
+
+    // Botón añadir item
+    document.getElementById('add-item-btn').addEventListener('click', () => {
+      addItemRow();
+    });
+
+    // Calcular totales
+    function calculateTotals() {
+      const items = document.querySelectorAll('.item-row');
+      let subtotal = 0;
+      
+      items.forEach(item => {
+        const total = parseFloat(item.querySelector('.item-total').value) || 0;
+        subtotal += total;
+      });
+      
+      const iva = subtotal * 0.16;
+      const grandTotal = subtotal + iva;
+      
+      document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('iva').textContent = `$${iva.toFixed(2)}`;
+      document.getElementById('grand-total').textContent = `$${grandTotal.toFixed(2)}`;
+    }
+
+    // Guardar factura
+    document.getElementById('invoice-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const invoiceId = document.getElementById('invoice-id').value;
+      const date = document.getElementById('invoice-date').value;
+      const status = document.getElementById('invoice-status').value;
+      const clientName = document.getElementById('client-name').value;
+      const petName = document.getElementById('pet-name').value;
+      const phone = document.getElementById('client-phone').value;
+      const paymentMethod = document.getElementById('payment-method').value;
+      const notes = document.getElementById('invoice-notes').value;
+      
+      // Obtener items
+      const itemRows = document.querySelectorAll('.item-row');
+      const items = [];
+      
+      itemRows.forEach(row => {
+        const description = row.querySelector('.item-description').value;
+        const quantity = parseFloat(row.querySelector('.item-quantity').value);
+        const price = parseFloat(row.querySelector('.item-price').value);
+        
+        items.push({ description, quantity, price });
+      });
+      
+      const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+      const iva = subtotal * 0.16;
+      const total = subtotal + iva;
+      
+      let invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+      
+      if (invoiceId) {
+        // Editar factura existente
+        const index = invoices.findIndex(inv => inv.id === invoiceId);
+        if (index !== -1) {
+          invoices[index] = {
+            ...invoices[index],
+            date,
+            status,
+            clientName,
+            petName,
+            phone,
+            paymentMethod,
+            items,
+            subtotal,
+            iva,
+            total,
+            notes
+          };
+        }
+      } else {
+        // Nueva factura
+        const newInvoice = {
+          id: 'FAC' + String(invoices.length + 1).padStart(3, '0'),
+          date,
+          status,
+          clientName,
+          petName,
+          phone,
+          paymentMethod,
+          items,
+          subtotal,
+          iva,
+          total,
+          notes
+        };
+        
+        invoices.push(newInvoice);
+      }
+      
+      localStorage.setItem('petCareInvoices', JSON.stringify(invoices));
+      
+      invoiceModal.style.display = 'none';
+      loadInvoices();
+    });
+
+    // Ver factura
+    function viewInvoice(invoiceId) {
+      const invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+      const invoice = invoices.find(inv => inv.id === invoiceId);
+      
+      if (!invoice) return;
+      
+      const previewContainer = document.getElementById('invoice-preview');
+      
+      let itemsHTML = '';
+      invoice.items.forEach(item => {
+        itemsHTML += `
+          <tr>
+            <td>${item.description}</td>
+            <td>${item.quantity}</td>
+            <td>$${item.price.toFixed(2)}</td>
+            <td>$${(item.quantity * item.price).toFixed(2)}</td>
+          </tr>
+        `;
+      });
+      
+      const statusText = {
+        'pagada': 'PAGADA',
+        'pendiente': 'PENDIENTE',
+        'parcial': 'PAGO PARCIAL',
+        'cancelada': 'CANCELADA'
+      }[invoice.status];
+      
+      previewContainer.innerHTML = `
+        <div class="invoice-header">
+          <div class="clinic-info">
+            <h2><i class="fas fa-paw"></i> Pet Care</h2>
+            <p>Calzada del Tecnológico S/N</p>
+            <p>Unidad Tomas Aquino</p>
+            <p>C.P. 22414, Tijuana, B.C.</p>
+            <p>Tel: 664-623-4054</p>
+          </div>
+          <div class="invoice-info">
+            <div class="invoice-number">${invoice.id}</div>
+            <p>Fecha: ${new Date(invoice.date).toLocaleDateString('es-MX')}</p>
+            <p><strong>Estado: ${statusText}</strong></p>
+          </div>
+        </div>
+        
+        <div class="client-info">
+          <h3>Cliente:</h3>
+          <p><strong>${invoice.clientName}</strong></p>
+          <p>Mascota: ${invoice.petName}</p>
+          <p>Teléfono: ${invoice.phone}</p>
+          <p>Método de pago: ${invoice.paymentMethod}</p>
+        </div>
+        
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th>Cantidad</th>
+              <th>Precio Unitario</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHTML}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" style="text-align: right;">Subtotal:</td>
+              <td>$${invoice.subtotal.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td colspan="3" style="text-align: right;">IVA (16%):</td>
+              <td>$${invoice.iva.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td colspan="3" style="text-align: right;"><strong>TOTAL:</strong></td>
+              <td><strong>$${invoice.total.toFixed(2)}</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+        
+        ${invoice.notes ? `<p style="margin-top: 20px;"><strong>Notas:</strong> ${invoice.notes}</p>` : ''}
+        
+        <p style="margin-top: 30px; text-align: center; color: #666;">
+          ¡Gracias por su preferencia!
+        </p>
+      `;
+      
+      previewModal.style.display = 'block';
+    }
+
+    // Imprimir factura
+    document.getElementById('print-invoice').addEventListener('click', () => {
+      window.print();
+    });
+
+    function printInvoice(invoiceId) {
+      viewInvoice(invoiceId);
+      setTimeout(() => {
+        window.print();
+      }, 500);
+    }
+
+    // Editar factura
+    function editInvoice(invoiceId) {
+      const invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+      const invoice = invoices.find(inv => inv.id === invoiceId);
+      
+      if (invoice) {
+        showInvoiceModal(invoice);
+      }
+    }
+
+    // Eliminar factura
+    function deleteInvoice(invoiceId) {
+      if (confirm('¿Está seguro de que desea eliminar esta factura?')) {
+        let invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+        invoices = invoices.filter(inv => inv.id !== invoiceId);
+        
+        localStorage.setItem('petCareInvoices', JSON.stringify(invoices));
+        loadInvoices();
+      }
+    }
+
+    // Buscar factura
+    document.getElementById('search-btn').addEventListener('click', function() {
+      const searchTerm = document.getElementById('search-invoice').value.toLowerCase().trim();
+      
+      if (!searchTerm) {
+        loadInvoices();
+        return;
+      }
+      
+      const invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+      const results = invoices.filter(inv => 
+        inv.id.toLowerCase().includes(searchTerm) ||
+        inv.clientName.toLowerCase().includes(searchTerm) ||
+        inv.petName.toLowerCase().includes(searchTerm)
+      );
+      
+      renderInvoicesTable(results);
+    });
+
+    // Aplicar filtros
+    document.getElementById('apply-filters').addEventListener('click', function() {
+      const periodFilter = document.getElementById('period-filter').value;
+      const sortFilter = document.getElementById('sort-filter').value;
+      
+      let invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+      
+      // Filtrar por período
+      if (periodFilter !== 'all') {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        invoices = invoices.filter(inv => {
+          const invDate = new Date(inv.date);
+          invDate.setHours(0, 0, 0, 0);
+          
+          switch (periodFilter) {
+            case 'today':
+              return invDate.getTime() === today.getTime();
+            case 'week':
+              const weekAgo = new Date(today);
+              weekAgo.setDate(weekAgo.getDate() - 7);
+              return invDate >= weekAgo;
+            case 'month':
+              return invDate.getMonth() === today.getMonth() && 
+                     invDate.getFullYear() === today.getFullYear();
+            case 'year':
+              return invDate.getFullYear() === today.getFullYear();
+            default:
+              return true;
+          }
+        });
+      }
+      
+      // Ordenar
+      switch (sortFilter) {
+        case 'date-desc':
+          invoices.sort((a, b) => new Date(b.date) - new Date(a.date));
+          break;
+        case 'date-asc':
+          invoices.sort((a, b) => new Date(a.date) - new Date(b.date));
+          break;
+        case 'amount-desc':
+          invoices.sort((a, b) => b.total - a.total);
+          break;
+        case 'amount-asc':
+          invoices.sort((a, b) => a.total - b.total);
+          break;
+      }
+      
+      renderInvoicesTable(invoices);
+    });
+
+    // Cerrar modales al hacer clic fuera
+    window.addEventListener('click', function(e) {
+      if (e.target === invoiceModal) invoiceModal.style.display = 'none';
+      if (e.target === previewModal) previewModal.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Care - Exportar Datos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #008080, #00a3a3);
+      min-height: 100vh;
+      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .header {
+      background: #006666;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideDown {
+      0% { transform: translateY(-100%); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .header h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      font-size: 28px;
+    }
+
+    .header .info {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      display: flex;
+      min-height: calc(100vh - 120px);
+    }
+
+    @keyframes slideInLeft {
+      0% { transform: translateX(-50px); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideInRight {
+      0% { transform: translateX(50px); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #004d4d;
+      padding: 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .menu-section {
+      margin-bottom: 30px;
+    }
+
+    .menu-title {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 20px;
+      color: #b3d9d9;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      will-change: transform;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background: #006666;
+      color: white;
+      border-left-color: #00e6e6;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      margin: 20px;
+      animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      overflow: auto;
+    }
+
+    .page-title {
+      color: #006666;
+      margin-bottom: 20px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .export-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .export-card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      border-top: 5px solid;
+    }
+
+    .export-card:nth-child(1) {
+      border-top-color: #4CAF50;
+    }
+
+    .export-card:nth-child(2) {
+      border-top-color: #2196F3;
+    }
+
+    .export-card:nth-child(3) {
+      border-top-color: #FF9800;
+    }
+
+    .export-card:nth-child(4) {
+      border-top-color: #9C27B0;
+    }
+
+    .export-card:nth-child(5) {
+      border-top-color: #f44336;
+    }
+
+    .export-card:nth-child(6) {
+      border-top-color: #00BCD4;
+    }
+
+    .export-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .card-icon {
+      font-size: 40px;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 15px;
+      background: linear-gradient(135deg, rgba(0,128,128,0.1), rgba(0,128,128,0.2));
+      color: #008080;
+    }
+
+    .card-title {
+      flex-grow: 1;
+    }
+
+    .card-title h3 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .card-title p {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .card-info {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .info-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .info-label {
+      color: #666;
+    }
+
+    .info-value {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .export-options {
+      margin-bottom: 20px;
+    }
+
+    .option-label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .date-range {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: #008080;
+      outline: none;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .export-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .export-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .btn-pdf {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-pdf:hover {
+      background: #d32f2f;
+      transform: scale(1.05);
+    }
+
+    .btn-excel {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .btn-excel:hover {
+      background: #388E3C;
+      transform: scale(1.05);
+    }
+
+    .btn-csv {
+      background: #2196F3;
+      color: white;
+    }
+
+    .btn-csv:hover {
+      background: #1976D2;
+      transform: scale(1.05);
+    }
+
+    .btn-json {
+      background: #FF9800;
+      color: white;
+    }
+
+    .btn-json:hover {
+      background: #F57C00;
+      transform: scale(1.05);
+    }
+
+    .progress-section {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      display: none;
+    }
+
+    .progress-section.active {
+      display: block;
+    }
+
+    .progress-title {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-bar-container {
+      background: #f0f0f0;
+      height: 30px;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #008080, #00e6e6);
+      width: 0%;
+      transition: width 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .progress-status {
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+    }
+
+    .success-message {
+      background: #4CAF50;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideDown 0.5s ease-out;
+    }
+
+    .quick-actions {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+    }
+
+    .quick-actions h3 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .quick-btn {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 15px;
+      color: #333;
+    }
+
+    .quick-btn:hover {
+      border-color: #008080;
+      background: #f0f9f9;
+      transform: translateX(5px);
+    }
+
+    .quick-btn i {
+      font-size: 24px;
+      color: #008080;
+      width: 30px;
+    }
+
+    .file-input-hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>
+      <i class="fas fa-paw"></i>
+      Pet Care - Sistema Veterinario
+    </h1>
+    <div class="info">
+      Calzada del Tecnológico S/N, Unidad Tomas Aquino
+      <br>
+      C.P. 22414, Tijuana, Baja California
+      <br>
+      664-623-4054
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-home"></i>
+          Inicio
+        </div>
+        <a href="inicio.html" class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-users"></i>
+          Pacientes
+        </div>
+        <a href="registro.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_mascota.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-stethoscope"></i>
+          Consulta
+        </div>
+        <a href="consulta.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_consulta.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-calendar-alt"></i>
+          Gestión
+        </div>
+        <a href="calendario.html" class="menu-item">
+          <i class="fas fa-calendar-check"></i>
+          Calendario
+        </a>
+        <a href="recordatorios.html" class="menu-item">
+          <i class="fas fa-bell"></i>
+          Recordatorios
+        </a>
+        <a href="expediente.html" class="menu-item">
+          <i class="fas fa-file-medical"></i>
+          Expedientes
+        </a>
+        <a href="inventario.html" class="menu-item">
+          <i class="fas fa-boxes"></i>
+          Inventario
+        </a>
+        <a href="facturacion.html" class="menu-item">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Facturación
+        </a>
+        <a href="estadisticas.html" class="menu-item">
+          <i class="fas fa-chart-bar"></i>
+          Estadísticas
+        </a>
+        <a href="fotos.html" class="menu-item">
+          <i class="fas fa-images"></i>
+          Fotos
+        </a>
+        <a href="exportar.html" class="menu-item active">
+          <i class="fas fa-file-export"></i>
+          Exportar
+        </a>
+        <a href="fidelizacion.html" class="menu-item">
+          <i class="fas fa-award"></i>
+          Fidelización
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-ellipsis-h"></i>
+          Otros
+        </div>
+        <a href="bano.html" class="menu-item">
+          <i class="fas fa-shower"></i>
+          Baño
+        </a>
+        <a href="hospedaje.html" class="menu-item">
+          <i class="fas fa-hotel"></i>
+          Hospedaje
+        </a>
+      </div>
+
+      <a href="login.html" class="menu-item">
+        <i class="fas fa-sign-out-alt"></i>
+        Cerrar sesión
+      </a>
+    </div>
+
+    <div class="main-content">
+      <h2 class="page-title">
+        <i class="fas fa-file-export"></i>
+        Exportar Datos
+      </h2>
+
+      <!-- Sección de progreso -->
+      <div class="progress-section" id="progress-section">
+        <div class="progress-title">
+          <i class="fas fa-spinner fa-spin"></i>
+          Exportando datos...
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="progress-bar">0%</div>
+        </div>
+        <div class="progress-status" id="progress-status">Preparando datos...</div>
+      </div>
+
+      <!-- Tarjetas de exportación -->
+      <div class="export-grid">
+        <!-- Pacientes -->
+        <div class="export-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-paw"></i>
+            </div>
+            <div class="card-title">
+              <h3>Pacientes</h3>
+              <p>Base de datos de mascotas</p>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="info-row">
+              <span class="info-label">Total registros:</span>
+              <span class="info-value" id="total-pets">0</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Última actualización:</span>
+              <span class="info-value">Hoy</span>
+            </div>
+          </div>
+          <div class="export-options">
+            <label class="option-label">Rango de fechas:</label>
+            <div class="date-range">
+              <input type="date" class="form-control" id="pets-date-from" title="Fecha inicial" aria-label="Fecha inicial">
+              <input type="date" class="form-control" id="pets-date-to" title="Fecha final" aria-label="Fecha final">
+            </div>
+          </div>
+          <div class="export-buttons">
+            <button class="export-btn btn-pdf" onclick="exportPetsPDF()" title="Exportar a PDF">
+              <i class="fas fa-file-pdf"></i> PDF
+            </button>
+            <button class="export-btn btn-excel" onclick="exportPetsCSV()" title="Exportar a CSV">
+              <i class="fas fa-file-csv"></i> CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Consultas -->
+        <div class="export-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-stethoscope"></i>
+            </div>
+            <div class="card-title">
+              <h3>Consultas</h3>
+              <p>Historial médico</p>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="info-row">
+              <span class="info-label">Total registros:</span>
+              <span class="info-value" id="total-consultations">0</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Este mes:</span>
+              <span class="info-value" id="month-consultations">0</span>
+            </div>
+          </div>
+          <div class="export-options">
+            <label class="option-label">Rango de fechas:</label>
+            <div class="date-range">
+              <input type="date" class="form-control" id="consult-date-from" title="Fecha inicial" aria-label="Fecha inicial">
+              <input type="date" class="form-control" id="consult-date-to" title="Fecha final" aria-label="Fecha final">
+            </div>
+          </div>
+          <div class="export-buttons">
+            <button class="export-btn btn-pdf" onclick="exportConsultationsPDF()" title="Exportar a PDF">
+              <i class="fas fa-file-pdf"></i> PDF
+            </button>
+            <button class="export-btn btn-excel" onclick="exportConsultationsCSV()" title="Exportar a CSV">
+              <i class="fas fa-file-csv"></i> CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Facturación -->
+        <div class="export-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-file-invoice-dollar"></i>
+            </div>
+            <div class="card-title">
+              <h3>Facturación</h3>
+              <p>Ingresos y facturasy</p>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="info-row">
+              <span class="info-label">Total facturas:</span>
+              <span class="info-value" id="total-invoices">0</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Monto total:</span>
+              <span class="info-value" id="total-amount">$0.00</span>
+            </div>
+          </div>
+          <div class="export-options">
+            <label class="option-label">Rango de fechas:</label>
+            <div class="date-range">
+              <input type="date" class="form-control" id="invoice-date-from" title="Fecha inicial" aria-label="Fecha inicial">
+              <input type="date" class="form-control" id="invoice-date-to" title="Fecha final" aria-label="Fecha final">
+            </div>
+          </div>
+          <div class="export-buttons">
+            <button class="export-btn btn-pdf" onclick="exportInvoicesPDF()" title="Exportar a PDF">
+              <i class="fas fa-file-pdf"></i> PDF
+            </button>
+            <button class="export-btn btn-excel" onclick="exportInvoicesCSV()" title="Exportar a CSV">
+              <i class="fas fa-file-csv"></i> CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Inventario -->
+        <div class="export-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-boxes"></i>
+            </div>
+            <div class="card-title">
+              <h3>Inventario</h3>
+              <p>Productos y medicamentos</p>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="info-row">
+              <span class="info-label">Total productos:</span>
+              <span class="info-value" id="total-inventory">0</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Stock bajo:</span>
+              <span class="info-value" id="low-stock">0</span>
+            </div>
+          </div>
+          <div class="export-options">
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="include-low-stock" checked>
+                Incluir alertas de stock bajo
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="include-expiry" checked>
+                Incluir productos próximos a vencer
+              </label>
+            </div>
+          </div>
+          <div class="export-buttons">
+            <button class="export-btn btn-pdf" onclick="exportInventoryPDF()" title="Exportar a PDF">
+              <i class="fas fa-file-pdf"></i> PDF
+            </button>
+            <button class="export-btn btn-excel" onclick="exportInventoryCSV()" title="Exportar a CSV">
+              <i class="fas fa-file-csv"></i> CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Citas -->
+        <div class="export-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="card-title">
+              <h3>Citas</h3>
+              <p>Agenda y calendario</p>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="info-row">
+              <span class="info-label">Total citas:</span>
+              <span class="info-value" id="total-appointments">0</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Próximas:</span>
+              <span class="info-value" id="upcoming-appointments">0</span>
+            </div>
+          </div>
+          <div class="export-options">
+            <label class="option-label">Rango de fechas:</label>
+            <div class="date-range">
+              <input type="date" class="form-control" id="appt-date-from" title="Fecha inicial" aria-label="Fecha inicial">
+              <input type="date" class="form-control" id="appt-date-to" title="Fecha final" aria-label="Fecha final">
+            </div>
+          </div>
+          <div class="export-buttons">
+            <button class="export-btn btn-pdf" onclick="exportAppointmentsPDF()" title="Exportar a PDF">
+              <i class="fas fa-file-pdf"></i> PDF
+            </button>
+            <button class="export-btn btn-excel" onclick="exportAppointmentsCSV()" title="Exportar a CSV">
+              <i class="fas fa-file-csv"></i> CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Respaldo completo -->
+        <div class="export-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-database"></i>
+            </div>
+            <div class="card-title">
+              <h3>Respaldo Completo</h3>
+              <p>Todos los datos del sistema</p>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="info-row">
+              <span class="info-label">Último respaldo:</span>
+              <span class="info-value" id="last-backup">Nunca</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Tamaño estimado:</span>
+              <span class="info-value" id="backup-size">~2MB</span>
+            </div>
+          </div>
+          <div class="export-options">
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="backup-pets" checked>
+                Pacientes
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="backup-consultations" checked>
+                Consultas
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="backup-invoices" checked>
+                Facturación
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="backup-inventory" checked>
+                Inventario
+              </label>
+            </div>
+          </div>
+          <div class="export-buttons">
+            <button class="export-btn btn-json" onclick="exportFullBackup()" title="Exportar respaldo completo">
+              <i class="fas fa-download"></i> Descargar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones rápidas -->
+      <div class="quick-actions">
+        <h3>
+          <i class="fas fa-bolt"></i>
+          Acciones Rápidas
+        </h3>
+        <button class="quick-btn" onclick="exportAllPDF()">
+          <i class="fas fa-file-pdf"></i>
+          <div>
+            <strong>Reporte Completo PDF</strong>
+            <br>
+            <small>Generar reporte completo de la clínica</small>
+          </div>
+        </button>
+        <button class="quick-btn" onclick="exportMonthlyReport()">
+          <i class="fas fa-calendar-alt"></i>
+          <div>
+            <strong>Reporte Mensual</strong>
+            <br>
+            <small>Resumen de actividades del mes actual</small>
+          </div>
+        </button>
+        <button class="quick-btn" onclick="document.getElementById('import-file').click()">
+          <i class="fas fa-file-import"></i>
+          <div>
+            <strong>Importar Datos</strong>
+            <br>
+            <small>Restaurar respaldo desde archivo JSON</small>
+          </div>
+        </button>
+        <input type="file" id="import-file" accept=".json" class="file-input-hidden" onchange="importBackup(event)">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Verificar sesión
+    window.onload = function() {
+      if(!localStorage.getItem('petCareSessionActive') || localStorage.getItem('petCareSessionActive') !== 'true') {
+        window.location.href = 'login.html';
+      } else {
+        loadSampleData();
+        loadStats();
+        setDefaultDates();
+      }
+    };
+
+    // Cargar datos de ejemplo
+    function loadSampleData() {
+      // Solo cargar si no hay datos previos
+      if (localStorage.getItem('exportSampleDataLoaded') === 'true') {
+        return;
+      }
+
+      // Datos de ejemplo para Pacientes (si no existen)
+      if (!localStorage.getItem('petCarePets') || JSON.parse(localStorage.getItem('petCarePets')).length === 0) {
+        const samplePets = [
+          {
+            id: 'PET001',
+            nombre: 'Max',
+            especie: 'Perro',
+            raza: 'Labrador',
+            edad: '5 años',
+            sexo: 'Macho',
+            peso: '32 kg',
+            dueño: 'Juan Pérez',
+            telefono: '664-123-4567',
+            email: 'juan.perez@email.com',
+            fechaRegistro: '2025-01-15'
+          },
+          {
+            id: 'PET002',
+            nombre: 'Luna',
+            especie: 'Gato',
+            raza: 'Siamés',
+            edad: '3 años',
+            sexo: 'Hembra',
+            peso: '4 kg',
+            dueño: 'María García',
+            telefono: '664-234-5678',
+            email: 'maria.garcia@email.com',
+            fechaRegistro: '2025-03-20'
+          },
+          {
+            id: 'PET003',
+            nombre: 'Rocky',
+            especie: 'Perro',
+            raza: 'Bulldog',
+            edad: '4 años',
+            sexo: 'Macho',
+            peso: '28 kg',
+            dueño: 'Carlos Rodríguez',
+            telefono: '664-345-6789',
+            email: 'carlos.rodriguez@email.com',
+            fechaRegistro: '2025-06-10'
+          }
+        ];
+        localStorage.setItem('petCarePets', JSON.stringify(samplePets));
+      }
+
+      // Datos de ejemplo para Facturación (si no existen)
+      if (!localStorage.getItem('petCareInvoices') || JSON.parse(localStorage.getItem('petCareInvoices')).length === 0) {
+        const today = new Date();
+        const sampleInvoices = [
+          {
+            numeroFactura: 'FAC-001',
+            fecha: '2025-10-01',
+            cliente: 'Juan Pérez',
+            mascota: 'Max',
+            concepto: 'Consulta General + Vacuna',
+            subtotal: '500.00',
+            iva: '80.00',
+            total: '580.00',
+            estado: 'Pagada'
+          },
+          {
+            numeroFactura: 'FAC-002',
+            fecha: '2025-10-05',
+            cliente: 'María García',
+            mascota: 'Luna',
+            concepto: 'Limpieza Dental',
+            subtotal: '800.00',
+            iva: '128.00',
+            total: '928.00',
+            estado: 'Pagada'
+          },
+          {
+            numeroFactura: 'FAC-003',
+            fecha: '2025-10-08',
+            cliente: 'Carlos Rodríguez',
+            mascota: 'Rocky',
+            concepto: 'Cirugía Menor',
+            subtotal: '2500.00',
+            iva: '400.00',
+            total: '2900.00',
+            estado: 'Pendiente'
+          },
+          {
+            numeroFactura: 'FAC-004',
+            fecha: '2025-10-10',
+            cliente: 'Ana Martínez',
+            mascota: 'Bella',
+            concepto: 'Consulta de Urgencia',
+            subtotal: '1200.00',
+            iva: '192.00',
+            total: '1392.00',
+            estado: 'Pagada'
+          },
+          {
+            numeroFactura: 'FAC-005',
+            fecha: '2025-10-12',
+            cliente: 'Luis Hernández',
+            mascota: 'Toby',
+            concepto: 'Baño y Corte',
+            subtotal: '350.00',
+            iva: '56.00',
+            total: '406.00',
+            estado: 'Pagada'
+          }
+        ];
+        localStorage.setItem('petCareInvoices', JSON.stringify(sampleInvoices));
+      }
+
+      // Datos de ejemplo para Inventario (si no existen)
+      if (!localStorage.getItem('petCareInventory') || JSON.parse(localStorage.getItem('petCareInventory')).length === 0) {
+        const sampleInventory = [
+          {
+            codigo: 'MED-001',
+            nombre: 'Amoxicilina 500mg',
+            categoria: 'Antibióticos',
+            cantidad: 25,
+            minimo: 10,
+            precio: '150.00',
+            proveedor: 'Farmacéutica Veterinaria SA',
+            fechaVencimiento: '2025-08-15'
+          },
+          {
+            codigo: 'MED-002',
+            nombre: 'Vacuna Antirrábica',
+            categoria: 'Vacunas',
+            cantidad: 45,
+            minimo: 20,
+            precio: '200.00',
+            proveedor: 'VetVaccines Inc',
+            fechaVencimiento: '2025-12-20'
+          },
+          {
+            codigo: 'MED-003',
+            nombre: 'Desparasitante Interno',
+            categoria: 'Antiparasitarios',
+            cantidad: 8,
+            minimo: 15,
+            precio: '120.00',
+            proveedor: 'Farmacéutica Veterinaria SA',
+            fechaVencimiento: '2025-05-10'
+          },
+          {
+            codigo: 'PROD-001',
+            nombre: 'Alimento Premium Perro Adulto 15kg',
+            categoria: 'Alimentos',
+            cantidad: 30,
+            minimo: 10,
+            precio: '850.00',
+            proveedor: 'Pet Nutrition SA',
+            fechaVencimiento: '2025-11-30'
+          },
+          {
+            codigo: 'PROD-002',
+            nombre: 'Shampoo Medicado',
+            categoria: 'Higiene',
+            cantidad: 18,
+            minimo: 8,
+            precio: '180.00',
+            proveedor: 'Pet Care Products',
+            fechaVencimiento: '2026-03-15'
+          },
+          {
+            codigo: 'ACC-001',
+            nombre: 'Collar Antipulgas',
+            categoria: 'Accesorios',
+            cantidad: 5,
+            minimo: 12,
+            precio: '250.00',
+            proveedor: 'Pet Accessories Co',
+            fechaVencimiento: '2026-01-20'
+          },
+          {
+            codigo: 'MED-004',
+            nombre: 'Analgésico Carprofeno',
+            categoria: 'Analgésicos',
+            cantidad: 35,
+            minimo: 15,
+            precio: '180.00',
+            proveedor: 'Farmacéutica Veterinaria SA',
+            fechaVencimiento: '2025-09-25'
+          },
+          {
+            codigo: 'MED-005',
+            nombre: 'Gotas Oftálmicas',
+            categoria: 'Oftalmología',
+            cantidad: 12,
+            minimo: 8,
+            precio: '95.00',
+            proveedor: 'VetPharm Solutions',
+            fechaVencimiento: '2025-07-30'
+          },
+          {
+            codigo: 'PROD-003',
+            nombre: 'Arena para Gato 10kg',
+            categoria: 'Higiene',
+            cantidad: 22,
+            minimo: 10,
+            precio: '120.00',
+            proveedor: 'Pet Care Products',
+            fechaVencimiento: null
+          },
+          {
+            codigo: 'ACC-002',
+            nombre: 'Correa Ajustable',
+            categoria: 'Accesorios',
+            cantidad: 15,
+            minimo: 8,
+            precio: '180.00',
+            proveedor: 'Pet Accessories Co',
+            fechaVencimiento: null
+          },
+          {
+            codigo: 'MED-006',
+            nombre: 'Vitaminas Multiples',
+            categoria: 'Suplementos',
+            cantidad: 3,
+            minimo: 10,
+            precio: '220.00',
+            proveedor: 'VetPharm Solutions',
+            fechaVencimiento: '2025-10-15'
+          },
+          {
+            codigo: 'PROD-004',
+            nombre: 'Snacks Dentales',
+            categoria: 'Alimentos',
+            cantidad: 28,
+            minimo: 15,
+            precio: '95.00',
+            proveedor: 'Pet Nutrition SA',
+            fechaVencimiento: '2025-12-01'
+          }
+        ];
+        localStorage.setItem('petCareInventory', JSON.stringify(sampleInventory));
+      }
+
+      // Marcar que los datos de ejemplo ya fueron cargados
+      localStorage.setItem('exportSampleDataLoaded', 'true');
+    }
+
+    // Configurar fechas por defecto
+    function setDefaultDates() {
+      const today = new Date();
+      const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+      
+      const todayStr = today.toISOString().split('T')[0];
+      const yearStartStr = firstDayOfYear.toISOString().split('T')[0];
+      
+      // Establecer rango para el año actual
+      document.getElementById('pets-date-from').value = yearStartStr;
+      document.getElementById('pets-date-to').value = todayStr;
+      document.getElementById('consult-date-from').value = yearStartStr;
+      document.getElementById('consult-date-to').value = todayStr;
+      document.getElementById('invoice-date-from').value = yearStartStr;
+      document.getElementById('invoice-date-to').value = todayStr;
+      document.getElementById('appt-date-from').value = yearStartStr;
+      document.getElementById('appt-date-to').value = todayStr;
+    }
+
+    // Cargar estadísticas
+    function loadStats() {
+      // Pacientes
+      const pets = JSON.parse(localStorage.getItem('petCarePets')) || [];
+      document.getElementById('total-pets').textContent = pets.length;
+
+      // Consultas - usar registros médicos del sistema
+      const medicalRecords = JSON.parse(localStorage.getItem('petCareMedicalRecords')) || [];
+      const today = new Date();
+      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      
+      let monthConsultations = 0;
+      medicalRecords.forEach(record => {
+        if (new Date(record.date) >= firstDayOfMonth) {
+          monthConsultations++;
+        }
+      });
+      
+      document.getElementById('total-consultations').textContent = medicalRecords.length;
+      document.getElementById('month-consultations').textContent = monthConsultations;
+
+      // Facturación
+      const invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+      document.getElementById('total-invoices').textContent = invoices.length;
+      
+      const totalAmount = invoices.reduce((sum, inv) => sum + (parseFloat(inv.total) || 0), 0);
+      document.getElementById('total-amount').textContent = '$' + totalAmount.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+      // Inventario
+      const inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+      document.getElementById('total-inventory').textContent = inventory.length;
+      
+      const lowStock = inventory.filter(item => item.cantidad <= item.minimo).length;
+      document.getElementById('low-stock').textContent = lowStock;
+
+      // Citas
+      const appointments = JSON.parse(localStorage.getItem('petCareAppointments')) || [];
+      document.getElementById('total-appointments').textContent = appointments.length;
+      
+      const upcomingAppointments = appointments.filter(appt => new Date(appt.start) >= today).length;
+      document.getElementById('upcoming-appointments').textContent = upcomingAppointments;
+
+      // Último respaldo
+      const lastBackup = localStorage.getItem('petCareLastBackup');
+      if (lastBackup) {
+        const backupDate = new Date(lastBackup);
+        document.getElementById('last-backup').textContent = backupDate.toLocaleDateString('es-MX');
+      }
+    }
+
+    // Simular progreso
+    function showProgress(callback) {
+      const progressSection = document.getElementById('progress-section');
+      const progressBar = document.getElementById('progress-bar');
+      const progressStatus = document.getElementById('progress-status');
+      
+      progressSection.classList.add('active');
+      progressBar.style.width = '0%';
+      progressBar.textContent = '0%';
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 10;
+        progressBar.style.width = progress + '%';
+        progressBar.textContent = progress + '%';
+        
+        if (progress === 30) progressStatus.textContent = 'Recopilando datos...';
+        if (progress === 60) progressStatus.textContent = 'Generando documento...';
+        if (progress === 90) progressStatus.textContent = 'Finalizando...';
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          progressStatus.textContent = '¡Exportación completada!';
+          
+          setTimeout(() => {
+            if (callback) callback();
+            progressSection.classList.remove('active');
+          }, 1000);
+        }
+      }, 200);
+    }
+
+    // Exportar Pacientes a PDF
+    function exportPetsPDF() {
+      showProgress(() => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const pets = JSON.parse(localStorage.getItem('petCarePets')) || [];
+        const dateFrom = document.getElementById('pets-date-from').value;
+        const dateTo = document.getElementById('pets-date-to').value;
+        
+        let filteredPets = pets;
+        if (dateFrom && dateTo) {
+          const filtered = pets.filter(pet => {
+            const petDate = new Date(pet.fechaRegistro || '2020-01-01');
+            return petDate >= new Date(dateFrom) && petDate <= new Date(dateTo);
+          });
+          // Si el filtro resulta en 0 pacientes, usar todos
+          if (filtered.length > 0) {
+            filteredPets = filtered;
+          }
+        }
+        
+        // Título
+        doc.setFontSize(18);
+        doc.text('Pet Care - Reporte de Pacientes', 14, 20);
+        
+        doc.setFontSize(11);
+        doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 14, 28);
+        doc.text(`Total de pacientes: ${filteredPets.length}`, 14, 34);
+        
+        // Tabla
+        const tableData = filteredPets.map(pet => [
+          pet.nombre || '',
+          pet.especie || '',
+          pet.raza || '',
+          pet.edad || '',
+          pet.dueño || '',
+          pet.telefono || ''
+        ]);
+        
+        doc.autoTable({
+          head: [['Nombre', 'Especie', 'Raza', 'Edad', 'Dueño', 'Teléfono']],
+          body: tableData,
+          startY: 40,
+          styles: { fontSize: 9 },
+          headStyles: { fillColor: [0, 128, 128] }
+        });
+        
+        doc.save('pacientes_' + new Date().getTime() + '.pdf');
+      });
+    }
+
+    // Exportar Pacientes a CSV
+    function exportPetsCSV() {
+      showProgress(() => {
+        const pets = JSON.parse(localStorage.getItem('petCarePets')) || [];
+        
+        let csv = 'Nombre,Especie,Raza,Edad,Sexo,Dueño,Teléfono,Email\n';
+        pets.forEach(pet => {
+          csv += `"${pet.nombre}","${pet.especie}","${pet.raza}","${pet.edad}","${pet.sexo}","${pet.dueño}","${pet.telefono}","${pet.email}"\n`;
+        });
+        
+        downloadFile(csv, 'pacientes_' + new Date().getTime() + '.csv', 'text/csv');
+      });
+    }
+
+    // Exportar Consultas a PDF
+    function exportConsultationsPDF() {
+      showProgress(() => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const medicalRecords = JSON.parse(localStorage.getItem('petCareMedicalRecords')) || [];
+        const pets = JSON.parse(localStorage.getItem('petCarePets')) || [];
+        const dateFrom = document.getElementById('consult-date-from').value;
+        const dateTo = document.getElementById('consult-date-to').value;
+        
+        let filteredRecords = medicalRecords;
+        if (dateFrom && dateTo) {
+          const filtered = medicalRecords.filter(record => {
+            const recordDate = new Date(record.date);
+            return recordDate >= new Date(dateFrom) && recordDate <= new Date(dateTo);
+          });
+          // Si el filtro resulta en 0 registros, usar todos
+          if (filtered.length > 0) {
+            filteredRecords = filtered;
+          }
+        }
+        
+        doc.setFontSize(18);
+        doc.text('Pet Care - Reporte de Consultas', 14, 20);
+        
+        doc.setFontSize(11);
+        doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 14, 28);
+        doc.text(`Total de consultas: ${filteredRecords.length}`, 14, 34);
+        
+        const tableData = filteredRecords.map(record => {
+          const pet = pets.find(p => p.id === record.petId);
+          const petName = pet ? pet.nombre : record.petName || 'Desconocido';
+          return [
+            petName,
+            new Date(record.date).toLocaleDateString('es-MX'),
+            (record.reason || record.diagnosis || '').substring(0, 30),
+            (record.diagnosis || record.treatment || '').substring(0, 30)
+          ];
+        });
+        
+        doc.autoTable({
+          head: [['Mascota', 'Fecha', 'Motivo/Diagnóstico', 'Tratamiento']],
+          body: tableData,
+          startY: 40,
+          styles: { fontSize: 9 },
+          headStyles: { fillColor: [0, 128, 128] }
+        });
+        
+        doc.save('consultas_' + new Date().getTime() + '.pdf');
+      });
+    }
+
+    // Exportar Consultas a CSV
+    function exportConsultationsCSV() {
+      showProgress(() => {
+        const medicalRecords = JSON.parse(localStorage.getItem('petCareMedicalRecords')) || [];
+        const pets = JSON.parse(localStorage.getItem('petCarePets')) || [];
+        
+        let csv = 'Mascota,Fecha,Diagnóstico,Tratamiento,Veterinario,Peso,Temperatura\n';
+        medicalRecords.forEach(record => {
+          const pet = pets.find(p => p.id === record.petId);
+          const petName = pet ? pet.nombre : record.petName || 'Desconocido';
+          csv += `"${petName}","${record.date}","${record.diagnosis || ''}","${record.treatment || ''}","${record.veterinarian || record.vet || ''}","${record.weight || ''}","${record.temperature || ''}"\n`;
+        });
+        
+        downloadFile(csv, 'consultas_' + new Date().getTime() + '.csv', 'text/csv');
+      });
+    }
+
+    // Exportar Facturas a PDF
+    function exportInvoicesPDF() {
+      showProgress(() => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+        const dateFrom = document.getElementById('invoice-date-from').value;
+        const dateTo = document.getElementById('invoice-date-to').value;
+        
+        let filteredInvoices = invoices;
+        if (dateFrom && dateTo) {
+          const filtered = invoices.filter(inv => {
+            const invDate = new Date(inv.fecha);
+            return invDate >= new Date(dateFrom) && invDate <= new Date(dateTo);
+          });
+          // Si el filtro resulta en 0 facturas, usar todas
+          if (filtered.length > 0) {
+            filteredInvoices = filtered;
+          }
+        }
+        
+        doc.setFontSize(18);
+        doc.text('Pet Care - Reporte de Facturación', 14, 20);
+        
+        doc.setFontSize(11);
+        doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 14, 28);
+        doc.text(`Total de facturas: ${filteredInvoices.length}`, 14, 34);
+        
+        const total = filteredInvoices.reduce((sum, inv) => sum + parseFloat(inv.total || 0), 0);
+        doc.text(`Monto total: $${total.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, 14, 40);
+        
+        const tableData = filteredInvoices.map(inv => [
+          inv.numeroFactura,
+          new Date(inv.fecha).toLocaleDateString('es-MX'),
+          inv.cliente,
+          '$' + parseFloat(inv.total).toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
+          inv.estado
+        ]);
+        
+        doc.autoTable({
+          head: [['No. Factura', 'Fecha', 'Cliente', 'Monto', 'Estado']],
+          body: tableData,
+          startY: 46,
+          styles: { fontSize: 9 },
+          headStyles: { fillColor: [0, 128, 128] }
+        });
+        
+        doc.save('facturacion_' + new Date().getTime() + '.pdf');
+      });
+    }
+
+    // Exportar Facturas a CSV
+    function exportInvoicesCSV() {
+      showProgress(() => {
+        const invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+        
+        let csv = 'No. Factura,Fecha,Cliente,Subtotal,IVA,Total,Estado\n';
+        invoices.forEach(inv => {
+          csv += `"${inv.numeroFactura}","${inv.fecha}","${inv.cliente}","${inv.subtotal}","${inv.iva}","${inv.total}","${inv.estado}"\n`;
+        });
+        
+        downloadFile(csv, 'facturacion_' + new Date().getTime() + '.csv', 'text/csv');
+      });
+    }
+
+    // Exportar Inventario a PDF
+    function exportInventoryPDF() {
+      showProgress(() => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        let inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+        
+        const includeLowStock = document.getElementById('include-low-stock').checked;
+        const includeExpiry = document.getElementById('include-expiry').checked;
+        
+        if (includeLowStock || includeExpiry) {
+          inventory = inventory.filter(item => {
+            const lowStock = item.cantidad <= item.minimo;
+            const expirySoon = item.fechaVencimiento && 
+              new Date(item.fechaVencimiento) <= new Date(Date.now() + 30*24*60*60*1000);
+            
+            return (includeLowStock && lowStock) || (includeExpiry && expirySoon);
+          });
+        }
+        
+        doc.setFontSize(18);
+        doc.text('Pet Care - Reporte de Inventario', 14, 20);
+        
+        doc.setFontSize(11);
+        doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 14, 28);
+        doc.text(`Total de productos: ${inventory.length}`, 14, 34);
+        
+        const tableData = inventory.map(item => [
+          item.nombre,
+          item.categoria,
+          item.cantidad,
+          item.minimo,
+          item.precio ? '$' + parseFloat(item.precio).toFixed(2) : '-',
+          item.fechaVencimiento ? new Date(item.fechaVencimiento).toLocaleDateString('es-MX') : '-'
+        ]);
+        
+        doc.autoTable({
+          head: [['Producto', 'Categoría', 'Stock', 'Mínimo', 'Precio', 'Vencimiento']],
+          body: tableData,
+          startY: 40,
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [0, 128, 128] }
+        });
+        
+        doc.save('inventario_' + new Date().getTime() + '.pdf');
+      });
+    }
+
+    // Exportar Inventario a CSV
+    function exportInventoryCSV() {
+      showProgress(() => {
+        const inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+        
+        let csv = 'Código,Producto,Categoría,Cantidad,Mínimo,Precio,Proveedor,Fecha Vencimiento\n';
+        inventory.forEach(item => {
+          csv += `"${item.codigo}","${item.nombre}","${item.categoria}","${item.cantidad}","${item.minimo}","${item.precio}","${item.proveedor}","${item.fechaVencimiento}"\n`;
+        });
+        
+        downloadFile(csv, 'inventario_' + new Date().getTime() + '.csv', 'text/csv');
+      });
+    }
+
+    // Exportar Citas a PDF
+    function exportAppointmentsPDF() {
+      showProgress(() => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const appointments = JSON.parse(localStorage.getItem('petCareAppointments')) || [];
+        const dateFrom = document.getElementById('appt-date-from').value;
+        const dateTo = document.getElementById('appt-date-to').value;
+        
+        let filteredAppts = appointments;
+        if (dateFrom && dateTo) {
+          const filtered = appointments.filter(appt => {
+            const apptDate = new Date(appt.start || appt.date);
+            return apptDate >= new Date(dateFrom) && apptDate <= new Date(dateTo);
+          });
+          // Si el filtro resulta en 0 citas, usar todas
+          if (filtered.length > 0) {
+            filteredAppts = filtered;
+          }
+        }
+        
+        doc.setFontSize(18);
+        doc.text('Pet Care - Reporte de Citas', 14, 20);
+        
+        doc.setFontSize(11);
+        doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 14, 28);
+        doc.text(`Total de citas: ${filteredAppts.length}`, 14, 34);
+        
+        const tableData = filteredAppts.map(appt => [
+          appt.title || 'Sin título',
+          new Date(appt.start).toLocaleDateString('es-MX'),
+          new Date(appt.start).toLocaleTimeString('es-MX', {hour: '2-digit', minute: '2-digit'}),
+          appt.tipo || 'General'
+        ]);
+        
+        doc.autoTable({
+          head: [['Mascota/Cliente', 'Fecha', 'Hora', 'Tipo']],
+          body: tableData,
+          startY: 40,
+          styles: { fontSize: 9 },
+          headStyles: { fillColor: [0, 128, 128] }
+        });
+        
+        doc.save('citas_' + new Date().getTime() + '.pdf');
+      });
+    }
+
+    // Exportar Citas a CSV
+    function exportAppointmentsCSV() {
+      showProgress(() => {
+        const appointments = JSON.parse(localStorage.getItem('petCareAppointments')) || [];
+        
+        let csv = 'Título,Fecha,Hora,Tipo\n';
+        appointments.forEach(appt => {
+          const date = new Date(appt.start);
+          csv += `"${appt.title}","${date.toLocaleDateString('es-MX')}","${date.toLocaleTimeString('es-MX')}","${appt.tipo}"\n`;
+        });
+        
+        downloadFile(csv, 'citas_' + new Date().getTime() + '.csv', 'text/csv');
+      });
+    }
+
+    // Exportar respaldo completo
+    function exportFullBackup() {
+      showProgress(() => {
+        const backup = {
+          version: '1.0',
+          date: new Date().toISOString(),
+          data: {}
+        };
+        
+        if (document.getElementById('backup-pets').checked) {
+          backup.data.pets = JSON.parse(localStorage.getItem('petCarePets')) || [];
+        }
+        if (document.getElementById('backup-consultations').checked) {
+          backup.data.medicalRecords = JSON.parse(localStorage.getItem('petCareMedicalRecords')) || [];
+          backup.data.vaccines = JSON.parse(localStorage.getItem('petCareVaccines')) || [];
+          backup.data.medications = JSON.parse(localStorage.getItem('petCareMedications')) || [];
+        }
+        if (document.getElementById('backup-invoices').checked) {
+          backup.data.invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+        }
+        if (document.getElementById('backup-inventory').checked) {
+          backup.data.inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+        }
+        
+        // Siempre incluir estos datos adicionales
+        backup.data.appointments = JSON.parse(localStorage.getItem('petCareAppointments')) || [];
+        backup.data.reminders = JSON.parse(localStorage.getItem('petCareReminders')) || [];
+        
+        const jsonStr = JSON.stringify(backup, null, 2);
+        const estimatedSize = (new Blob([jsonStr]).size / 1024).toFixed(2);
+        
+        downloadFile(jsonStr, 'petcare_backup_' + new Date().getTime() + '.json', 'application/json');
+        
+        localStorage.setItem('petCareLastBackup', new Date().toISOString());
+        document.getElementById('backup-size').textContent = '~' + estimatedSize + 'KB';
+        loadStats();
+      });
+    }
+
+    // Exportar reporte completo
+    function exportAllPDF() {
+      showProgress(() => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFontSize(20);
+        doc.text('Pet Care', 14, 20);
+        doc.setFontSize(16);
+        doc.text('Reporte Completo de la Clínica', 14, 30);
+        
+        doc.setFontSize(11);
+        doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 14, 40);
+        
+        let yPos = 50;
+        
+        // Resumen
+        doc.setFontSize(14);
+        doc.text('Resumen General', 14, yPos);
+        yPos += 10;
+        
+        doc.setFontSize(11);
+        const pets = JSON.parse(localStorage.getItem('petCarePets')) || [];
+        const invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+        const inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+        
+        doc.text(`Total de pacientes registrados: ${pets.length}`, 20, yPos);
+        yPos += 7;
+        doc.text(`Total de facturas emitidas: ${invoices.length}`, 20, yPos);
+        yPos += 7;
+        doc.text(`Productos en inventario: ${inventory.length}`, 20, yPos);
+        yPos += 7;
+        
+        const totalRevenue = invoices.reduce((sum, inv) => sum + parseFloat(inv.total || 0), 0);
+        doc.text(`Ingresos totales: $${totalRevenue.toFixed(2)}`, 20, yPos);
+        
+        doc.save('reporte_completo_' + new Date().getTime() + '.pdf');
+      });
+    }
+
+    // Exportar reporte mensual
+    function exportMonthlyReport() {
+      showProgress(() => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const today = new Date();
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const monthName = today.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' });
+        
+        doc.setFontSize(18);
+        doc.text('Pet Care - Reporte Mensual', 14, 20);
+        doc.setFontSize(14);
+        doc.text(monthName.charAt(0).toUpperCase() + monthName.slice(1), 14, 28);
+        
+        let yPos = 40;
+        
+        // Consultas del mes
+        const medicalRecords = JSON.parse(localStorage.getItem('petCareMedicalRecords')) || [];
+        const monthConsultations = medicalRecords.filter(record => 
+          new Date(record.date) >= firstDayOfMonth
+        ).length;
+        
+        doc.setFontSize(11);
+        doc.text(`Consultas realizadas: ${monthConsultations}`, 14, yPos);
+        yPos += 10;
+        
+        // Ingresos del mes
+        const invoices = JSON.parse(localStorage.getItem('petCareInvoices')) || [];
+        const monthInvoices = invoices.filter(inv => new Date(inv.fecha) >= firstDayOfMonth);
+        const monthRevenue = monthInvoices.reduce((sum, inv) => sum + parseFloat(inv.total || 0), 0);
+        
+        doc.text(`Facturas emitidas: ${monthInvoices.length}`, 14, yPos);
+        yPos += 7;
+        doc.text(`Ingresos del mes: $${monthRevenue.toFixed(2)}`, 14, yPos);
+        yPos += 10;
+        
+        // Nuevos pacientes del mes
+        const pets = JSON.parse(localStorage.getItem('petCarePets')) || [];
+        const newPets = pets.filter(pet => 
+          pet.fechaRegistro && new Date(pet.fechaRegistro) >= firstDayOfMonth
+        ).length;
+        
+        doc.text(`Nuevos pacientes registrados: ${newPets}`, 14, yPos);
+        yPos += 7;
+        
+        // Productos con stock bajo
+        const inventory = JSON.parse(localStorage.getItem('petCareInventory')) || [];
+        const lowStock = inventory.filter(item => item.cantidad <= item.minimo).length;
+        
+        doc.text(`Productos con stock bajo: ${lowStock}`, 14, yPos);
+        
+        doc.save('reporte_mensual_' + monthName.replace(' ', '_') + '.pdf');
+      });
+    }
+
+    // Importar respaldo
+    function importBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const backup = JSON.parse(e.target.result);
+          
+          if (confirm('¿Está seguro de que desea restaurar este respaldo? Esto sobrescribirá los datos actuales.')) {
+            // Restaurar datos
+            if (backup.data.pets) localStorage.setItem('petCarePets', JSON.stringify(backup.data.pets));
+            if (backup.data.medicalRecords) localStorage.setItem('petCareMedicalRecords', JSON.stringify(backup.data.medicalRecords));
+            if (backup.data.vaccines) localStorage.setItem('petCareVaccines', JSON.stringify(backup.data.vaccines));
+            if (backup.data.medications) localStorage.setItem('petCareMedications', JSON.stringify(backup.data.medications));
+            if (backup.data.invoices) localStorage.setItem('petCareInvoices', JSON.stringify(backup.data.invoices));
+            if (backup.data.inventory) localStorage.setItem('petCareInventory', JSON.stringify(backup.data.inventory));
+            if (backup.data.appointments) localStorage.setItem('petCareAppointments', JSON.stringify(backup.data.appointments));
+            if (backup.data.reminders) localStorage.setItem('petCareReminders', JSON.stringify(backup.data.reminders));
+            
+            // Compatibilidad con respaldos antiguos
+            if (backup.data.expedientes) localStorage.setItem('petCareExpedientes', JSON.stringify(backup.data.expedientes));
+            if (backup.data.photos) localStorage.setItem('petCarePhotos', JSON.stringify(backup.data.photos));
+            
+            alert('✅ Respaldo restaurado exitosamente\n\nDatos restaurados:\n' +
+              (backup.data.pets ? `• ${backup.data.pets.length} pacientes\n` : '') +
+              (backup.data.medicalRecords ? `• ${backup.data.medicalRecords.length} registros médicos\n` : '') +
+              (backup.data.invoices ? `• ${backup.data.invoices.length} facturas\n` : '') +
+              (backup.data.inventory ? `• ${backup.data.inventory.length} productos\n` : '') +
+              (backup.data.appointments ? `• ${backup.data.appointments.length} citas\n` : '')
+            );
+            loadStats();
+            location.reload();
+          }
+        } catch (error) {
+          alert('❌ Error al leer el archivo de respaldo:\n\n' + error.message + '\n\nAsegúrese de que el archivo sea un respaldo válido en formato JSON.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Descargar archivo
+    function downloadFile(content, filename, contentType) {
+      const blob = new Blob([content], { type: contentType });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

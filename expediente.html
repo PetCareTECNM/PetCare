@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Care - Expediente Médico</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #008080, #00a3a3);
+      min-height: 100vh;
+      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      0% { 
+        opacity: 0; 
+        transform: translateY(20px); 
+      }
+      100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    .header {
+      background: #006666;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideDown {
+      0% { 
+        transform: translateY(-100%); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateY(0); 
+        opacity: 1; 
+      }
+    }
+
+    .header h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      font-size: 28px;
+    }
+
+    .header .info {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      display: flex;
+      min-height: calc(100vh - 120px);
+    }
+
+    @keyframes slideInLeft {
+      0% { 
+        transform: translateX(-50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    @keyframes slideInRight {
+      0% { 
+        transform: translateX(50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #004d4d;
+      padding: 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .menu-section {
+      margin-bottom: 30px;
+    }
+
+    .menu-title {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 20px;
+      color: #b3d9d9;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      will-change: transform;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background: #006666;
+      color: white;
+      border-left-color: #00e6e6;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      margin: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      overflow: auto;
+      animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+    }
+
+    .page-title {
+      color: #006666;
+      margin-bottom: 20px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Estilos específicos para expediente */
+    .search-container {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .search-form {
+      display: flex;
+      gap: 15px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 25px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      border-color: #008080;
+      outline: none;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: #008080;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #006666;
+    }
+
+    .expediente-container {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .pet-info {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .pet-photo {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid #008080;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .pet-details {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .pet-name {
+      color: #006666;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .pet-details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .detail-item {
+      margin-bottom: 5px;
+    }
+
+    .detail-label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      background-color: #f0f0f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      background: #e0e0e0;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .tab.active {
+      background: #006666;
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .history-item {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .history-date {
+      color: #006666;
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .history-type {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 15px;
+      color: white;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+
+    .type-consulta {
+      background: #4CAF50;
+    }
+
+    .type-vacuna {
+      background: #2196F3;
+    }
+
+    .type-medicamento {
+      background: #FF9800;
+    }
+
+    .history-details {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .detail-row {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .detail-label {
+      width: 150px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .chart-container {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .chart-title {
+      color: #006666;
+      margin-bottom: 15px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .vaccines-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .vaccines-table th,
+    .vaccines-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .vaccines-table th {
+      background-color: #f5f5f5;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .vaccines-table tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .status-active {
+      background-color: #e8f5e9;
+      color: #4CAF50;
+    }
+
+    .status-expired {
+      background-color: #ffebee;
+      color: #f44336;
+    }
+
+    .status-soon {
+      background-color: #fff8e1;
+      color: #ff9800;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      font-style: italic;
+    }
+
+    .add-button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 15px;
+      background: #008080;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .add-button:hover {
+      background: #006666;
+    }
+
+    /* Modal para añadir registros */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 70%;
+      max-width: 600px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .modal-title {
+      color: #006666;
+      margin-bottom: 20px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>
+      <i class="fas fa-paw"></i>
+      Pet Care - Sistema Veterinario
+    </h1>
+    <div class="info">
+      Calzada del Tecnológico S/N, Unidad Tomas Aquino
+      <br>
+      C.P. 22414, Tijuana, Baja California
+      <br>
+      664-623-4054
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-home"></i>
+          Inicio
+        </div>
+        <a href="inicio.html" class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-users"></i>
+          Pacientes
+        </div>
+        <a href="registro.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_mascota.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-stethoscope"></i>
+          Consulta
+        </div>
+        <a href="consulta.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_consulta.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-calendar-alt"></i>
+          Gestión
+        </div>
+        <a href="calendario.html" class="menu-item">
+          <i class="fas fa-calendar-check"></i>
+          Calendario
+        </a>
+        <a href="recordatorios.html" class="menu-item">
+          <i class="fas fa-bell"></i>
+          Recordatorios
+        </a>
+        <a href="expediente.html" class="menu-item active">
+          <i class="fas fa-file-medical"></i>
+          Expedientes
+        </a>
+        <a href="inventario.html" class="menu-item">
+          <i class="fas fa-boxes"></i>
+          Inventario
+        </a>
+        <a href="facturacion.html" class="menu-item">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Facturación
+        </a>
+        <a href="estadisticas.html" class="menu-item">
+          <i class="fas fa-chart-bar"></i>
+          Estadísticas
+        </a>
+        <a href="fotos.html" class="menu-item">
+          <i class="fas fa-images"></i>
+          Fotos
+        </a>
+        <a href="exportar.html" class="menu-item">
+          <i class="fas fa-file-export"></i>
+          Exportar
+        </a>
+        <a href="fidelizacion.html" class="menu-item">
+          <i class="fas fa-award"></i>
+          Fidelización
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-ellipsis-h"></i>
+          Otros
+        </div>
+        <a href="bano.html" class="menu-item">
+          <i class="fas fa-shower"></i>
+          Baño
+        </a>
+        <a href="hospedaje.html" class="menu-item">
+          <i class="fas fa-hotel"></i>
+          Hospedaje
+        </a>
+      </div>
+
+      <a href="login.html" class="menu-item">
+        <i class="fas fa-sign-out-alt"></i>
+        Cerrar sesión
+      </a>
+    </div>
+
+    <div class="main-content">
+      <h2 class="page-title">
+        <i class="fas fa-file-medical"></i>
+        Expediente Médico
+      </h2>
+
+      <div class="search-container">
+        <form class="search-form" id="search-form">
+          <input type="text" class="search-input" id="pet-search" placeholder="Buscar mascota por ID o nombre...">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search"></i> Buscar
+          </button>
+        </form>
+      </div>
+
+      <div id="expediente-container" class="expediente-container">
+        <!-- Información básica de la mascota -->
+        <div class="pet-info">
+          <img src="https://via.placeholder.com/150" alt="Foto de mascota" class="pet-photo" id="pet-photo">
+          <div class="pet-details">
+            <h3 class="pet-name" id="pet-name">Nombre de la Mascota</h3>
+            <div class="pet-details-grid">
+              <div class="detail-item">
+                <span class="detail-label">ID:</span>
+                <span id="pet-id">PET001</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Especie:</span>
+                <span id="pet-species">Perro</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Raza:</span>
+                <span id="pet-breed">Labrador</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Edad:</span>
+                <span id="pet-age">3 años</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Peso actual:</span>
+                <span id="pet-weight">15 kg</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Dueño:</span>
+                <span id="pet-owner">Juan Pérez</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pestañas -->
+        <div class="tabs">
+          <div class="tab active" data-tab="history">Historial Médico</div>
+          <div class="tab" data-tab="graphs">Gráficas de Salud</div>
+          <div class="tab" data-tab="vaccines">Vacunas</div>
+          <div class="tab" data-tab="medications">Medicamentos</div>
+        </div>
+
+        <!-- Contenido de las pestañas -->
+        <div id="history-tab" class="tab-content active">
+          <button class="add-button" id="add-history">
+            <i class="fas fa-plus"></i> Añadir Registro
+          </button>
+          <div id="history-container">
+            <!-- Los registros del historial se cargarán dinámicamente -->
+          </div>
+        </div>
+
+        <div id="graphs-tab" class="tab-content">
+          <div class="chart-container">
+            <h3 class="chart-title">Evolución del Peso</h3>
+            <canvas id="weight-chart"></canvas>
+          </div>
+          <div class="chart-container">
+            <h3 class="chart-title">Otros Indicadores de Salud</h3>
+            <canvas id="health-indicators-chart"></canvas>
+          </div>
+        </div>
+
+        <div id="vaccines-tab" class="tab-content">
+          <button class="add-button" id="add-vaccine">
+            <i class="fas fa-plus"></i> Registrar Vacuna
+          </button>
+          <table class="vaccines-table" id="vaccines-table">
+            <thead>
+              <tr>
+                <th>Vacuna</th>
+                <th>Fecha Aplicación</th>
+                <th>Fecha Vencimiento</th>
+                <th>Aplicada por</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Las vacunas se cargarán dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+
+        <div id="medications-tab" class="tab-content">
+          <button class="add-button" id="add-medication">
+            <i class="fas fa-plus"></i> Añadir Medicamento
+          </button>
+          <div id="medications-container">
+            <!-- Los medicamentos se cargarán dinámicamente -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para añadir registro al historial -->
+  <div id="history-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="close-history-modal">&times;</span>
+      <h3 class="modal-title">
+        <i class="fas fa-plus-circle"></i>
+        Nuevo Registro Médico
+      </h3>
+      <form id="history-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="record-type">Tipo de Registro</label>
+            <select id="record-type" class="form-control" required>
+              <option value="">Seleccionar tipo</option>
+              <option value="consulta">Consulta</option>
+              <option value="vacuna">Vacuna</option>
+              <option value="medicamento">Medicamento</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="record-date">Fecha</label>
+            <input type="date" id="record-date" class="form-control" required>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="record-title">Título</label>
+            <input type="text" id="record-title" class="form-control" required placeholder="Breve descripción">
+          </div>
+
+          <div class="form-group">
+            <label for="record-weight">Peso (kg)</label>
+            <input type="number" id="record-weight" class="form-control" step="0.1" placeholder="Peso en kg">
+          </div>
+
+          <div class="form-group">
+            <label for="record-vet">Veterinario</label>
+            <input type="text" id="record-vet" class="form-control" placeholder="Nombre del veterinario">
+          </div>
+
+          <div class="form-group full-width">
+            <label for="record-diagnosis">Diagnóstico / Observaciones</label>
+            <textarea id="record-diagnosis" class="form-control" rows="3" placeholder="Diagnóstico o detalles"></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="record-treatment">Tratamiento / Indicaciones</label>
+            <textarea id="record-treatment" class="form-control" rows="3" placeholder="Tratamiento recomendado"></textarea>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="button" class="btn btn-secondary" id="cancel-history">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para añadir vacuna -->
+  <div id="vaccine-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="close-vaccine-modal">&times;</span>
+      <h3 class="modal-title">
+        <i class="fas fa-syringe"></i>
+        Nueva Vacuna
+      </h3>
+      <form id="vaccine-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="vaccine-name">Nombre de Vacuna</label>
+            <input type="text" id="vaccine-name" class="form-control" required placeholder="Nombre de la vacuna">
+          </div>
+
+          <div class="form-group">
+            <label for="vaccine-date">Fecha de Aplicación</label>
+            <input type="date" id="vaccine-date" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label for="vaccine-expiry">Fecha de Vencimiento</label>
+            <input type="date" id="vaccine-expiry" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label for="vaccine-vet">Aplicada por</label>
+            <input type="text" id="vaccine-vet" class="form-control" placeholder="Nombre del veterinario">
+          </div>
+
+          <div class="form-group full-width">
+            <label for="vaccine-notes">Notas</label>
+            <textarea id="vaccine-notes" class="form-control" rows="3" placeholder="Notas adicionales"></textarea>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="button" class="btn btn-secondary" id="cancel-vaccine">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para añadir medicamento -->
+  <div id="medication-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="close-medication-modal">&times;</span>
+      <h3 class="modal-title">
+        <i class="fas fa-pills"></i>
+        Nuevo Medicamento
+      </h3>
+      <form id="medication-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="medication-name">Nombre del Medicamento</label>
+            <input type="text" id="medication-name" class="form-control" required placeholder="Nombre del medicamento">
+          </div>
+
+          <div class="form-group">
+            <label for="medication-start">Fecha de Inicio</label>
+            <input type="date" id="medication-start" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label for="medication-end">Fecha de Finalización</label>
+            <input type="date" id="medication-end" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="medication-dosage">Dosificación</label>
+            <input type="text" id="medication-dosage" class="form-control" required placeholder="Ej: 1 comprimido cada 8 horas">
+          </div>
+
+          <div class="form-group full-width">
+            <label for="medication-prescribed">Prescrito por</label>
+            <input type="text" id="medication-prescribed" class="form-control" placeholder="Nombre del veterinario">
+          </div>
+
+          <div class="form-group full-width">
+            <label for="medication-notes">Indicaciones / Observaciones</label>
+            <textarea id="medication-notes" class="form-control" rows="3" placeholder="Indicaciones adicionales"></textarea>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="button" class="btn btn-secondary" id="cancel-medication">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Cargar datos de ejemplo si no existen
+    function loadSampleData() {
+      // Cargar mascotas de ejemplo primero
+      if (!localStorage.getItem('petCarePets') || JSON.parse(localStorage.getItem('petCarePets')).length === 0) {
+        const samplePets = [
+          {
+            id: 'PET001',
+            name: 'Max',
+            species: 'Perro',
+            breed: 'Golden Retriever',
+            age: 5,
+            weight: 25.5,
+            color: 'Dorado',
+            owner: 'Juan Pérez',
+            phone: '555-0101',
+            email: 'juan.perez@email.com',
+            address: 'Av. Principal 123',
+            birthDate: '2020-03-15',
+            registrationDate: '2020-03-15',
+            photoUrl: '',
+            ownerName: 'Juan Pérez',
+            notes: 'Mascota muy activa y amigable'
+          },
+          {
+            id: 'PET002',
+            name: 'Luna',
+            species: 'Gato',
+            breed: 'Siamés',
+            age: 3,
+            weight: 4.2,
+            color: 'Crema con puntos oscuros',
+            owner: 'María González',
+            phone: '555-0102',
+            email: 'maria.gonzalez@email.com',
+            address: 'Calle Secundaria 456',
+            birthDate: '2022-01-10',
+            registrationDate: '2021-07-20',
+            photoUrl: '',
+            ownerName: 'María González',
+            notes: 'Gata tranquila, requiere dieta especial'
+          },
+          {
+            id: 'PET003',
+            name: 'Rocky',
+            species: 'Perro',
+            breed: 'Bulldog',
+            age: 4,
+            weight: 18.3,
+            color: 'Blanco con manchas marrones',
+            owner: 'Carlos Rodríguez',
+            phone: '555-0103',
+            email: 'carlos.rodriguez@email.com',
+            address: 'Boulevard Norte 789',
+            birthDate: '2021-02-10',
+            registrationDate: '2021-02-10',
+            photoUrl: '',
+            notes: 'Requiere ejercicio moderado'
+          }
+        ];
+        localStorage.setItem('petCarePets', JSON.stringify(samplePets));
+        console.log('✅ Mascotas de ejemplo cargadas');
+      }
+
+      // Verificar si ya hay datos
+      if (!localStorage.getItem('petCareMedicalRecords') || JSON.parse(localStorage.getItem('petCareMedicalRecords')).length === 0) {
+        // Datos de ejemplo de registros médicos
+        const sampleMedicalRecords = [
+          {
+            id: 'MED001',
+            petId: 'PET001',
+            petName: 'Max',
+            date: '2024-10-01',
+            type: 'Consulta General',
+            vet: 'Dr. García',
+            diagnosis: 'Chequeo rutinario - Estado de salud excelente',
+            treatment: 'Continuar con alimentación balanceada',
+            weight: 25.5,
+            temperature: 38.5,
+            notes: 'Mascota activa y saludable'
+          },
+          {
+            id: 'MED002',
+            petId: 'PET002',
+            petName: 'Luna',
+            date: '2024-09-15',
+            type: 'Emergencia',
+            vet: 'Dra. Martínez',
+            diagnosis: 'Intoxicación alimentaria leve',
+            treatment: 'Suero rehidratante y dieta blanda por 3 días',
+            weight: 4.2,
+            temperature: 39.1,
+            notes: 'Recuperación favorable en 48 horas'
+          },
+          {
+            id: 'MED003',
+            petId: 'PET003',
+            petName: 'Rocky',
+            date: '2024-10-05',
+            type: 'Control',
+            vet: 'Dr. Rodríguez',
+            diagnosis: 'Control post-quirúrgico - Cicatrización correcta',
+            treatment: 'Antibiótico por 5 días más',
+            weight: 18.3,
+            temperature: 38.3,
+            notes: 'Retirar puntos en 7 días'
+          },
+          {
+            id: 'MED004',
+            petId: 'PET001',
+            petName: 'Max',
+            date: '2024-08-20',
+            type: 'Vacunación',
+            vet: 'Dr. García',
+            diagnosis: 'Vacunación anual completa',
+            treatment: 'Aplicación de vacunas múltiples',
+            weight: 25.0,
+            temperature: 38.4,
+            notes: 'Sin reacciones adversas'
+          }
+        ];
+        localStorage.setItem('petCareMedicalRecords', JSON.stringify(sampleMedicalRecords));
+
+        // Datos de ejemplo de vacunas
+        const sampleVaccines = [
+          {
+            id: 'VAC001',
+            petId: 'PET001',
+            petName: 'Max',
+            vaccine: 'Rabia',
+            date: '2024-08-20',
+            nextDate: '2025-08-20',
+            vet: 'Dr. García',
+            batch: 'RAB-2024-08',
+            status: 'Vigente'
+          },
+          {
+            id: 'VAC002',
+            petId: 'PET001',
+            petName: 'Max',
+            vaccine: 'Múltiple (DHPP)',
+            date: '2024-08-20',
+            nextDate: '2025-08-20',
+            vet: 'Dr. García',
+            batch: 'DHPP-2024-08',
+            status: 'Vigente'
+          },
+          {
+            id: 'VAC003',
+            petId: 'PET002',
+            petName: 'Luna',
+            vaccine: 'Rabia',
+            date: '2024-07-10',
+            nextDate: '2025-07-10',
+            vet: 'Dra. Martínez',
+            batch: 'RAB-2024-07',
+            status: 'Vigente'
+          },
+          {
+            id: 'VAC004',
+            petId: 'PET002',
+            petName: 'Luna',
+            vaccine: 'Triple Felina',
+            date: '2024-07-10',
+            nextDate: '2025-07-10',
+            vet: 'Dra. Martínez',
+            batch: 'TF-2024-07',
+            status: 'Vigente'
+          },
+          {
+            id: 'VAC005',
+            petId: 'PET003',
+            petName: 'Rocky',
+            vaccine: 'Rabia',
+            date: '2024-06-15',
+            nextDate: '2025-06-15',
+            vet: 'Dr. Rodríguez',
+            batch: 'RAB-2024-06',
+            status: 'Vigente'
+          }
+        ];
+        localStorage.setItem('petCareVaccines', JSON.stringify(sampleVaccines));
+
+        // Datos de ejemplo de medicamentos
+        const sampleMedications = [
+          {
+            id: 'MED-RX001',
+            petId: 'PET003',
+            petName: 'Rocky',
+            medication: 'Amoxicilina 500mg',
+            dosage: '1 tableta cada 12 horas',
+            startDate: '2024-10-05',
+            endDate: '2024-10-12',
+            vet: 'Dr. Rodríguez',
+            purpose: 'Prevención de infección post-quirúrgica',
+            status: 'Activo'
+          },
+          {
+            id: 'MED-RX002',
+            petId: 'PET002',
+            petName: 'Luna',
+            medication: 'Metoclopramida',
+            dosage: '0.5ml cada 8 horas',
+            startDate: '2024-09-15',
+            endDate: '2024-09-18',
+            vet: 'Dra. Martínez',
+            purpose: 'Control de náuseas',
+            status: 'Completado'
+          },
+          {
+            id: 'MED-RX003',
+            petId: 'PET001',
+            petName: 'Max',
+            medication: 'Suplemento Articular',
+            dosage: '1 tableta diaria',
+            startDate: '2024-09-01',
+            endDate: '2024-12-01',
+            vet: 'Dr. García',
+            purpose: 'Salud articular preventiva',
+            status: 'Activo'
+          }
+        ];
+        localStorage.setItem('petCareMedications', JSON.stringify(sampleMedications));
+
+        console.log('✅ Datos de ejemplo cargados en expediente.html');
+      }
+    }
+
+    // Verificar si hay sesión activa
+    window.onload = function() {
+      if(!localStorage.getItem('petCareSessionActive') || localStorage.getItem('petCareSessionActive') !== 'true') {
+        window.location.href = 'login.html';
+      }
+      
+      // Cargar datos de ejemplo
+      loadSampleData();
+      
+      // Establecer fecha actual en los formularios
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('record-date').value = today;
+      document.getElementById('vaccine-date').value = today;
+      document.getElementById('medication-start').value = today;
+    };
+
+    // Configuración de pestañas
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        const tabId = this.getAttribute('data-tab');
+        
+        tabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        tabContents.forEach(content => content.classList.remove('active'));
+        document.getElementById(`${tabId}-tab`).classList.add('active');
+      });
+    });
+
+    // Formulario de búsqueda
+    const searchForm = document.getElementById('search-form');
+    const expedienteContainer = document.getElementById('expediente-container');
+
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const searchQuery = document.getElementById('pet-search').value.trim();
+      
+      if (!searchQuery) {
+        alert('Por favor ingrese un ID o nombre de mascota');
+        return;
+      }
+      
+      // Buscar mascota en localStorage
+      let pets = JSON.parse(localStorage.getItem('petCarePets')) || [];
+      
+      // Si no hay mascotas, cargar datos de ejemplo con loadSampleData()
+      if (pets.length === 0) {
+        loadSampleData();
+        pets = JSON.parse(localStorage.getItem('petCarePets')) || [];
+      }
+      
+      // Buscar por ID o nombre
+      const pet = pets.find(pet => 
+        pet.id.toLowerCase() === searchQuery.toLowerCase() || 
+        pet.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      
+      if (!pet) {
+        alert('No se encontró la mascota. Intente con otro ID o nombre');
+        return;
+      }
+      
+      // Mostrar datos de la mascota
+      displayPetInfo(pet);
+      
+      // Cargar historial médico
+      loadMedicalHistory(pet.id);
+      
+      // Cargar vacunas
+      loadVaccines(pet.id);
+      
+      // Cargar medicamentos
+      loadMedications(pet.id);
+      
+      // Generar gráficas
+      generateCharts(pet.id);
+      
+      // Mostrar contenedor de expediente
+      expedienteContainer.style.display = 'block';
+    });
+
+    // Función para mostrar información de la mascota
+    function displayPetInfo(pet) {
+      document.getElementById('pet-photo').src = pet.photoUrl || pet.photo || 'https://via.placeholder.com/150';
+      document.getElementById('pet-name').textContent = pet.name;
+      document.getElementById('pet-id').textContent = pet.id;
+      document.getElementById('pet-species').textContent = pet.species;
+      document.getElementById('pet-breed').textContent = pet.breed;
+      
+      // Calcular edad (usar age si existe, sino calcular desde birthDate o registrationDate)
+      if (pet.age) {
+        document.getElementById('pet-age').textContent = `${pet.age} años`;
+      } else if (pet.birthDate) {
+        const birthDate = new Date(pet.birthDate);
+        const today = new Date();
+        const ageInMilliseconds = today - birthDate;
+        const ageInYears = Math.floor(ageInMilliseconds / (365 * 24 * 60 * 60 * 1000));
+        document.getElementById('pet-age').textContent = `${ageInYears} años`;
+      } else {
+        document.getElementById('pet-age').textContent = 'No registrado';
+      }
+      
+      // Obtener peso (usar weight del pet si existe, sino buscar en registros médicos)
+      if (pet.weight) {
+        document.getElementById('pet-weight').textContent = `${pet.weight} kg`;
+      } else {
+        const medicalRecords = JSON.parse(localStorage.getItem('petCareMedicalRecords')) || [];
+        const petRecords = medicalRecords.filter(record => record.petId === pet.id);
+        
+        if (petRecords.length > 0) {
+          // Ordenar por fecha descendente
+          petRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+          
+          // Buscar último registro con peso
+          const lastWeightRecord = petRecords.find(record => record.weight);
+          
+          if (lastWeightRecord) {
+            document.getElementById('pet-weight').textContent = `${lastWeightRecord.weight} kg`;
+          } else {
+            document.getElementById('pet-weight').textContent = 'No registrado';
+          }
+        } else {
+          document.getElementById('pet-weight').textContent = 'No registrado';
+        }
+      }
+      
+      document.getElementById('pet-owner').textContent = pet.owner || pet.ownerName || 'No registrado';
+    }
+
+    // Cargar historial médico
+    function loadMedicalHistory(petId) {
+      const medicalRecords = JSON.parse(localStorage.getItem('petCareMedicalRecords')) || [];
+      const petRecords = medicalRecords.filter(record => record.petId === petId);
+      
+      const historyContainer = document.getElementById('history-container');
+      historyContainer.innerHTML = '';
+      
+      if (petRecords.length === 0) {
+        historyContainer.innerHTML = '<div class="no-data">No hay registros médicos para esta mascota</div>';
+        return;
+      }
+      
+      // Ordenar por fecha descendente
+      petRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      petRecords.forEach(record => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        
+        // Formatear fecha
+        const recordDate = new Date(record.date);
+        const formattedDate = recordDate.toLocaleDateString('es-MX', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        
+        historyItem.innerHTML = `
+          <div class="history-date">
+            <i class="fas fa-calendar-day"></i>
+            ${formattedDate}
+            <span class="history-type type-${record.type}">${getTypeText(record.type)}</span>
+          </div>
+          <h3>${record.title}</h3>
+          <div class="history-details">
+            ${record.weight ? `<div class="detail-row">
+              <div class="detail-label">Peso:</div>
+              <div>${record.weight} kg</div>
+            </div>` : ''}
+            ${record.vet ? `<div class="detail-row">
+              <div class="detail-label">Veterinario:</div>
+              <div>${record.vet}</div>
+            </div>` : ''}
+            ${record.diagnosis ? `<div class="detail-row">
+              <div class="detail-label">Diagnóstico:</div>
+              <div>${record.diagnosis}</div>
+            </div>` : ''}
+            ${record.treatment ? `<div class="detail-row">
+              <div class="detail-label">Tratamiento:</div>
+              <div>${record.treatment}</div>
+            </div>` : ''}
+          </div>
+        `;
+        
+        historyContainer.appendChild(historyItem);
+      });
+    }
+
+    // Cargar vacunas
+    function loadVaccines(petId) {
+      const vaccines = JSON.parse(localStorage.getItem('petCareVaccines')) || [];
+      const petVaccines = vaccines.filter(vaccine => vaccine.petId === petId);
+      
+      const vaccinesTable = document.getElementById('vaccines-table');
+      const tableBody = vaccinesTable.querySelector('tbody');
+      tableBody.innerHTML = '';
+      
+      if (petVaccines.length === 0) {
+        const noDataRow = document.createElement('tr');
+        noDataRow.innerHTML = '<td colspan="5" class="no-data">No hay vacunas registradas</td>';
+        tableBody.appendChild(noDataRow);
+        return;
+      }
+      
+      // Ordenar por fecha de vencimiento
+      petVaccines.sort((a, b) => new Date(a.nextDate || a.expiryDate) - new Date(b.nextDate || b.expiryDate));
+      
+      petVaccines.forEach(vaccine => {
+        const vaccineRow = document.createElement('tr');
+        
+        // Determinar estado de la vacuna
+        const today = new Date();
+        const expiryDate = new Date(vaccine.nextDate || vaccine.expiryDate);
+        
+        let status = '';
+        let statusClass = '';
+        
+        if (expiryDate < today) {
+          status = 'Vencida';
+          statusClass = 'status-expired';
+        } else if ((expiryDate - today) / (1000 * 60 * 60 * 24) <= 30) {
+          status = 'Próxima a vencer';
+          statusClass = 'status-soon';
+        } else {
+          status = 'Vigente';
+          statusClass = 'status-active';
+        }
+        
+        // Formatear fechas
+        const applicationDate = new Date(vaccine.date).toLocaleDateString('es-MX');
+        const formattedExpiryDate = expiryDate.toLocaleDateString('es-MX');
+        
+        vaccineRow.innerHTML = `
+          <td>${vaccine.vaccine || vaccine.name}</td>
+          <td>${applicationDate}</td>
+          <td>${formattedExpiryDate}</td>
+          <td>${vaccine.vet || '-'}</td>
+          <td><span class="status ${statusClass}">${status}</span></td>
+        `;
+        
+        tableBody.appendChild(vaccineRow);
+      });
+    }
+
+    // Cargar medicamentos
+    function loadMedications(petId) {
+      const medications = JSON.parse(localStorage.getItem('petCareMedications')) || [];
+      const petMedications = medications.filter(medication => medication.petId === petId);
+      
+      const medicationsContainer = document.getElementById('medications-container');
+      medicationsContainer.innerHTML = '';
+      
+      if (petMedications.length === 0) {
+        medicationsContainer.innerHTML = '<div class="no-data">No hay medicamentos registrados</div>';
+        return;
+      }
+      
+      // Ordenar por fecha de inicio descendente
+      petMedications.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+      
+      petMedications.forEach(medication => {
+        const medicationItem = document.createElement('div');
+        medicationItem.className = 'history-item';
+        
+        // Determinar estado del medicamento
+        const today = new Date();
+        const startDate = new Date(medication.startDate);
+        const endDate = medication.endDate ? new Date(medication.endDate) : null;
+        
+        let status = '';
+        let statusClass = '';
+        
+        if (endDate && endDate < today) {
+          status = 'Completado';
+          statusClass = 'status-active';
+        } else if (!endDate || endDate >= today) {
+          status = 'Activo';
+          statusClass = 'status-soon';
+        }
+        
+        // Formatear fechas
+        const formattedStartDate = startDate.toLocaleDateString('es-MX');
+        const formattedEndDate = endDate ? endDate.toLocaleDateString('es-MX') : 'No definida';
+        
+        medicationItem.innerHTML = `
+          <div class="history-date">
+            <i class="fas fa-pills"></i>
+            ${medication.medication || medication.name}
+            <span class="status ${statusClass}" style="margin-left: 10px;">${status}</span>
+          </div>
+          <div class="history-details">
+            <div class="detail-row">
+              <div class="detail-label">Dosificación:</div>
+              <div>${medication.dosage}</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Fecha Inicio:</div>
+              <div>${formattedStartDate}</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Fecha Fin:</div>
+              <div>${formattedEndDate}</div>
+            </div>
+            ${(medication.prescribedBy || medication.vet) ? `<div class="detail-row">
+              <div class="detail-label">Prescrito por:</div>
+              <div>${medication.prescribedBy || medication.vet}</div>
+            </div>` : ''}
+            ${(medication.purpose || medication.notes) ? `<div class="detail-row">
+              <div class="detail-label">Indicaciones:</div>
+              <div>${medication.purpose || medication.notes}</div>
+            </div>` : ''}
+          </div>
+        `;
+        
+        medicationsContainer.appendChild(medicationItem);
+      });
+    }
+
+    // Generar gráficas
+    function generateCharts(petId) {
+      const medicalRecords = JSON.parse(localStorage.getItem('petCareMedicalRecords')) || [];
+      const petRecords = medicalRecords.filter(record => record.petId === petId && record.weight);
+      
+      if (petRecords.length === 0) {
+        document.getElementById('graphs-tab').innerHTML = '<div class="no-data">No hay suficientes datos para generar gráficas</div>';
+        return;
+      }
+      
+      // Ordenar por fecha
+      petRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+      // Preparar datos para gráfica de peso
+      const weightDates = [];
+      const weightValues = [];
+      
+      petRecords.forEach(record => {
+        if (record.weight) {
+          const recordDate = new Date(record.date);
+          weightDates.push(recordDate.toLocaleDateString('es-MX', { month: 'short', day: 'numeric' }));
+          weightValues.push(record.weight);
+        }
+      });
+      
+      // Crear gráfica de peso
+      const weightCtx = document.getElementById('weight-chart').getContext('2d');
+      new Chart(weightCtx, {
+        type: 'line',
+        data: {
+          labels: weightDates,
+          datasets: [{
+            label: 'Peso (kg)',
+            data: weightValues,
+            borderColor: '#008080',
+            backgroundColor: 'rgba(0, 128, 128, 0.1)',
+            borderWidth: 2,
+            pointRadius: 5,
+            pointBackgroundColor: '#008080',
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: false,
+              title: {
+                display: true,
+                text: 'Peso (kg)'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: true
+            }
+          }
+        }
+      });
+      
+      // Gráfica de indicadores (datos de ejemplo)
+      const healthCtx = document.getElementById('health-indicators-chart').getContext('2d');
+      new Chart(healthCtx, {
+        type: 'radar',
+        data: {
+          labels: ['Actividad', 'Alimentación', 'Hidratación', 'Bienestar', 'Sueño'],
+          datasets: [{
+            label: 'Indicadores',
+            data: [85, 90, 95, 80, 85],
+            backgroundColor: 'rgba(0, 128, 128, 0.2)',
+            borderColor: '#008080',
+            borderWidth: 2,
+            pointBackgroundColor: '#008080'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            r: {
+              min: 0,
+              max: 100,
+              ticks: {
+                stepSize: 20,
+                showLabelBackdrop: false
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Obtener texto del tipo de registro
+    function getTypeText(type) {
+      switch (type) {
+        case 'consulta':
+          return 'Consulta';
+        case 'vacuna':
+          return 'Vacuna';
+        case 'medicamento':
+          return 'Medicamento';
+        default:
+          return 'Otro';
+      }
+    }
+
+    // Manejo de modales
+    // Modal de historial médico
+    const historyModal = document.getElementById('history-modal');
+    const addHistoryBtn = document.getElementById('add-history');
+    const closeHistoryModal = document.getElementById('close-history-modal');
+    const cancelHistoryBtn = document.getElementById('cancel-history');
+    const historyForm = document.getElementById('history-form');
+
+    addHistoryBtn.addEventListener('click', function() {
+      historyModal.style.display = 'block';
+    });
+
+    closeHistoryModal.addEventListener('click', function() {
+      historyModal.style.display = 'none';
+    });
+
+    cancelHistoryBtn.addEventListener('click', function() {
+      historyModal.style.display = 'none';
+    });
+
+    historyForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const petId = document.getElementById('pet-id').textContent;
+      const type = document.getElementById('record-type').value;
+      const date = document.getElementById('record-date').value;
+      const title = document.getElementById('record-title').value;
+      const weight = document.getElementById('record-weight').value;
+      const vet = document.getElementById('record-vet').value;
+      const diagnosis = document.getElementById('record-diagnosis').value;
+      const treatment = document.getElementById('record-treatment').value;
+
+      if (!type || !date || !title) {
+        alert('Por favor complete los campos obligatorios');
+        return;
+      }
+
+      // Obtener registros existentes o inicializar
+      let medicalRecords = JSON.parse(localStorage.getItem('petCareMedicalRecords')) || [];
+
+      // Añadir nuevo registro
+      const newRecord = {
+        id: Date.now().toString(),
+        petId,
+        type,
+        date,
+        title,
+        weight: weight || null,
+        vet,
+        diagnosis,
+        treatment
+      };
+
+      medicalRecords.push(newRecord);
+      localStorage.setItem('petCareMedicalRecords', JSON.stringify(medicalRecords));
+
+      // Cerrar modal y resetear formulario
+      historyForm.reset();
+      historyModal.style.display = 'none';
+
+      // Recargar historial
+      loadMedicalHistory(petId);
+      
+      // Regenerar gráficas
+      generateCharts(petId);
+    });
+
+    // Modal de vacunas
+    const vaccineModal = document.getElementById('vaccine-modal');
+    const addVaccineBtn = document.getElementById('add-vaccine');
+    const closeVaccineModal = document.getElementById('close-vaccine-modal');
+    const cancelVaccineBtn = document.getElementById('cancel-vaccine');
+    const vaccineForm = document.getElementById('vaccine-form');
+
+    addVaccineBtn.addEventListener('click', function() {
+      vaccineModal.style.display = 'block';
+    });
+
+    closeVaccineModal.addEventListener('click', function() {
+      vaccineModal.style.display = 'none';
+    });
+
+    cancelVaccineBtn.addEventListener('click', function() {
+      vaccineModal.style.display = 'none';
+    });
+
+    vaccineForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const petId = document.getElementById('pet-id').textContent;
+      const name = document.getElementById('vaccine-name').value;
+      const date = document.getElementById('vaccine-date').value;
+      const expiryDate = document.getElementById('vaccine-expiry').value;
+      const vet = document.getElementById('vaccine-vet').value;
+      const notes = document.getElementById('vaccine-notes').value;
+
+      if (!name || !date || !expiryDate) {
+        alert('Por favor complete los campos obligatorios');
+        return;
+      }
+
+      // Obtener vacunas existentes o inicializar
+      let vaccines = JSON.parse(localStorage.getItem('petCareVaccines')) || [];
+
+      // Añadir nueva vacuna
+      const newVaccine = {
+        id: Date.now().toString(),
+        petId,
+        name,
+        date,
+        expiryDate,
+        vet,
+        notes
+      };
+
+      vaccines.push(newVaccine);
+      localStorage.setItem('petCareVaccines', JSON.stringify(vaccines));
+
+      // Cerrar modal y resetear formulario
+      vaccineForm.reset();
+      vaccineModal.style.display = 'none';
+
+      // Recargar vacunas
+      loadVaccines(petId);
+    });
+
+    // Modal de medicamentos
+    const medicationModal = document.getElementById('medication-modal');
+    const addMedicationBtn = document.getElementById('add-medication');
+    const closeMedicationModal = document.getElementById('close-medication-modal');
+    const cancelMedicationBtn = document.getElementById('cancel-medication');
+    const medicationForm = document.getElementById('medication-form');
+
+    addMedicationBtn.addEventListener('click', function() {
+      medicationModal.style.display = 'block';
+    });
+
+    closeMedicationModal.addEventListener('click', function() {
+      medicationModal.style.display = 'none';
+    });
+
+    cancelMedicationBtn.addEventListener('click', function() {
+      medicationModal.style.display = 'none';
+    });
+
+    medicationForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const petId = document.getElementById('pet-id').textContent;
+      const name = document.getElementById('medication-name').value;
+      const startDate = document.getElementById('medication-start').value;
+      const endDate = document.getElementById('medication-end').value;
+      const dosage = document.getElementById('medication-dosage').value;
+      const prescribedBy = document.getElementById('medication-prescribed').value;
+      const notes = document.getElementById('medication-notes').value;
+
+      if (!name || !startDate || !dosage) {
+        alert('Por favor complete los campos obligatorios');
+        return;
+      }
+
+      // Obtener medicamentos existentes o inicializar
+      let medications = JSON.parse(localStorage.getItem('petCareMedications')) || [];
+
+      // Añadir nuevo medicamento
+      const newMedication = {
+        id: Date.now().toString(),
+        petId,
+        name,
+        startDate,
+        endDate: endDate || null,
+        dosage,
+        prescribedBy,
+        notes
+      };
+
+      medications.push(newMedication);
+      localStorage.setItem('petCareMedications', JSON.stringify(medications));
+
+      // Cerrar modal y resetear formulario
+      medicationForm.reset();
+      medicationModal.style.display = 'none';
+
+      // Recargar medicamentos
+      loadMedications(petId);
+    });
+
+    // Cerrar modales al hacer clic fuera
+    window.addEventListener('click', function(e) {
+      if (e.target === historyModal) historyModal.style.display = 'none';
+      if (e.target === vaccineModal) vaccineModal.style.display = 'none';
+      if (e.target === medicationModal) medicationModal.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

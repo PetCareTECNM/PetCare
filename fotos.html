@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Care - Galería de Fotos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #008080, #00a3a3);
+      min-height: 100vh;
+      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      0% { 
+        opacity: 0; 
+        transform: translateY(20px); 
+      }
+      100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    .header {
+      background: #006666;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideDown {
+      0% { 
+        transform: translateY(-100%); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateY(0); 
+        opacity: 1; 
+      }
+    }
+
+    .header h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      font-size: 28px;
+    }
+
+    .header .info {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      display: flex;
+      min-height: calc(100vh - 120px);
+    }
+
+    @keyframes slideInLeft {
+      0% { 
+        transform: translateX(-50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    @keyframes slideInRight {
+      0% { 
+        transform: translateX(50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #004d4d;
+      padding: 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .menu-section {
+      margin-bottom: 30px;
+    }
+
+    .menu-title {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 20px;
+      color: #b3d9d9;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      will-change: transform;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background: #006666;
+      color: white;
+      border-left-color: #00e6e6;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      margin: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      overflow: auto;
+      animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+    }
+
+    .page-title {
+      color: #006666;
+      margin-bottom: 20px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .gallery-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .search-filter {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-input {
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 5px;
+      font-size: 14px;
+      min-width: 250px;
+    }
+
+    .filter-select {
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 5px;
+      background: white;
+      font-size: 14px;
+    }
+
+    .action-btn {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .btn-primary {
+      background: #008080;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #006666;
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 5px;
+      background: #f0f0f0;
+      border-radius: 5px;
+      padding: 5px;
+    }
+
+    .view-btn {
+      padding: 8px 15px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+      color: #666;
+      transition: all 0.3s ease;
+    }
+
+    .view-btn.active {
+      background: #008080;
+      color: white;
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stat-icon {
+      font-size: 24px;
+      color: #008080;
+    }
+
+    .stat-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* Vista de galería */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .photo-card {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .photo-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    .photo-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      color: #ddd;
+    }
+
+    .photo-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-info {
+      padding: 15px;
+    }
+
+    .photo-title {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+
+    .photo-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .photo-pet {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .photo-date {
+      color: #999;
+      font-size: 12px;
+    }
+
+    .photo-category {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 11px;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 10px;
+    }
+
+    .category-consulta {
+      background: #4CAF50;
+    }
+
+    .category-cirugia {
+      background: #f44336;
+    }
+
+    .category-progreso {
+      background: #2196F3;
+    }
+
+    .category-general {
+      background: #9C27B0;
+    }
+
+    .photo-actions {
+      display: flex;
+      gap: 5px;
+      justify-content: flex-end;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: #666;
+      cursor: pointer;
+      padding: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .icon-btn:hover {
+      color: #008080;
+      transform: scale(1.1);
+    }
+
+    /* Vista de lista */
+    .gallery-list {
+      display: none;
+    }
+
+    .gallery-list.active {
+      display: block;
+    }
+
+    .photo-list-item {
+      display: flex;
+      gap: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .photo-list-item:hover {
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+
+    .list-thumbnail {
+      width: 100px;
+      height: 100px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: #ddd;
+      flex-shrink: 0;
+    }
+
+    .list-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .list-info {
+      flex-grow: 1;
+    }
+
+    .list-title {
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .list-meta {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .list-notes {
+      font-size: 14px;
+      color: #666;
+      margin-top: 10px;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.9);
+      overflow-y: auto;
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 3% auto;
+      padding: 0;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 800px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .modal-title {
+      color: #006666;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .close {
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .close:hover {
+      color: #555;
+    }
+
+    .modal-body {
+      padding: 30px;
+    }
+
+    .upload-area {
+      border: 3px dashed #ddd;
+      border-radius: 10px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .upload-area:hover {
+      border-color: #008080;
+      background: #f9f9f9;
+    }
+
+    .upload-area.dragover {
+      border-color: #008080;
+      background: #e6f7f7;
+    }
+
+    .upload-icon {
+      font-size: 50px;
+      color: #008080;
+      margin-bottom: 15px;
+    }
+
+    .upload-text {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .upload-hint {
+      font-size: 14px;
+      color: #999;
+    }
+
+    .preview-area {
+      display: none;
+      margin-bottom: 20px;
+    }
+
+    .preview-image {
+      width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: #f0f0f0;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: #008080;
+      outline: none;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    /* Modal de vista */
+    .view-modal .modal-content {
+      max-width: 1000px;
+    }
+
+    .view-image {
+      width: 100%;
+      max-height: 600px;
+      object-fit: contain;
+      background: #000;
+    }
+
+    .view-details {
+      padding: 30px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .detail-label {
+      font-weight: bold;
+      color: #666;
+    }
+
+    .detail-value {
+      color: #333;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-icon {
+      font-size: 80px;
+      color: #ddd;
+      margin-bottom: 20px;
+    }
+
+    .empty-text {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .empty-hint {
+      font-size: 14px;
+    }
+
+    .hide {
+      display: none;
+    }
+
+    .view-toggle-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>
+      <i class="fas fa-paw"></i>
+      Pet Care - Sistema Veterinario
+    </h1>
+    <div class="info">
+      Calzada del Tecnológico S/N, Unidad Tomas Aquino
+      <br>
+      C.P. 22414, Tijuana, Baja California
+      <br>
+      664-623-4054
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-home"></i>
+          Inicio
+        </div>
+        <a href="inicio.html" class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-users"></i>
+          Pacientes
+        </div>
+        <a href="registro.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_mascota.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-stethoscope"></i>
+          Consulta
+        </div>
+        <a href="consulta.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_consulta.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-calendar-alt"></i>
+          Gestión
+        </div>
+        <a href="calendario.html" class="menu-item">
+          <i class="fas fa-calendar-check"></i>
+          Calendario
+        </a>
+        <a href="recordatorios.html" class="menu-item">
+          <i class="fas fa-bell"></i>
+          Recordatorios
+        </a>
+        <a href="expediente.html" class="menu-item">
+          <i class="fas fa-file-medical"></i>
+          Expedientes
+        </a>
+        <a href="inventario.html" class="menu-item">
+          <i class="fas fa-boxes"></i>
+          Inventario
+        </a>
+        <a href="facturacion.html" class="menu-item">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Facturación
+        </a>
+        <a href="estadisticas.html" class="menu-item">
+          <i class="fas fa-chart-bar"></i>
+          Estadísticas
+        </a>
+        <a href="fotos.html" class="menu-item active">
+          <i class="fas fa-images"></i>
+          Fotos
+        </a>
+        <a href="exportar.html" class="menu-item">
+          <i class="fas fa-file-export"></i>
+          Exportar
+        </a>
+        <a href="fidelizacion.html" class="menu-item">
+          <i class="fas fa-award"></i>
+          Fidelización
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-ellipsis-h"></i>
+          Otros
+        </div>
+        <a href="bano.html" class="menu-item">
+          <i class="fas fa-shower"></i>
+          Baño
+        </a>
+        <a href="hospedaje.html" class="menu-item">
+          <i class="fas fa-hotel"></i>
+          Hospedaje
+        </a>
+      </div>
+
+      <a href="login.html" class="menu-item">
+        <i class="fas fa-sign-out-alt"></i>
+        Cerrar sesión
+      </a>
+    </div>
+
+    <div class="main-content">
+      <h2 class="page-title">
+        <i class="fas fa-images"></i>
+        Galería de Fotos
+      </h2>
+
+      <div class="gallery-header">
+        <div class="search-filter">
+          <input type="text" class="search-input" id="search-photos" placeholder="Buscar por mascota o descripción...">
+          <select class="filter-select" id="category-filter" title="Filtrar por categoría" aria-label="Filtrar por categoría">
+            <option value="all">Todas las Categorías</option>
+            <option value="consulta">Consultas</option>
+            <option value="cirugia">Cirugías</option>
+            <option value="progreso">Progreso</option>
+            <option value="general">General</option>
+          </select>
+        </div>
+        <div class="view-toggle-group">
+          <div class="view-toggle">
+            <button class="view-btn active" data-view="grid" title="Vista de cuadrícula">
+              <i class="fas fa-th"></i>
+            </button>
+            <button class="view-btn" data-view="list" title="Vista de lista">
+              <i class="fas fa-list"></i>
+            </button>
+          </div>
+          <button class="action-btn btn-primary" id="upload-btn">
+            <i class="fas fa-cloud-upload-alt"></i> Subir Foto
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i class="fas fa-images"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value" id="total-photos">0</div>
+            <div class="stat-label">Total de Fotos</div>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i class="fas fa-paw"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value" id="total-pets-photos">0</div>
+            <div class="stat-label">Mascotas con Fotos</div>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i class="fas fa-calendar"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value" id="recent-photos">0</div>
+            <div class="stat-label">Este Mes</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vista de Galería -->
+      <div class="gallery-grid" id="gallery-grid">
+        <!-- Las fotos se cargarán dinámicamente -->
+      </div>
+
+      <!-- Vista de Lista -->
+      <div class="gallery-list" id="gallery-list">
+        <!-- Las fotos se cargarán dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para subir foto -->
+  <div id="upload-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="fas fa-cloud-upload-alt"></i>
+          Subir Foto
+        </h3>
+        <button class="close" id="close-upload-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="upload-form">
+          <div class="upload-area" id="upload-area">
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="upload-text">Arrastra una foto aquí o haz clic para seleccionar</div>
+            <div class="upload-hint">Formatos: JPG, PNG, GIF (máx. 5MB)</div>
+            <input type="file" id="photo-file" accept="image/*" class="hide" aria-label="Seleccionar foto">
+          </div>
+
+          <div class="preview-area" id="preview-area">
+            <img id="preview-image" class="preview-image" alt="Vista previa">
+          </div>
+
+          <div class="form-group">
+            <label for="photo-pet">Mascota</label>
+            <input type="text" id="photo-pet" class="form-control" required placeholder="Nombre de la mascota">
+          </div>
+
+          <div class="form-group">
+            <label for="photo-title">Título</label>
+            <input type="text" id="photo-title" class="form-control" required placeholder="Ej: Consulta post-operatoria">
+          </div>
+
+          <div class="form-group">
+            <label for="photo-category-select">Categoría</label>
+            <select id="photo-category-select" class="form-control" required>
+              <option value="">Seleccionar categoría</option>
+              <option value="consulta">Consulta</option>
+              <option value="cirugia">Cirugía</option>
+              <option value="progreso">Progreso</option>
+              <option value="general">General</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="photo-date">Fecha</label>
+            <input type="date" id="photo-date" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label for="photo-notes">Notas</label>
+            <textarea id="photo-notes" class="form-control" rows="3" placeholder="Descripción o notas adicionales..."></textarea>
+          </div>
+
+          <div class="button-group">
+            <button type="button" class="action-btn btn-primary" id="cancel-upload">Cancelar</button>
+            <button type="submit" class="action-btn btn-primary">
+              <i class="fas fa-save"></i> Guardar Foto
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para ver foto -->
+  <div id="view-modal" class="modal view-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="fas fa-image"></i>
+          <span id="view-title">Foto</span>
+        </h3>
+        <button class="close" id="close-view-modal">&times;</button>
+      </div>
+      <div id="view-photo-content">
+        <!-- Contenido se cargará dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Verificar sesión
+    window.onload = function() {
+      if(!localStorage.getItem('petCareSessionActive') || localStorage.getItem('petCareSessionActive') !== 'true') {
+        window.location.href = 'login.html';
+      } else {
+        loadPhotos();
+      }
+    };
+
+    // Cambiar vista
+    document.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        const view = this.getAttribute('data-view');
+        
+        if (view === 'grid') {
+          document.getElementById('gallery-grid').style.display = 'grid';
+          document.getElementById('gallery-list').classList.remove('active');
+        } else {
+          document.getElementById('gallery-grid').style.display = 'none';
+          document.getElementById('gallery-list').classList.add('active');
+        }
+      });
+    });
+
+    // Cargar fotos
+    function loadPhotos() {
+      let photos = JSON.parse(localStorage.getItem('petCarePhotos')) || [];
+      
+      // Datos de ejemplo si no hay fotos
+      if (photos.length === 0) {
+        const today = new Date();
+        const lastWeek = new Date(today);
+        lastWeek.setDate(lastWeek.getDate() - 7);
+        const lastMonth = new Date(today);
+        lastMonth.setMonth(lastMonth.getMonth() - 1);
+        
+        photos = [
+          {
+            id: 'PHT001',
+            petName: 'Max',
+            title: 'Consulta General',
+            category: 'consulta',
+            date: today.toISOString().split('T')[0],
+            notes: 'Revisión post-vacuna. Mascota en excelente estado.',
+            imageData: ''
+          },
+          {
+            id: 'PHT002',
+            petName: 'Luna',
+            title: 'Progreso Limpieza Dental',
+            category: 'progreso',
+            date: lastWeek.toISOString().split('T')[0],
+            notes: 'Foto de seguimiento después de limpieza dental. Encías saludables.',
+            imageData: ''
+          },
+          {
+            id: 'PHT003',
+            petName: 'Rocky',
+            title: 'Post-Cirugía Displasia',
+            category: 'cirugia',
+            date: lastMonth.toISOString().split('T')[0],
+            notes: 'Recuperación exitosa de cirugía de cadera. Herida cicatrizando correctamente.',
+            imageData: ''
+          },
+          {
+            id: 'PHT004',
+            petName: 'Bella',
+            title: 'Foto de Perfil',
+            category: 'general',
+            date: lastMonth.toISOString().split('T')[0],
+            notes: 'Foto de perfil de la mascota para expediente.',
+            imageData: ''
+          }
+        ];
+        
+        localStorage.setItem('petCarePhotos', JSON.stringify(photos));
+      }
+      
+      updateStats(photos);
+      renderGallery(photos);
+    }
+
+    // Actualizar estadísticas
+    function updateStats(photos) {
+      document.getElementById('total-photos').textContent = photos.length;
+      
+      const uniquePets = new Set(photos.map(p => p.petName)).size;
+      document.getElementById('total-pets-photos').textContent = uniquePets;
+      
+      const today = new Date();
+      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      const recentPhotos = photos.filter(p => new Date(p.date) >= firstDayOfMonth).length;
+      document.getElementById('recent-photos').textContent = recentPhotos;
+    }
+
+    // Renderizar galería
+    function renderGallery(photos) {
+      renderGridView(photos);
+      renderListView(photos);
+    }
+
+    // Vista de galería (grid)
+    function renderGridView(photos) {
+      const gridContainer = document.getElementById('gallery-grid');
+      gridContainer.innerHTML = '';
+      
+      if (photos.length === 0) {
+        gridContainer.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <div class="empty-icon">
+              <i class="fas fa-images"></i>
+            </div>
+            <div class="empty-text">No hay fotos en la galería</div>
+            <div class="empty-hint">Comienza subiendo la primera foto</div>
+          </div>
+        `;
+        return;
+      }
+      
+      photos.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      photos.forEach(photo => {
+        const card = document.createElement('div');
+        card.className = 'photo-card';
+        
+        const formattedDate = new Date(photo.date).toLocaleDateString('es-MX', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+        
+        card.innerHTML = `
+          <div class="photo-image">
+            ${photo.imageData ? `<img src="${photo.imageData}" alt="${photo.title}">` : '<i class="fas fa-image"></i>'}
+          </div>
+          <div class="photo-info">
+            <span class="photo-category category-${photo.category}">${getCategoryText(photo.category)}</span>
+            <div class="photo-title">${photo.title}</div>
+            <div class="photo-meta">
+              <span class="photo-pet"><i class="fas fa-paw"></i> ${photo.petName}</span>
+              <span class="photo-date">${formattedDate}</span>
+            </div>
+            <div class="photo-actions">
+              <button class="icon-btn view-photo" data-id="${photo.id}" title="Ver">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="icon-btn delete-photo" data-id="${photo.id}" title="Eliminar">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+        
+        gridContainer.appendChild(card);
+      });
+      
+      addPhotoEventListeners();
+    }
+
+    // Vista de lista
+    function renderListView(photos) {
+      const listContainer = document.getElementById('gallery-list');
+      listContainer.innerHTML = '';
+      
+      if (photos.length === 0) {
+        listContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fas fa-images"></i>
+            </div>
+            <div class="empty-text">No hay fotos en la galería</div>
+            <div class="empty-hint">Comienza subiendo la primera foto</div>
+          </div>
+        `;
+        return;
+      }
+      
+      photos.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      photos.forEach(photo => {
+        const item = document.createElement('div');
+        item.className = 'photo-list-item';
+        
+        const formattedDate = new Date(photo.date).toLocaleDateString('es-MX', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        
+        item.innerHTML = `
+          <div class="list-thumbnail">
+            ${photo.imageData ? `<img src="${photo.imageData}" alt="${photo.title}">` : '<i class="fas fa-image"></i>'}
+          </div>
+          <div class="list-info">
+            <div class="list-title">${photo.title}</div>
+            <div class="list-meta">
+              <span><i class="fas fa-paw"></i> ${photo.petName}</span>
+              <span><i class="fas fa-calendar"></i> ${formattedDate}</span>
+              <span class="photo-category category-${photo.category}">${getCategoryText(photo.category)}</span>
+            </div>
+            ${photo.notes ? `<div class="list-notes">${photo.notes}</div>` : ''}
+          </div>
+          <div class="photo-actions">
+            <button class="icon-btn view-photo" data-id="${photo.id}" title="Ver" style="font-size: 20px;">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="icon-btn delete-photo" data-id="${photo.id}" title="Eliminar" style="font-size: 20px;">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        `;
+        
+        listContainer.appendChild(item);
+      });
+      
+      addPhotoEventListeners();
+    }
+
+    // Añadir event listeners
+    function addPhotoEventListeners() {
+      document.querySelectorAll('.view-photo').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          viewPhoto(this.getAttribute('data-id'));
+        });
+      });
+      
+      document.querySelectorAll('.delete-photo').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          deletePhoto(this.getAttribute('data-id'));
+        });
+      });
+    }
+
+    function getCategoryText(category) {
+      const categories = {
+        'consulta': 'Consulta',
+        'cirugia': 'Cirugía',
+        'progreso': 'Progreso',
+        'general': 'General'
+      };
+      return categories[category] || category;
+    }
+
+    // Modal de subir
+    const uploadModal = document.getElementById('upload-modal');
+    const uploadBtn = document.getElementById('upload-btn');
+    const closeUploadModal = document.getElementById('close-upload-modal');
+    const cancelUpload = document.getElementById('cancel-upload');
+
+    uploadBtn.addEventListener('click', () => {
+      document.getElementById('upload-form').reset();
+      document.getElementById('preview-area').style.display = 'none';
+      document.getElementById('photo-date').value = new Date().toISOString().split('T')[0];
+      uploadModal.style.display = 'block';
+    });
+
+    closeUploadModal.addEventListener('click', () => {
+      uploadModal.style.display = 'none';
+    });
+
+    cancelUpload.addEventListener('click', () => {
+      uploadModal.style.display = 'none';
+    });
+
+    // Área de arrastrar y soltar
+    const uploadArea = document.getElementById('upload-area');
+    const photoFile = document.getElementById('photo-file');
+    const previewArea = document.getElementById('preview-area');
+    const previewImage = document.getElementById('preview-image');
+
+    uploadArea.addEventListener('click', () => {
+      photoFile.click();
+    });
+
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFile(files[0]);
+      }
+    });
+
+    photoFile.addEventListener('change', function() {
+      if (this.files.length > 0) {
+        handleFile(this.files[0]);
+      }
+    });
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Por favor selecciona una imagen válida');
+        return;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) {
+        alert('La imagen es demasiado grande. Máximo 5MB');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImage.src = e.target.result;
+        previewArea.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Guardar foto
+    document.getElementById('upload-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const petName = document.getElementById('photo-pet').value;
+      const title = document.getElementById('photo-title').value;
+      const category = document.getElementById('photo-category-select').value;
+      const date = document.getElementById('photo-date').value;
+      const notes = document.getElementById('photo-notes').value;
+      const imageData = previewImage.src || '';
+      
+      let photos = JSON.parse(localStorage.getItem('petCarePhotos')) || [];
+      
+      const newPhoto = {
+        id: 'PHT' + String(photos.length + 1).padStart(3, '0'),
+        petName,
+        title,
+        category,
+        date,
+        notes,
+        imageData
+      };
+      
+      photos.push(newPhoto);
+      localStorage.setItem('petCarePhotos', JSON.stringify(photos));
+      
+      uploadModal.style.display = 'none';
+      loadPhotos();
+    });
+
+    // Ver foto
+    function viewPhoto(photoId) {
+      const photos = JSON.parse(localStorage.getItem('petCarePhotos')) || [];
+      const photo = photos.find(p => p.id === photoId);
+      
+      if (!photo) return;
+      
+      const viewModal = document.getElementById('view-modal');
+      const viewTitle = document.getElementById('view-title');
+      const viewContent = document.getElementById('view-photo-content');
+      
+      viewTitle.textContent = photo.title;
+      
+      const formattedDate = new Date(photo.date).toLocaleDateString('es-MX', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      viewContent.innerHTML = `
+        ${photo.imageData ? `<img src="${photo.imageData}" class="view-image" alt="${photo.title}">` : '<div style="padding: 100px; text-align: center; background: #f0f0f0;"><i class="fas fa-image" style="font-size: 100px; color: #ddd;"></i></div>'}
+        <div class="view-details">
+          <div class="detail-row">
+            <span class="detail-label">Mascota:</span>
+            <span class="detail-value">${photo.petName}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Categoría:</span>
+            <span class="detail-value"><span class="photo-category category-${photo.category}">${getCategoryText(photo.category)}</span></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Fecha:</span>
+            <span class="detail-value">${formattedDate}</span>
+          </div>
+          ${photo.notes ? `
+            <div class="detail-row">
+              <span class="detail-label">Notas:</span>
+              <span class="detail-value">${photo.notes}</span>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      
+      viewModal.style.display = 'block';
+    }
+
+    document.getElementById('close-view-modal').addEventListener('click', () => {
+      document.getElementById('view-modal').style.display = 'none';
+    });
+
+    // Eliminar foto
+    function deletePhoto(photoId) {
+      if (confirm('¿Está seguro de que desea eliminar esta foto?')) {
+        let photos = JSON.parse(localStorage.getItem('petCarePhotos')) || [];
+        photos = photos.filter(p => p.id !== photoId);
+        
+        localStorage.setItem('petCarePhotos', JSON.stringify(photos));
+        loadPhotos();
+      }
+    }
+
+    // Buscar y filtrar
+    document.getElementById('search-photos').addEventListener('input', function() {
+      filterPhotos();
+    });
+
+    document.getElementById('category-filter').addEventListener('change', function() {
+      filterPhotos();
+    });
+
+    function filterPhotos() {
+      const searchTerm = document.getElementById('search-photos').value.toLowerCase();
+      const categoryFilter = document.getElementById('category-filter').value;
+      
+      let photos = JSON.parse(localStorage.getItem('petCarePhotos')) || [];
+      
+      photos = photos.filter(photo => {
+        const matchesSearch = !searchTerm || 
+          photo.petName.toLowerCase().includes(searchTerm) ||
+          photo.title.toLowerCase().includes(searchTerm) ||
+          photo.notes.toLowerCase().includes(searchTerm);
+        
+        const matchesCategory = categoryFilter === 'all' || photo.category === categoryFilter;
+        
+        return matchesSearch && matchesCategory;
+      });
+      
+      renderGallery(photos);
+      updateStats(photos);
+    }
+
+    // Cerrar modales al hacer clic fuera
+    window.addEventListener('click', function(e) {
+      if (e.target === uploadModal) uploadModal.style.display = 'none';
+      if (e.target === document.getElementById('view-modal')) {
+        document.getElementById('view-modal').style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

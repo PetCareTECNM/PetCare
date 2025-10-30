@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Care - Sistema de Registro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #008080, #00a3a3);
+      min-height: 100vh;
+      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      0% { 
+        opacity: 0; 
+        transform: translateY(20px);
+      }
+      100% { 
+        opacity: 1; 
+        transform: translateY(0);
+      }
+    }
+
+    .header {
+      background: #006666;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideDown {
+      0% { 
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      100% { 
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .header h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      font-size: 28px;
+    }
+
+    .header .info {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      display: flex;
+      min-height: calc(100vh - 120px);
+    }
+
+    @keyframes slideInLeft {
+      0% { 
+        transform: translateX(-50px);
+        opacity: 0;
+      }
+      100% { 
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #004d4d;
+      padding: 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .menu-section {
+      margin-bottom: 30px;
+    }
+
+    .menu-title {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 20px;
+      color: #b3d9d9;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      will-change: transform;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background: #006666;
+      color: white;
+      border-left-color: #00cccc;
+      transform: translateX(5px);
+    }
+
+    .menu-item i {
+      width: 20px;
+      text-align: center;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      background: rgba(255,255,255,0.95);
+      animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+    }
+
+    @keyframes slideInRight {
+      0% { 
+        transform: translateX(50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    .content-header {
+      background: #008080;
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      animation: bounceIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+    }
+
+    @keyframes bounceIn {
+      0% { 
+        transform: scale(0.8); 
+        opacity: 0; 
+      }
+      50% { 
+        transform: scale(1.03); 
+      }
+      100% { 
+        transform: scale(1); 
+        opacity: 1; 
+      }
+    }
+
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+    }
+
+    @keyframes slideUp {
+      0% { 
+        transform: translateY(30px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateY(0); 
+        opacity: 1; 
+      }
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 25px;
+      outline: none;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: #008080;
+      box-shadow: 0 0 10px rgba(0,128,128,0.2);
+      transform: scale(1.02);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transform: translateY(0);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .btn:active {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #28a745, #34d058);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #34d058, #28a745);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d, #868e96);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #868e96, #6c757d);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #dc3545, #e85d75);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #e85d75, #dc3545);
+    }
+
+    .btn-info {
+      background: linear-gradient(135deg, #17a2b8, #3dd5f3);
+      color: white;
+    }
+
+    .btn-info:hover {
+      background: linear-gradient(135deg, #3dd5f3, #17a2b8);
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #ffc107, #ffcd39);
+      color: #212529;
+    }
+
+    .btn-warning:hover {
+      background: linear-gradient(135deg, #ffcd39, #ffc107);
+    }
+
+    .data-table {
+      width: 100%;
+      margin-top: 30px;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.6s both;
+    }
+
+    .data-table th {
+      background: #008080;
+      color: white;
+      padding: 15px;
+      text-align: left;
+      font-weight: bold;
+    }
+
+    .data-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .data-table tr:hover {
+      background: #f8f9fa;
+      transform: scale(1.01);
+      transition: all 0.3s ease;
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #008080, #00a3a3);
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    /* Animaciones de carga */
+    .loading {
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .button-group {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>
+      <i class="fa-solid fa-paw"></i>
+      Pet Care - Sistema Veterinario
+    </h1>
+    <div class="info">
+      Calzada del Tecnológico S/N, Unidad Tomás Aquino<br>
+      C.P. 22414, Tijuana, Baja California<br>
+      664-623-4043
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-home"></i>
+          Inicio
+        </div>
+        <a href="inicio.html" class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-users"></i>
+          Pacientes
+        </div>
+        <a href="#" class="menu-item active" onclick="showRegistrar()">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_mascota.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-stethoscope"></i>
+          Consulta
+        </div>
+        <a href="consulta.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_consulta.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-calendar-alt"></i>
+          Gestión
+        </div>
+        <a href="calendario.html" class="menu-item">
+          <i class="fas fa-calendar-check"></i>
+          Calendario
+        </a>
+        <a href="recordatorios.html" class="menu-item">
+          <i class="fas fa-bell"></i>
+          Recordatorios
+        </a>
+        <a href="expediente.html" class="menu-item">
+          <i class="fas fa-file-medical"></i>
+          Expedientes
+        </a>
+        <a href="inventario.html" class="menu-item">
+          <i class="fas fa-boxes"></i>
+          Inventario
+        </a>
+        <a href="facturacion.html" class="menu-item">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Facturación
+        </a>
+        <a href="estadisticas.html" class="menu-item">
+          <i class="fas fa-chart-bar"></i>
+          Estadísticas
+        </a>
+        <a href="fotos.html" class="menu-item">
+          <i class="fas fa-images"></i>
+          Fotos
+        </a>
+        <a href="exportar.html" class="menu-item">
+          <i class="fas fa-file-export"></i>
+          Exportar
+        </a>
+        <a href="fidelizacion.html" class="menu-item">
+          <i class="fas fa-award"></i>
+          Fidelización
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-ellipsis-h"></i>
+          Otros
+        </div>
+        <a href="bano.html" class="menu-item">
+          <i class="fas fa-bath"></i>
+          Baño
+        </a>
+        <a href="hospedaje.html" class="menu-item">
+          <i class="fas fa-bed"></i>
+          Hospedaje
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <a href="#" class="menu-item" onclick="cerrarSesion()">
+          <i class="fas fa-sign-out-alt"></i>
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+
+    <div class="main-content">      <div class="content-header">
+        <h2>Registro de Mascotas - Nuevos Pacientes</h2>
+      </div>
+
+      <div class="form-container loading">
+        <form id="registroForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="idMascota">ID Mascota</label>
+              <input type="text" id="idMascota" name="idMascota" placeholder="ID automático" readonly>
+            </div>
+            <div class="form-group">
+              <label for="nombre">Nombre</label>
+              <input type="text" id="nombre" name="nombre" placeholder="Nombre de la mascota" required>
+            </div>
+            <div class="form-group">
+              <label for="especie">Especie</label>
+              <select id="especie" name="especie" required>
+                <option value="">Seleccionar especie</option>
+                <option value="perro">Perro</option>
+                <option value="gato">Gato</option>
+                <option value="conejo">Conejo</option>
+                <option value="hamster">Hamster</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="raza">Raza</label>
+              <input type="text" id="raza" name="raza" placeholder="Raza de la mascota" required>
+            </div>
+            <div class="form-group">
+              <label for="fechaNacimiento">Fecha de nacimiento</label>
+              <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+            </div>
+            <div class="form-group">
+              <label for="propietario">Propietario</label>
+              <input type="text" id="propietario" name="propietario" placeholder="Nombre del propietario" required>
+            </div>
+          </div>
+
+          <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Crear
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
+              <i class="fas fa-broom"></i> Limpiar
+            </button>
+            <button type="button" class="btn btn-danger">
+              <i class="fas fa-trash"></i> Eliminar
+            </button>
+            <button type="button" class="btn btn-info">
+              <i class="fas fa-undo"></i> Regresar
+            </button>
+            <button type="button" class="btn btn-warning">
+              <i class="fas fa-edit"></i> Actualizar
+            </button>
+          </div>
+        </form>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Especie</th>
+              <th>Raza</th>
+              <th>Nacimiento</th>
+              <th>Propietario</th>
+            </tr>
+          </thead>
+          <tbody id="tablaDatos">
+            <tr>
+              <td>1</td>
+              <td>luke</td>
+              <td>gato</td>
+              <td>de colores</td>
+              <td>24-Oct-24</td>
+              <td>alex</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>güero</td>
+              <td>gato</td>
+              <td>naranja</td>
+              <td>23-May-24</td>
+              <td>fresy</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Bonita</td>
+              <td>Perro</td>
+              <td>Mixta</td>
+              <td>14-Jan-19</td>
+              <td>yo</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>lulu</td>
+              <td>gato</td>
+              <td>pekinés</td>
+              <td>14-Oct-24</td>
+              <td>jaime lópez</td>
+            </tr>
+            <tr>
+              <td>90</td>
+              <td>lulu</td>
+              <td>perro</td>
+              <td>chihuahua</td>
+              <td>22-Nov-24</td>
+              <td>maya</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== CONFIGURACIÓN DE API ==========
+    const API_CONFIG = {
+      baseUrl: 'http://localhost:3000/api',
+      timeout: 5000
+    };
+
+    // ========== FUNCIONES DE API ==========
+    async function hacerPeticionAPI(endpoint, options = {}) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
+
+        const response = await fetch(`${API_CONFIG.baseUrl}${endpoint}`, {
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+          },
+          ...options
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        return await response.json();
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          throw new Error('Tiempo de espera agotado');
+        }
+        throw error;
+      }
+    }
+
+    // ========== FUNCIONES DE BASE DE DATOS ==========
+    async function registrarPacienteAPI(datos) {
+      try {
+        const pacienteData = {
+          id: datos.idMascota,
+          nombre: datos.nombre,
+          especie: datos.especie,
+          raza: datos.raza,
+          nacimiento: datos.fechaNacimiento,
+          propietario: datos.propietario
+        };
+
+        const resultado = await hacerPeticionAPI('/pacientes', {
+          method: 'POST',
+          body: JSON.stringify(pacienteData)
+        });
+
+        return resultado;
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    async function obtenerPacientesAPI() {
+      try {
+        return await hacerPeticionAPI('/pacientes');
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    async function eliminarPacienteAPI(id) {
+      try {
+        return await hacerPeticionAPI(`/pacientes/${id}`, {
+          method: 'DELETE'
+        });
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    async function testearConexionAPI() {
+      try {
+        return await hacerPeticionAPI('/test');
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    // ========== DATOS LOCALES DE RESPALDO ==========
+    let pacientesLocal = [
+      {
+        ID: 'PET001',
+        NOMBRE: 'Luke',
+        ESPECIE: 'Gato',
+        RAZA: 'De colores',
+        NACIMEINTO: '2024-10-24',
+        PROPIETARIO: 'Alex'
+      },
+      {
+        ID: 'PET002',
+        NOMBRE: 'Güero',
+        ESPECIE: 'Gato',
+        RAZA: 'Naranja',
+        NACIMEINTO: '2024-05-23',
+        PROPIETARIO: 'Fresy'
+      }
+    ];
+
+    let modoConexion = 'local'; // 'api' o 'local'
+
+    // ========== FUNCIONES HÍBRIDAS (API + LOCAL) ==========
+    async function registrarPaciente(datos) {
+      if (modoConexion === 'api') {
+        try {
+          return await registrarPacienteAPI(datos);
+        } catch (error) {
+          console.log('API falló, usando modo local:', error.message);
+          modoConexion = 'local';
+          mostrarNotificacion('⚠️ Sin conexión - Guardando localmente', 'warning');
+        }
+      }
+
+      // Modo local
+      const existe = pacientesLocal.find(p => p.ID === datos.idMascota);
+      if (existe) {
+        return { success: false, error: 'ID ya existe' };
+      }
+
+      const nuevoPaciente = {
+        ID: datos.idMascota,
+        NOMBRE: datos.nombre.toUpperCase(),
+        ESPECIE: datos.especie.charAt(0).toUpperCase() + datos.especie.slice(1),
+        RAZA: datos.raza,
+        NACIMEINTO: datos.fechaNacimiento,
+        PROPIETARIO: datos.propietario
+      };
+
+      pacientesLocal.unshift(nuevoPaciente);
+      localStorage.setItem('petcare_pacientes', JSON.stringify(pacientesLocal));
+      
+      return { success: true, message: 'Paciente registrado localmente' };
+    }
+
+    async function obtenerPacientes() {
+      if (modoConexion === 'api') {
+        try {
+          return await obtenerPacientesAPI();
+        } catch (error) {
+          console.log('API falló, usando datos locales:', error.message);
+          modoConexion = 'local';
+        }
+      }
+
+      return pacientesLocal;
+    }
+
+    async function eliminarPaciente(id) {
+      if (modoConexion === 'api') {
+        try {
+          return await eliminarPacienteAPI(id);
+        } catch (error) {
+          console.log('API falló, eliminando localmente:', error.message);
+          modoConexion = 'local';
+        }
+      }
+
+      // Modo local
+      const index = pacientesLocal.findIndex(p => p.ID === id);
+      if (index !== -1) {
+        pacientesLocal.splice(index, 1);
+        localStorage.setItem('petcare_pacientes', JSON.stringify(pacientesLocal));
+        return { success: true, message: 'Paciente eliminado localmente' };
+      }
+      return { success: false, error: 'Paciente no encontrado' };
+    }
+
+    // ========== UTILIDADES ==========
+    function mostrarNotificacion(mensaje, tipo = 'info') {
+      const notificacion = document.createElement('div');
+      notificacion.textContent = mensaje;
+      notificacion.style.cssText = `
+        position: fixed; top: 20px; right: 20px; padding: 15px 20px;
+        border-radius: 10px; color: white; font-weight: bold; z-index: 1000;
+        animation: slideInRight 0.3s ease; max-width: 400px; min-width: 250px;
+        background: ${tipo === 'success' ? '#28a745' : tipo === 'error' ? '#dc3545' : tipo === 'warning' ? '#ffc107' : tipo === 'api' ? '#17a2b8' : '#007bff'};
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      `;
+
+      if (!document.getElementById('notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'notification-styles';
+        style.textContent = `
+          @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+          @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      document.body.appendChild(notificacion);
+
+      setTimeout(() => {
+        notificacion.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => notificacion.remove(), 300);
+      }, 4000);
+    }
+
+    function formatearFecha(fecha) {
+      if (!fecha) return '';
+      const date = new Date(fecha);
+      return date.toLocaleDateString('es-ES');
+    }
+
+    function generarID() {
+      return 'PET' + Date.now().toString().slice(-6);
+    }
+
+    async function cargarPacientes() {
+      const tbody = document.getElementById('tablaDatos');
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">🔄 Cargando...</td></tr>';
+
+      try {
+        const pacientes = await obtenerPacientes();
+        tbody.innerHTML = '';
+
+        if (!pacientes || pacientes.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #666;">No hay pacientes registrados</td></tr>';
+          return;
+        }
+
+        pacientes.forEach((paciente, index) => {
+          const row = tbody.insertRow();
+          row.style.animation = `fadeInUp 0.5s ease ${index * 0.1}s both`;
+          row.innerHTML = `
+            <td>${paciente.ID}</td>
+            <td>${paciente.NOMBRE}</td>
+            <td>${paciente.ESPECIE}</td>
+            <td>${paciente.RAZA}</td>
+            <td>${formatearFecha(paciente.NACIMEINTO)}</td>
+            <td>${paciente.PROPIETARIO}</td>
+          `;
+
+          row.addEventListener('click', function() {
+            document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('selected'));
+            this.classList.add('selected');
+
+            document.getElementById('idMascota').value = paciente.ID;
+            document.getElementById('nombre').value = paciente.NOMBRE;
+            document.getElementById('especie').value = paciente.ESPECIE.toLowerCase();
+            document.getElementById('raza').value = paciente.RAZA;
+            document.getElementById('fechaNacimiento').value = paciente.NACIMEINTO;
+            document.getElementById('propietario').value = paciente.PROPIETARIO;
+          });
+        });
+      } catch (error) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #dc3545;">❌ Error al cargar datos</td></tr>';
+        console.error('Error cargando pacientes:', error);
+      }
+    }
+
+    function limpiarFormulario() {
+      document.getElementById('registroForm').reset();
+      document.getElementById('idMascota').value = generarID();
+      document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('selected'));
+    }
+
+    function validarFormulario(datos) {
+      const errores = [];
+
+      if (!datos.nombre || datos.nombre.trim().length < 2) {
+        errores.push('El nombre debe tener al menos 2 caracteres');
+      }
+
+      if (!datos.especie) {
+        errores.push('Debe seleccionar una especie');
+      }
+
+      if (!datos.raza || datos.raza.trim().length < 2) {
+        errores.push('La raza debe tener al menos 2 caracteres');
+      }
+
+      if (!datos.fechaNacimiento) {
+        errores.push('Debe seleccionar la fecha de nacimiento');
+      } else {
+        const fechaNac = new Date(datos.fechaNacimiento);
+        const hoy = new Date();
+        if (fechaNac > hoy) {
+          errores.push('La fecha de nacimiento no puede ser futura');
+        }
+      }
+
+      if (!datos.propietario || datos.propietario.trim().length < 2) {
+        errores.push('El propietario debe tener al menos 2 caracteres');
+      }
+
+      return errores;
+    }
+
+    // ========== INICIALIZACIÓN ==========
+    document.addEventListener('DOMContentLoaded', async function() {
+      // Verificar sesión
+      if (localStorage.getItem('petCareSessionActive') !== 'true') {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Cargar datos guardados localmente
+      const datosGuardados = localStorage.getItem('petcare_pacientes');
+      if (datosGuardados) {
+        pacientesLocal = JSON.parse(datosGuardados);
+      }
+
+      // Configurar formulario
+      document.getElementById('idMascota').value = generarID();
+
+      const hoy = new Date();
+      const fechaFormateada = hoy.toISOString().split('T')[0];
+      document.getElementById('fechaNacimiento').setAttribute('max', fechaFormateada);
+
+      // Probar conexión con la API
+      try {
+        const resultado = await testearConexionAPI();
+        if (resultado.success) {
+          modoConexion = 'api';
+          mostrarNotificacion('✅ Conectado al servidor API', 'api');
+        }
+      } catch (error) {
+        modoConexion = 'local';
+        mostrarNotificacion('⚠️ Servidor offline - Modo local', 'warning');
+      }
+
+      // Cargar datos
+      await cargarPacientes();
+
+      // Animación de carga
+      setTimeout(() => {
+        document.querySelector('.form-container').classList.add('loading');
+      }, 100);
+
+      // Mostrar información del usuario
+      const usuario = localStorage.getItem('petCareUsername') || 'Usuario';
+      const modoTexto = modoConexion === 'api' ? '🌐 Online' : '💾 Local';
+      mostrarNotificacion(`${usuario} - ${modoTexto} 🐾`, 'info');
+
+      // Agregar estilos
+      if (!document.getElementById('table-styles')) {
+        const style = document.createElement('style');
+        style.id = 'table-styles';
+        style.textContent = `
+          @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          tbody tr.selected {
+            background-color: #e3f2fd !important;
+            border-left: 4px solid #008080;
+          }
+          tbody tr {
+            cursor: pointer;
+            transition: all 0.3s ease;
+          }
+          tbody tr:hover {
+            background-color: #f8f9fa !important;
+            transform: translateX(5px);
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    });
+
+    // ========== MANEJO DEL FORMULARIO ==========
+    document.getElementById('registroForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const datos = Object.fromEntries(formData);
+
+      // Validar datos
+      const errores = validarFormulario(datos);
+      if (errores.length > 0) {
+        mostrarNotificacion('❌ ' + errores[0], 'error');
+        return;
+      }
+
+      // Deshabilitar botón
+      const btnSubmit = this.querySelector('button[type="submit"]');
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+      try {
+        const resultado = await registrarPaciente(datos);
+
+        if (resultado.success) {
+          const tipoMsg = modoConexion === 'api' ? 'success' : 'warning';
+          mostrarNotificacion('✅ ' + resultado.message, tipoMsg);
+          limpiarFormulario();
+          await cargarPacientes();
+        } else {
+          mostrarNotificacion('❌ ' + resultado.error, 'error');
+        }
+      } catch (error) {
+        mostrarNotificacion('❌ Error: ' + error.message, 'error');
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '<i class="fas fa-save"></i> Crear';
+      }
+    });
+
+    // ========== FUNCIONES GLOBALES ==========
+    window.cerrarSesion = function() {
+      if (confirm('¿Estás seguro de cerrar sesión?')) {
+        localStorage.removeItem('petCareSessionActive');
+        localStorage.removeItem('petCareUsername');
+        localStorage.removeItem('petCareUserRole');
+        window.location.href = 'login.html';
+      }
+    }
+
+    // Configurar botones adicionales
+    document.addEventListener('DOMContentLoaded', function() {
+      // Botón Limpiar
+      const btnLimpiar = document.querySelector('.btn-secondary');
+      if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', limpiarFormulario);
+      }
+
+      // Botón Eliminar
+      const btnEliminar = document.querySelector('.btn-danger');
+      if (btnEliminar) {
+        btnEliminar.addEventListener('click', async function() {
+          const idSeleccionado = document.getElementById('idMascota').value;
+          const idGenerado = generarID();
+          
+          if (!idSeleccionado || idSeleccionado === idGenerado) {
+            mostrarNotificacion('Selecciona un paciente de la tabla para eliminar', 'warning');
+            return;
+          }
+
+          if (confirm(`¿Estás seguro de eliminar el paciente ${idSeleccionado}?`)) {
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
+
+            try {
+              const resultado = await eliminarPaciente(idSeleccionado);
+              if (resultado.success) {
+                const tipoMsg = modoConexion === 'api' ? 'success' : 'warning';
+                mostrarNotificacion('✅ ' + resultado.message, tipoMsg);
+                limpiarFormulario();
+                await cargarPacientes();
+              } else {
+                mostrarNotificacion('❌ ' + resultado.error, 'error');
+              }
+            } catch (error) {
+              mostrarNotificacion('❌ Error: ' + error.message, 'error');
+            } finally {
+              this.disabled = false;
+              this.innerHTML = '<i class="fas fa-trash"></i> Eliminar';
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

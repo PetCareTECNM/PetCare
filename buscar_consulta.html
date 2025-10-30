@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Care - Buscar Consulta</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #008080, #00a3a3);
+      min-height: 100vh;
+      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      0% { 
+        opacity: 0; 
+        transform: translateY(20px); 
+      }
+      100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    .header {
+      background: #006666;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @keyframes slideDown {
+      0% { 
+        transform: translateY(-100%); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateY(0); 
+        opacity: 1; 
+      }
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-left h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+
+    .header-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .header-center .info {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      display: flex;
+      min-height: calc(100vh - 120px);
+    }
+
+    @keyframes slideInLeft {
+      0% { 
+        transform: translateX(-50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #004d4d;
+      padding: 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .menu-section {
+      margin-bottom: 30px;
+    }
+
+    .menu-title {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 20px;
+      color: #b3d9d9;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      will-change: transform;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background: #006666;
+      color: white;
+      border-left-color: #00cccc;
+      transform: translateX(5px);
+    }
+
+    .menu-item i {
+      width: 20px;
+      text-align: center;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      background: rgba(255,255,255,0.95);
+      animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes slideInRight {
+      0% { 
+        transform: translateX(50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    .search-container {
+      background: white;
+      padding: 60px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+      text-align: center;
+      min-width: 500px;
+    }
+
+    @keyframes slideUp {
+      0% { 
+        transform: translateY(30px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateY(0); 
+        opacity: 1; 
+      }
+    }
+
+    .search-title {
+      font-size: 32px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 40px;
+    }
+
+    .form-group {
+      margin-bottom: 30px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 15px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      outline: none;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+      border-color: #008080;
+      box-shadow: 0 0 10px rgba(0,128,128,0.2);
+      transform: scale(1.02);
+    }
+
+    .search-options {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+    .option-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .btn {
+      padding: 15px 40px;
+      border: none;
+      border-radius: 25px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transform: translateY(0);
+      min-width: 130px;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .btn:active {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #28a745, #34d058);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #34d058, #28a745);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d, #868e96);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #868e96, #6c757d);
+    }
+
+    .results-container {
+      margin-top: 40px;
+      display: none;
+      text-align: left;
+    }
+
+    .results-container.show {
+      display: block;
+      animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+
+    .data-table th {
+      background: #008080;
+      color: white;
+      padding: 15px;
+      text-align: left;
+      font-weight: bold;
+    }
+
+    .data-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .data-table tr:hover {
+      background: #f8f9fa;
+      transform: scale(1.01);
+      transition: all 0.3s ease;
+    }
+
+    .no-results {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      margin-top: 20px;
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+      }
+      
+      .search-container {
+        padding: 40px 20px;
+        min-width: auto;
+      }
+      
+      .search-options {
+        flex-direction: column;
+      }
+      
+      .button-group {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <i class="fa-solid fa-paw"></i>
+      <h1>Pet Care</h1>
+    </div>
+    <div class="header-center">
+      <div class="info">
+        Calzada del Tecnológico S/N, Unidad Tomás Aquino<br>
+        C.P. 22414, Tijuana, Baja California<br>
+        664-623-4043
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-home"></i>
+          Inicio
+        </div>
+        <a href="inicio.html" class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-users"></i>
+          Pacientes
+        </div>
+        <a href="registro.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_mascota.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-stethoscope"></i>
+          Consulta
+        </div>
+        <a href="consulta.html" class="menu-item">
+          <i class="fas fa-notes-medical"></i>
+          Registrar
+        </a>
+        <a href="buscar_consulta.html" class="menu-item active">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-calendar-alt"></i>
+          Gestión
+        </div>
+        <a href="calendario.html" class="menu-item">
+          <i class="fas fa-calendar-check"></i>
+          Calendario
+        </a>
+        <a href="recordatorios.html" class="menu-item">
+          <i class="fas fa-bell"></i>
+          Recordatorios
+        </a>
+        <a href="expediente.html" class="menu-item">
+          <i class="fas fa-file-medical"></i>
+          Expedientes
+        </a>
+        <a href="inventario.html" class="menu-item">
+          <i class="fas fa-boxes"></i>
+          Inventario
+        </a>
+        <a href="facturacion.html" class="menu-item">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Facturación
+        </a>
+        <a href="estadisticas.html" class="menu-item">
+          <i class="fas fa-chart-bar"></i>
+          Estadísticas
+        </a>
+        <a href="fotos.html" class="menu-item">
+          <i class="fas fa-images"></i>
+          Fotos
+        </a>
+        <a href="exportar.html" class="menu-item">
+          <i class="fas fa-file-export"></i>
+          Exportar
+        </a>
+        <a href="fidelizacion.html" class="menu-item">
+          <i class="fas fa-award"></i>
+          Fidelización
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-ellipsis-h"></i>
+          Otros
+        </div>
+        <a href="bano.html" class="menu-item">
+          <i class="fas fa-bath"></i>
+          Baño
+        </a>
+        <a href="hospedaje.html" class="menu-item">
+          <i class="fas fa-bed"></i>
+          Hospedaje
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <a href="#" class="menu-item" onclick="cerrarSesion()">
+          <i class="fas fa-sign-out-alt"></i>
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="search-container">
+        <h2 class="search-title">Buscar Consulta</h2>
+        
+        <form id="buscarConsultaForm">
+          <div class="search-options">
+            <div class="option-group">
+              <div class="form-group">
+                <label for="idConsulta">ID de Consulta</label>
+                <input type="text" id="idConsulta" name="idConsulta" placeholder="Ingrese ID de la consulta">
+              </div>
+            </div>
+            <div class="option-group">
+              <div class="form-group">
+                <label for="idMascota">ID de Mascota</label>
+                <input type="text" id="idMascota" name="idMascota" placeholder="Ingrese ID de la mascota">
+              </div>
+            </div>
+          </div>
+
+          <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+              Buscar
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="regresarMenu()">
+              Regresar
+            </button>
+          </div>
+        </form>
+
+        <div class="results-container" id="resultsContainer">
+          <h3>Resultados de la búsqueda:</h3>
+          <div id="resultContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Verificar si el usuario ha iniciado sesión
+      if (localStorage.getItem('petCareSessionActive') !== 'true') {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Marcar elemento activo en el menú
+      document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+          // Remover clase activa de todos
+          document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
+          // Agregar clase activa al clickeado
+          this.classList.add('active');
+        });
+      });
+
+      // Manejar el envío del formulario
+      document.getElementById('buscarConsultaForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const idConsulta = document.getElementById('idConsulta').value.trim();
+        const idMascota = document.getElementById('idMascota').value.trim();
+        
+        if (!idConsulta && !idMascota) {
+          alert('Por favor, ingrese al menos un criterio de búsqueda');
+          return;
+        }
+        
+        buscarConsulta(idConsulta, idMascota);
+      });
+    });
+
+    // Función para buscar consulta
+    function buscarConsulta(idConsulta, idMascota) {
+      // Datos de ejemplo simulando una base de datos
+      const consultasData = [
+        {
+          id: '1',
+          idMascota: '1',
+          nombrePaciente: 'Luke',
+          fecha: '30-Oct-24',
+          motivo: 'Obesidad',
+          caracteristicas: 'obeso',
+          diagnostico: 'ejercicio',
+          veterinario: 'Dr. García'
+        },
+        {
+          id: '2',
+          idMascota: '1',
+          nombrePaciente: 'Luke',
+          fecha: '30-Oct-24',
+          motivo: 'Control de peso',
+          caracteristicas: 'El paciente pesa 5 kilos',
+          diagnostico: 'Reposo durante 1 semana',
+          veterinario: 'Dr. García'
+        },
+        {
+          id: '3',
+          idMascota: '3',
+          nombrePaciente: 'Bonita',
+          fecha: '13-Nov-24',
+          motivo: 'Diarrea',
+          caracteristicas: 'perro raza chica mixto',
+          diagnostico: 'que tome fluoxetina',
+          veterinario: 'Dr. López'
+        },
+        {
+          id: '4',
+          idMascota: '4',
+          nombrePaciente: 'lulu',
+          fecha: '06-Dec-24',
+          motivo: 'Caída de pelaje',
+          caracteristicas: 'Raza pequeña con mac',
+          diagnostico: 'Alopecia',
+          veterinario: 'Dr. Martínez'
+        }
+      ];
+
+      // Filtrar resultados
+      let resultados = consultasData.filter(consulta => {
+        let coincide = false;
+        
+        if (idConsulta && consulta.id === idConsulta) {
+          coincide = true;
+        }
+        
+        if (idMascota && consulta.idMascota === idMascota) {
+          coincide = true;
+        }
+        
+        return coincide;
+      });
+
+      const resultsContainer = document.getElementById('resultsContainer');
+      const resultContent = document.getElementById('resultContent');
+
+      if (resultados.length > 0) {
+        let html = `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID Consulta</th>
+                <th>ID Mascota</th>
+                <th>Nombre Paciente</th>
+                <th>Fecha</th>
+                <th>Motivo</th>
+                <th>Características</th>
+                <th>Diagnóstico</th>
+                <th>Veterinario</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        
+        resultados.forEach(consulta => {
+          html += `
+            <tr>
+              <td>${consulta.id}</td>
+              <td>${consulta.idMascota}</td>
+              <td>${consulta.nombrePaciente}</td>
+              <td>${consulta.fecha}</td>
+              <td>${consulta.motivo}</td>
+              <td>${consulta.caracteristicas}</td>
+              <td>${consulta.diagnostico}</td>
+              <td>${consulta.veterinario}</td>
+            </tr>
+          `;
+        });
+        
+        html += `
+            </tbody>
+          </table>
+        `;
+        
+        resultContent.innerHTML = html;
+        resultsContainer.classList.add('show');
+      } else {
+        let criterio = '';
+        if (idConsulta) criterio += `ID Consulta: ${idConsulta}`;
+        if (idMascota) {
+          if (criterio) criterio += ' y ';
+          criterio += `ID Mascota: ${idMascota}`;
+        }
+        
+        resultContent.innerHTML = `<div class="no-results">No se encontraron consultas con los criterios: ${criterio}</div>`;
+        resultsContainer.classList.add('show');
+      }
+    }
+
+    // Función para cerrar sesión
+    window.cerrarSesion = function() {
+      localStorage.removeItem('petCareSessionActive');
+      localStorage.removeItem('petCareUsername');
+      window.location.href = 'login.html';
+    }
+
+    // Función para regresar al menú
+    function regresarMenu() {
+      window.location.href = 'consulta.html';
+    }
+  </script>
+</body>
+</html>

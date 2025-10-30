@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Care - Servicio de hospedaje</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #008080, #00a3a3);
+      min-height: 100vh;
+      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      0% { 
+        opacity: 0; 
+        transform: translateY(20px); 
+      }
+      100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    .header {
+      background: #006666;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @keyframes slideDown {
+      0% { 
+        transform: translateY(-100%); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateY(0); 
+        opacity: 1; 
+      }
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-left h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+
+    .header-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .header-center .info {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .header-right {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .container {
+      display: flex;
+      min-height: calc(100vh - 120px);
+    }
+
+    @keyframes slideInLeft {
+      0% { 
+        transform: translateX(-50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    @keyframes slideInRight {
+      0% { 
+        transform: translateX(50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #004d4d;
+      padding: 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .menu-section {
+      margin-bottom: 30px;
+    }
+
+    .menu-title {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 20px;
+      color: #b3d9d9;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      will-change: transform;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background: #006666;
+      color: white;
+      border-left-color: #00cccc;
+      transform: translateX(5px);
+    }
+
+    .menu-item i {
+      width: 20px;
+      text-align: center;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      background: rgba(255,255,255,0.95);
+      animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+      display: flex;
+      gap: 30px;
+    }
+
+    .form-section {
+      flex: 0 0 400px;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      animation: slideUp 1s ease-out 0.7s both;
+      height: fit-content;
+    }
+
+    .table-section {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      animation: slideUp 1s ease-out 0.9s both;
+    }
+
+    @keyframes slideUp {
+      0% { transform: translateY(50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .form-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      font-family: Arial, sans-serif;
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: #008080;
+      box-shadow: 0 0 10px rgba(0,128,128,0.2);
+      transform: scale(1.02);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      transform: translateY(0);
+      min-width: 100px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #218838;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .data-table th {
+      background: #008080;
+      color: white;
+      padding: 12px 8px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .data-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #e0e0e0;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .data-table tr:hover {
+      background: #f8f9fa;
+      transform: scale(1.01);
+      transition: all 0.3s ease;
+    }
+
+    .data-table tr.selected {
+      background-color: #007acc;
+      color: white;
+    }
+
+    .data-table tr.selected:hover {
+      background-color: #0056b3;
+    }
+
+    /* Columna ID más estrecha */
+    .data-table th:first-child,
+    .data-table td:first-child {
+      width: 50px;
+    }
+
+    /* Estados de reservación */
+    .estado-activo {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+
+    .estado-completado {
+      background-color: #cce7ff;
+      color: #004085;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+
+    .estado-pendiente {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+
+    /* Animaciones de carga */
+    .loading {
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+      }
+      
+      .main-content {
+        flex-direction: column;
+      }
+      
+      .form-section {
+        flex: none;
+      }
+      
+      .button-group {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <i class="fa-solid fa-paw"></i>
+      <h1>Pet Care</h1>
+    </div>
+    <div class="header-center">
+      <div class="info">
+        Calzada del Tecnológico S/N, Unidad Tomás Aquino<br>
+        C.P. 22414, Tijuana, Baja California<br>
+        664-623-4043
+      </div>
+    </div>
+    <div class="header-right">
+      Servicio de hospedaje
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-home"></i>
+          Inicio
+        </div>
+        <a href="inicio.html" class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-users"></i>
+          Pacientes
+        </div>
+        <a href="registro.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_mascota.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-stethoscope"></i>
+          Consulta
+        </div>
+        <a href="consulta.html" class="menu-item">
+          <i class="fas fa-notes-medical"></i>
+          Registrar
+        </a>
+        <a href="buscar_consulta.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-calendar-alt"></i>
+          Gestión
+        </div>
+        <a href="calendario.html" class="menu-item">
+          <i class="fas fa-calendar-check"></i>
+          Calendario
+        </a>
+        <a href="recordatorios.html" class="menu-item">
+          <i class="fas fa-bell"></i>
+          Recordatorios
+        </a>
+        <a href="expediente.html" class="menu-item">
+          <i class="fas fa-file-medical"></i>
+          Expedientes
+        </a>
+        <a href="inventario.html" class="menu-item">
+          <i class="fas fa-boxes"></i>
+          Inventario
+        </a>
+        <a href="facturacion.html" class="menu-item">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Facturación
+        </a>
+        <a href="estadisticas.html" class="menu-item">
+          <i class="fas fa-chart-bar"></i>
+          Estadísticas
+        </a>
+        <a href="fotos.html" class="menu-item">
+          <i class="fas fa-images"></i>
+          Fotos
+        </a>
+        <a href="exportar.html" class="menu-item">
+          <i class="fas fa-file-export"></i>
+          Exportar
+        </a>
+        <a href="fidelizacion.html" class="menu-item">
+          <i class="fas fa-award"></i>
+          Fidelización
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-ellipsis-h"></i>
+          Otros
+        </div>
+        <a href="bano.html" class="menu-item">
+          <i class="fas fa-bath"></i>
+          Baño
+        </a>
+        <a href="hospedaje.html" class="menu-item active">
+          <i class="fas fa-bed"></i>
+          Hospedaje
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <a href="#" class="menu-item" onclick="cerrarSesion()">
+          <i class="fas fa-sign-out-alt"></i>
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="form-section loading">
+        <h3 class="form-title">Registro</h3>
+        <form id="hospedajeForm">
+          <div class="form-group">
+            <label for="idReservacion">ID Reservacion</label>
+            <input type="text" id="idReservacion" name="idReservacion" placeholder="ID automático" readonly>
+          </div>
+
+          <div class="form-group">
+            <label for="idMascota">ID Mascota</label>
+            <input type="text" id="idMascota" name="idMascota" placeholder="Ingrese ID de la mascota" required>
+          </div>
+
+          <div class="form-group">
+            <label for="fechaIngreso">Fecha de ingreso</label>
+            <input type="date" id="fechaIngreso" name="fechaIngreso" required>
+          </div>
+
+          <div class="form-group">
+            <label for="horaIngreso">Hora de ingreso</label>
+            <input type="time" id="horaIngreso" name="horaIngreso" value="09:00" required>
+          </div>
+
+          <div class="form-group">
+            <label for="fechaSalida">Fecha de salida</label>
+            <input type="date" id="fechaSalida" name="fechaSalida" required>
+          </div>
+
+          <div class="form-group">
+            <label for="horaSalida">Hora de salida</label>
+            <input type="time" id="horaSalida" name="horaSalida" value="17:00" required>
+          </div>
+
+          <div class="form-group">
+            <label for="comentario">Comentario</label>
+            <textarea id="comentario" name="comentario" placeholder="Comentarios adicionales sobre el hospedaje"></textarea>
+          </div>
+
+          <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+              Crear
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="regresarMenu()">
+              Regresar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="table-section loading">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha de Ingreso</th>
+              <th>Fecha de Egreso</th>
+              <th>Comentario</th>
+            </tr>
+          </thead>
+          <tbody id="tablaHospedaje">
+            <tr>
+              <td>1</td>
+              <td>30-Oct-24</td>
+              <td>02-Nov-24</td>
+              <td>requiere atencion especial</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>01-Nov-24</td>
+              <td>08-Nov-24</td>
+              <td>requiere gotas cada 8 hrs</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>13-Nov-24</td>
+              <td>14-Nov-24</td>
+              <td>Todo bien</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>19-Nov-24</td>
+              <td>20-Nov-24</td>
+              <td>Se orino</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>22-Nov-24</td>
+              <td>27-Nov-24</td>
+              <td>todo bn</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Verificar si el usuario ha iniciado sesión
+      if (localStorage.getItem('petCareSessionActive') !== 'true') {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Configurar fechas
+      const hoy = new Date();
+      const fechaHoyISO = hoy.toISOString().split('T')[0];
+      
+      // Establecer fecha de ingreso como mínimo el día actual
+      document.getElementById('fechaIngreso').setAttribute('min', fechaHoyISO);
+      document.getElementById('fechaSalida').setAttribute('min', fechaHoyISO);
+      
+      // Configurar fecha de ingreso por defecto
+      document.getElementById('fechaIngreso').value = fechaHoyISO;
+      
+      // Configurar fecha de salida por defecto (un día después)
+      const manana = new Date(hoy);
+      manana.setDate(manana.getDate() + 1);
+      document.getElementById('fechaSalida').value = manana.toISOString().split('T')[0];
+      
+      // Generar ID automático
+      document.getElementById('idReservacion').value = generarID();
+      
+      // Validar que fecha de salida sea posterior a fecha de ingreso
+      document.getElementById('fechaIngreso').addEventListener('change', function() {
+        const fechaIngreso = new Date(this.value);
+        const fechaSalidaInput = document.getElementById('fechaSalida');
+        
+        // Establecer fecha mínima de salida como un día después del ingreso
+        const fechaMinimaSalida = new Date(fechaIngreso);
+        fechaMinimaSalida.setDate(fechaMinimaSalida.getDate() + 1);
+        
+        fechaSalidaInput.setAttribute('min', fechaMinimaSalida.toISOString().split('T')[0]);
+        
+        // Si la fecha de salida actual es anterior al nuevo mínimo, actualizarla
+        if (new Date(fechaSalidaInput.value) <= fechaIngreso) {
+          fechaSalidaInput.value = fechaMinimaSalida.toISOString().split('T')[0];
+        }
+      });
+      
+      // Animaciones escalonadas
+      setTimeout(() => {
+        document.querySelectorAll('.loading').forEach(el => {
+          el.style.opacity = '1';
+        });
+      }, 100);
+
+      // Marcar elemento activo en el menú
+      document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+          // Remover clase activa de todos
+          document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
+          // Agregar clase activa al clickeado
+          this.classList.add('active');
+        });
+      });
+      
+      // Hacer filas de tabla seleccionables
+      document.querySelectorAll('.data-table tbody tr').forEach(row => {
+        row.addEventListener('click', function() {
+          document.querySelectorAll('.data-table tbody tr').forEach(r => {
+            r.classList.remove('selected');
+          });
+          this.classList.add('selected');
+          
+          // Cargar datos de la fila seleccionada en el formulario
+          const cells = this.cells;
+          document.getElementById('idReservacion').value = cells[0].textContent;
+          
+          // Convertir fechas de DD-MM-YY a YYYY-MM-DD
+          const fechaIngreso = convertirFecha(cells[1].textContent);
+          const fechaSalida = convertirFecha(cells[2].textContent);
+          
+          document.getElementById('fechaIngreso').value = fechaIngreso;
+          document.getElementById('fechaSalida').value = fechaSalida;
+          document.getElementById('comentario').value = cells[3].textContent;
+        });
+      });
+
+      // Manejar el envío del formulario
+      document.getElementById('hospedajeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Obtener datos del formulario
+        const idReservacion = document.getElementById('idReservacion').value.trim();
+        const idMascota = document.getElementById('idMascota').value.trim();
+        const fechaIngreso = document.getElementById('fechaIngreso').value;
+        const horaIngreso = document.getElementById('horaIngreso').value;
+        const fechaSalida = document.getElementById('fechaSalida').value;
+        const horaSalida = document.getElementById('horaSalida').value;
+        const comentario = document.getElementById('comentario').value.trim();
+        
+        // Validar datos
+        if (!idReservacion || !idMascota || !fechaIngreso || !horaIngreso || !fechaSalida || !horaSalida) {
+          alert('Por favor, completa todos los campos obligatorios');
+          return;
+        }
+        
+        // Validar que la fecha de salida sea posterior a la de ingreso
+        if (new Date(fechaSalida) <= new Date(fechaIngreso)) {
+          alert('La fecha de salida debe ser posterior a la fecha de ingreso');
+          return;
+        }
+        
+        // Verificar si es actualización o creación nueva
+        const filaSeleccionada = document.querySelector('.data-table tbody tr.selected');
+        
+        if (filaSeleccionada) {
+          // Actualizar fila existente
+          filaSeleccionada.cells[1].textContent = new Date(fechaIngreso).toLocaleDateString('es-ES');
+          filaSeleccionada.cells[2].textContent = new Date(fechaSalida).toLocaleDateString('es-ES');
+          filaSeleccionada.cells[3].textContent = comentario || 'Sin comentarios';
+          
+          // Animación de actualización
+          filaSeleccionada.style.backgroundColor = '#fff3cd';
+          setTimeout(() => {
+            filaSeleccionada.style.backgroundColor = '';
+          }, 2000);
+          
+          alert('Reservación actualizada correctamente');
+        } else {
+          // Crear nueva fila
+          const tabla = document.getElementById('tablaHospedaje');
+          const newRow = tabla.insertRow(0);
+          
+          newRow.innerHTML = `
+            <td>${idReservacion}</td>
+            <td>${new Date(fechaIngreso).toLocaleDateString('es-ES')} ${horaIngreso}</td>
+            <td>${new Date(fechaSalida).toLocaleDateString('es-ES')} ${horaSalida}</td>
+            <td>${comentario || 'Sin comentarios'}</td>
+          `;
+          
+          // Animación de la nueva fila
+          newRow.style.backgroundColor = '#d4edda';
+          setTimeout(() => {
+            newRow.style.backgroundColor = '';
+          }, 2000);
+          
+          // Guardar citas en el calendario (ingreso y salida)
+          let appointments = JSON.parse(localStorage.getItem('petCareAppointments')) || [];
+          
+          // Cita de ingreso
+          appointments.push({
+            id: 'HOSP-IN-' + Date.now(),
+            type: 'hospedaje',
+            petName: idMascota,
+            ownerName: 'Ingreso',
+            date: fechaIngreso,
+            time: horaIngreso,
+            notes: `Ingreso a hospedaje - ${comentario || 'Sin comentarios'}`
+          });
+          
+          // Cita de salida
+          appointments.push({
+            id: 'HOSP-OUT-' + Date.now() + 1,
+            type: 'hospedaje',
+            petName: idMascota,
+            ownerName: 'Salida',
+            date: fechaSalida,
+            time: horaSalida,
+            notes: `Salida de hospedaje - ${comentario || 'Sin comentarios'}`
+          });
+          
+          localStorage.setItem('petCareAppointments', JSON.stringify(appointments));
+          
+          // Agregar evento click a la nueva fila
+          newRow.addEventListener('click', function() {
+            document.querySelectorAll('.data-table tbody tr').forEach(r => {
+              r.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            const cells = this.cells;
+            document.getElementById('idReservacion').value = cells[0].textContent;
+            
+            const fechaIngreso = convertirFecha(cells[1].textContent);
+            const fechaSalida = convertirFecha(cells[2].textContent);
+            
+            document.getElementById('fechaIngreso').value = fechaIngreso;
+            document.getElementById('fechaSalida').value = fechaSalida;
+            document.getElementById('comentario').value = cells[3].textContent;
+          });
+          
+          alert('✅ Reservación creada y citas agendadas en el calendario (ingreso y salida)');
+        }
+        
+        // Limpiar formulario
+        limpiarFormulario();
+      });
+    });
+
+    // Generar ID automático
+    function generarID() {
+      const tabla = document.getElementById('tablaHospedaje');
+      const filas = tabla.querySelectorAll('tr');
+      let maxId = 0;
+      
+      filas.forEach(fila => {
+        const id = parseInt(fila.cells[0].textContent);
+        if (id > maxId) {
+          maxId = id;
+        }
+      });
+      
+      return maxId + 1;
+    }
+
+    // Convertir fecha de DD-MM-YY a YYYY-MM-DD
+    function convertirFecha(fechaTexto) {
+      const partes = fechaTexto.split('-');
+      if (partes.length === 3) {
+        let year = partes[2];
+        if (year.length === 2) year = '20' + year;
+        const month = partes[1];
+        const day = partes[0];
+        
+        // Convertir nombres de mes a números si es necesario
+        const meses = {
+          'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06',
+          'Jul': '07', 'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+        };
+        
+        const monthNum = meses[month] || month;
+        return `${year}-${monthNum.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      return '';
+    }
+
+    // Limpiar formulario
+    function limpiarFormulario() {
+      document.getElementById('hospedajeForm').reset();
+      document.getElementById('idReservacion').value = generarID();
+      
+      // Restablecer fechas por defecto
+      const hoy = new Date();
+      const manana = new Date(hoy);
+      manana.setDate(manana.getDate() + 1);
+      
+      document.getElementById('fechaIngreso').value = hoy.toISOString().split('T')[0];
+      document.getElementById('fechaSalida').value = manana.toISOString().split('T')[0];
+      
+      // Remover selección de la tabla
+      document.querySelectorAll('.data-table tbody tr').forEach(r => {
+        r.classList.remove('selected');
+      });
+    }
+
+    // Función para cerrar sesión
+    window.cerrarSesion = function() {
+      localStorage.removeItem('petCareSessionActive');
+      localStorage.removeItem('petCareUsername');
+      window.location.href = 'login.html';
+    }
+
+    // Función para regresar al menú
+    function regresarMenu() {
+      window.location.href = 'registro.html';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Care - Sistema de Recordatorios</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #008080, #00a3a3);
+      min-height: 100vh;
+      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      0% { 
+        opacity: 0; 
+        transform: translateY(20px); 
+      }
+      100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    .header {
+      background: #006666;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideDown {
+      0% { 
+        transform: translateY(-100%); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateY(0); 
+        opacity: 1; 
+      }
+    }
+
+    .header h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      font-size: 28px;
+    }
+
+    .header .info {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      display: flex;
+      min-height: calc(100vh - 120px);
+    }
+
+    @keyframes slideInLeft {
+      0% { 
+        transform: translateX(-50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    @keyframes slideInRight {
+      0% { 
+        transform: translateX(50px); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #004d4d;
+      padding: 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .menu-section {
+      margin-bottom: 30px;
+    }
+
+    .menu-title {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 20px;
+      color: #b3d9d9;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      will-change: transform;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background: #006666;
+      color: white;
+      border-left-color: #00e6e6;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      margin: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      overflow: auto;
+      animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+    }
+
+    .page-title {
+      color: #006666;
+      margin-bottom: 20px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Estilos específicos para recordatorios */
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      background-color: #f0f0f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      background: #e0e0e0;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .tab.active {
+      background: #006666;
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .reminders-list {
+      margin-top: 20px;
+    }
+
+    .reminder-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 15px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: slideInRight 0.5s ease-out;
+    }
+
+    @keyframes slideInRight {
+      0% { transform: translateX(50px); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    .reminder-info {
+      flex: 1;
+    }
+
+    .reminder-title {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+      font-size: 18px;
+    }
+
+    .reminder-details {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .reminder-date {
+      color: #006666;
+      font-weight: bold;
+    }
+
+    .reminder-type {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 15px;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .type-vacuna {
+      background: #4CAF50;
+    }
+
+    .type-medicamento {
+      background: #2196F3;
+    }
+
+    .type-cita {
+      background: #9C27B0;
+    }
+
+    .reminder-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .action-btn.edit {
+      color: #2196F3;
+    }
+
+    .action-btn.delete {
+      color: #dc3545;
+    }
+
+    .action-btn.complete {
+      color: #4CAF50;
+    }
+
+    .form-container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: #006666;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #008080;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    .empty-message {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      font-style: italic;
+    }
+
+    /* Estilos para filtros */
+    .filters {
+      background: #f0f0f0;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-group label {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .filter-control {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>
+      <i class="fas fa-paw"></i>
+      Pet Care - Sistema Veterinario
+    </h1>
+    <div class="info">
+      Calzada del Tecnológico S/N, Unidad Tomas Aquino
+      <br>
+      C.P. 22414, Tijuana, Baja California
+      <br>
+      664-623-4054
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-home"></i>
+          Inicio
+        </div>
+        <a href="inicio.html" class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-users"></i>
+          Pacientes
+        </div>
+        <a href="registro.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_mascota.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-stethoscope"></i>
+          Consulta
+        </div>
+        <a href="consulta.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          Registrar
+        </a>
+        <a href="buscar_consulta.html" class="menu-item">
+          <i class="fas fa-search"></i>
+          Buscar
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-calendar-alt"></i>
+          Gestión
+        </div>
+        <a href="calendario.html" class="menu-item">
+          <i class="fas fa-calendar-check"></i>
+          Calendario
+        </a>
+        <a href="recordatorios.html" class="menu-item active">
+          <i class="fas fa-bell"></i>
+          Recordatorios
+        </a>
+        <a href="expediente.html" class="menu-item">
+          <i class="fas fa-file-medical"></i>
+          Expedientes
+        </a>
+        <a href="inventario.html" class="menu-item">
+          <i class="fas fa-boxes"></i>
+          Inventario
+        </a>
+        <a href="facturacion.html" class="menu-item">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Facturación
+        </a>
+        <a href="estadisticas.html" class="menu-item">
+          <i class="fas fa-chart-bar"></i>
+          Estadísticas
+        </a>
+        <a href="fotos.html" class="menu-item">
+          <i class="fas fa-images"></i>
+          Fotos
+        </a>
+        <a href="exportar.html" class="menu-item">
+          <i class="fas fa-file-export"></i>
+          Exportar
+        </a>
+        <a href="fidelizacion.html" class="menu-item">
+          <i class="fas fa-award"></i>
+          Fidelización
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">
+          <i class="fas fa-ellipsis-h"></i>
+          Otros
+        </div>
+        <a href="bano.html" class="menu-item">
+          <i class="fas fa-shower"></i>
+          Baño
+        </a>
+        <a href="hospedaje.html" class="menu-item">
+          <i class="fas fa-hotel"></i>
+          Hospedaje
+        </a>
+      </div>
+
+      <a href="login.html" class="menu-item">
+        <i class="fas fa-sign-out-alt"></i>
+        Cerrar sesión
+      </a>
+    </div>
+
+    <div class="main-content">
+      <h2 class="page-title">
+        <i class="fas fa-bell"></i>
+        Sistema de Recordatorios
+      </h2>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="upcoming">Próximos</div>
+        <div class="tab" data-tab="all">Todos</div>
+        <div class="tab" data-tab="completed">Completados</div>
+        <div class="tab" data-tab="new">Nuevo Recordatorio</div>
+      </div>
+
+      <!-- Tab de recordatorios próximos -->
+      <div class="tab-content active" id="upcoming-tab">
+        <div class="filters">
+          <div class="filter-group">
+            <label for="filter-type">Tipo:</label>
+            <select id="filter-type" class="filter-control">
+              <option value="all">Todos</option>
+              <option value="vacuna">Vacunas</option>
+              <option value="medicamento">Medicamentos</option>
+              <option value="cita">Citas</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-days">Días:</label>
+            <select id="filter-days" class="filter-control">
+              <option value="7">Próximos 7 días</option>
+              <option value="30">Próximos 30 días</option>
+              <option value="90">Próximos 3 meses</option>
+              <option value="all">Todos</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="apply-filters">
+            <i class="fas fa-filter"></i> Aplicar
+          </button>
+        </div>
+
+        <div class="reminders-list" id="upcoming-reminders">
+          <!-- Los recordatorios se cargarán dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Tab de todos los recordatorios -->
+      <div class="tab-content" id="all-tab">
+        <div class="filters">
+          <div class="filter-group">
+            <label for="sort-by">Ordenar por:</label>
+            <select id="sort-by" class="filter-control">
+              <option value="date-asc">Fecha (antiguo primero)</option>
+              <option value="date-desc">Fecha (reciente primero)</option>
+              <option value="type">Tipo</option>
+              <option value="pet">Mascota</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="apply-sort">
+            <i class="fas fa-sort"></i> Ordenar
+          </button>
+        </div>
+
+        <div class="reminders-list" id="all-reminders">
+          <!-- Los recordatorios se cargarán dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Tab de recordatorios completados -->
+      <div class="tab-content" id="completed-tab">
+        <div class="reminders-list" id="completed-reminders">
+          <!-- Los recordatorios completados se cargarán dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Tab de nuevo recordatorio -->
+      <div class="tab-content" id="new-tab">
+        <div class="form-container">
+          <form id="reminder-form">
+            <input type="hidden" id="reminder-id">
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="reminder-type">Tipo de Recordatorio</label>
+                <select id="reminder-type" class="form-control" required>
+                  <option value="">Seleccionar tipo</option>
+                  <option value="vacuna">Vacuna</option>
+                  <option value="medicamento">Medicamento</option>
+                  <option value="cita">Cita</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="pet-name">Mascota</label>
+                <input type="text" id="pet-name" class="form-control" required placeholder="Nombre de la mascota">
+              </div>
+
+              <div class="form-group">
+                <label for="reminder-title">Título</label>
+                <input type="text" id="reminder-title" class="form-control" required placeholder="Título del recordatorio">
+              </div>
+
+              <div class="form-group">
+                <label for="reminder-date">Fecha</label>
+                <input type="date" id="reminder-date" class="form-control" required>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="reminder-notes">Notas</label>
+                <textarea id="reminder-notes" class="form-control" rows="3" placeholder="Notas adicionales"></textarea>
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button type="button" class="btn btn-secondary" id="cancel-btn">Cancelar</button>
+              <button type="submit" class="btn btn-primary" id="save-btn">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Verificar si hay sesión activa
+    window.onload = function() {
+      if(!localStorage.getItem('petCareSessionActive') || localStorage.getItem('petCareSessionActive') !== 'true') {
+        window.location.href = 'login.html';
+      } else {
+        loadReminders();
+      }
+    };
+
+    // Manejo de tabs
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        const tabId = this.getAttribute('data-tab');
+        
+        tabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        tabContents.forEach(content => content.classList.remove('active'));
+        document.getElementById(`${tabId}-tab`).classList.add('active');
+      });
+    });
+
+    // Formulario de recordatorios
+    const reminderForm = document.getElementById('reminder-form');
+    const cancelBtn = document.getElementById('cancel-btn');
+
+    reminderForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const reminderId = document.getElementById('reminder-id').value;
+      const type = document.getElementById('reminder-type').value;
+      const petName = document.getElementById('pet-name').value;
+      const title = document.getElementById('reminder-title').value;
+      const date = document.getElementById('reminder-date').value;
+      const notes = document.getElementById('reminder-notes').value;
+
+      if (!type || !petName || !title || !date) {
+        alert('Por favor complete los campos obligatorios');
+        return;
+      }
+
+      // Obtener recordatorios existentes o inicializar si no existen
+      let reminders = JSON.parse(localStorage.getItem('petCareReminders')) || [];
+
+      if (reminderId) {
+        // Actualizar recordatorio existente
+        const reminderIndex = reminders.findIndex(reminder => reminder.id === reminderId);
+        
+        if (reminderIndex !== -1) {
+          reminders[reminderIndex] = {
+            ...reminders[reminderIndex],
+            type,
+            petName,
+            title,
+            date,
+            notes
+          };
+        }
+      } else {
+        // Crear nuevo recordatorio
+        const newReminder = {
+          id: Date.now().toString(),
+          type,
+          petName,
+          title,
+          date,
+          notes,
+          completed: false,
+          completedDate: null
+        };
+
+        reminders.push(newReminder);
+      }
+
+      localStorage.setItem('petCareReminders', JSON.stringify(reminders));
+      
+      // Resetear formulario y cargar recordatorios actualizados
+      reminderForm.reset();
+      document.getElementById('reminder-id').value = '';
+      
+      // Mostrar tab de próximos recordatorios
+      document.querySelector('.tab[data-tab="upcoming"]').click();
+      
+      // Recargar recordatorios
+      loadReminders();
+    });
+
+    cancelBtn.addEventListener('click', function() {
+      reminderForm.reset();
+      document.getElementById('reminder-id').value = '';
+      document.querySelector('.tab[data-tab="upcoming"]').click();
+    });
+
+    // Cargar recordatorios
+    function loadReminders() {
+      let reminders = JSON.parse(localStorage.getItem('petCareReminders')) || [];
+      
+      // Si no hay recordatorios, añadir datos de ejemplo
+      if (reminders.length === 0) {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const nextWeek = new Date(today);
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        const inTwoDays = new Date(today);
+        inTwoDays.setDate(inTwoDays.getDate() + 2);
+        const inFiveDays = new Date(today);
+        inFiveDays.setDate(inFiveDays.getDate() + 5);
+        const lastWeek = new Date(today);
+        lastWeek.setDate(lastWeek.getDate() - 7);
+        
+        reminders = [
+          {
+            id: 'REM001',
+            type: 'vacuna',
+            petName: 'Max',
+            ownerName: 'Juan Pérez',
+            date: today.toISOString().split('T')[0],
+            title: 'Vacuna Antirrábica',
+            notes: 'Aplicar vacuna antirrábica anual',
+            completed: false
+          },
+          {
+            id: 'REM002',
+            type: 'medicamento',
+            petName: 'Luna',
+            ownerName: 'María García',
+            date: tomorrow.toISOString().split('T')[0],
+            title: 'Desparasitación',
+            notes: 'Administrar desparasitante interno',
+            completed: false
+          },
+          {
+            id: 'REM003',
+            type: 'cita',
+            petName: 'Rocky',
+            ownerName: 'Carlos Rodríguez',
+            date: inTwoDays.toISOString().split('T')[0],
+            title: 'Revisión Post-operatoria',
+            notes: 'Control después de cirugía',
+            completed: false
+          },
+          {
+            id: 'REM004',
+            type: 'vacuna',
+            petName: 'Bella',
+            ownerName: 'Ana Martínez',
+            date: inFiveDays.toISOString().split('T')[0],
+            title: 'Vacuna Triple Felina',
+            notes: 'Segunda dosis de vacuna triple',
+            completed: false
+          },
+          {
+            id: 'REM005',
+            type: 'medicamento',
+            petName: 'Toby',
+            ownerName: 'Luis Fernández',
+            date: nextWeek.toISOString().split('T')[0],
+            title: 'Control de Medicación',
+            notes: 'Verificar efectividad del tratamiento para artritis',
+            completed: false
+          },
+          {
+            id: 'REM006',
+            type: 'cita',
+            petName: 'Coco',
+            ownerName: 'Patricia Sánchez',
+            date: lastWeek.toISOString().split('T')[0],
+            title: 'Limpieza Dental',
+            notes: 'Limpieza dental programada',
+            completed: true
+          }
+        ];
+        
+        localStorage.setItem('petCareReminders', JSON.stringify(reminders));
+      }
+      
+      // Cargar recordatorios próximos (no completados)
+      const upcomingReminders = reminders.filter(reminder => !reminder.completed);
+      renderReminders('upcoming-reminders', upcomingReminders);
+      
+      // Cargar todos los recordatorios
+      renderReminders('all-reminders', reminders);
+      
+      // Cargar recordatorios completados
+      const completedReminders = reminders.filter(reminder => reminder.completed);
+      renderReminders('completed-reminders', completedReminders);
+    }
+
+    // Renderizar recordatorios
+    function renderReminders(containerId, reminders) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      
+      if (reminders.length === 0) {
+        container.innerHTML = '<div class="empty-message">No hay recordatorios disponibles</div>';
+        return;
+      }
+
+      // Ordenar por fecha
+      reminders.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      reminders.forEach(reminder => {
+        const reminderCard = document.createElement('div');
+        reminderCard.className = 'reminder-card';
+        
+        // Formatear fecha
+        const reminderDate = new Date(reminder.date);
+        const formattedDate = reminderDate.toLocaleDateString('es-MX', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        
+        // Calcular días restantes
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const daysRemaining = Math.ceil((reminderDate - today) / (1000 * 60 * 60 * 24));
+        
+        let daysText = '';
+        if (!reminder.completed) {
+          if (daysRemaining < 0) {
+            daysText = `<span style="color: red;">Atrasado por ${Math.abs(daysRemaining)} días</span>`;
+          } else if (daysRemaining === 0) {
+            daysText = '<span style="color: #ff9800;">¡Hoy!</span>';
+          } else {
+            daysText = `<span style="color: ${daysRemaining <= 7 ? '#ff9800' : '#4CAF50'}">En ${daysRemaining} días</span>`;
+          }
+        }
+
+        reminderCard.innerHTML = `
+          <div class="reminder-info">
+            <span class="reminder-type type-${reminder.type}">${getTypeText(reminder.type)}</span>
+            <h3 class="reminder-title">${reminder.title}</h3>
+            <div class="reminder-details">
+              <div><strong>Mascota:</strong> ${reminder.petName}</div>
+              <div><strong>Fecha:</strong> <span class="reminder-date">${formattedDate}</span> ${daysText}</div>
+              ${reminder.notes ? `<div><strong>Notas:</strong> ${reminder.notes}</div>` : ''}
+              ${reminder.completed ? `<div><strong>Completado:</strong> ${new Date(reminder.completedDate).toLocaleDateString('es-MX')}</div>` : ''}
+            </div>
+          </div>
+          <div class="reminder-actions">
+            ${!reminder.completed ? `
+              <button class="action-btn complete" data-id="${reminder.id}" title="Marcar como completado">
+                <i class="fas fa-check-circle"></i>
+              </button>
+              <button class="action-btn edit" data-id="${reminder.id}" title="Editar">
+                <i class="fas fa-edit"></i>
+              </button>
+            ` : ''}
+            <button class="action-btn delete" data-id="${reminder.id}" title="Eliminar">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        `;
+        
+        container.appendChild(reminderCard);
+      });
+
+      // Añadir event listeners a los botones
+      document.querySelectorAll('.action-btn.edit').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const reminderId = this.getAttribute('data-id');
+          editReminder(reminderId);
+        });
+      });
+
+      document.querySelectorAll('.action-btn.delete').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const reminderId = this.getAttribute('data-id');
+          deleteReminder(reminderId);
+        });
+      });
+
+      document.querySelectorAll('.action-btn.complete').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const reminderId = this.getAttribute('data-id');
+          completeReminder(reminderId);
+        });
+      });
+    }
+
+    // Editar recordatorio
+    function editReminder(reminderId) {
+      const reminders = JSON.parse(localStorage.getItem('petCareReminders')) || [];
+      const reminder = reminders.find(r => r.id === reminderId);
+      
+      if (reminder) {
+        document.getElementById('reminder-id').value = reminder.id;
+        document.getElementById('reminder-type').value = reminder.type;
+        document.getElementById('pet-name').value = reminder.petName;
+        document.getElementById('reminder-title').value = reminder.title;
+        document.getElementById('reminder-date').value = reminder.date;
+        document.getElementById('reminder-notes').value = reminder.notes || '';
+        
+        // Mostrar tab de nuevo recordatorio
+        document.querySelector('.tab[data-tab="new"]').click();
+      }
+    }
+
+    // Eliminar recordatorio
+    function deleteReminder(reminderId) {
+      if (confirm('¿Estás seguro de que deseas eliminar este recordatorio?')) {
+        let reminders = JSON.parse(localStorage.getItem('petCareReminders')) || [];
+        reminders = reminders.filter(reminder => reminder.id !== reminderId);
+        localStorage.setItem('petCareReminders', JSON.stringify(reminders));
+        loadReminders();
+      }
+    }
+
+    // Marcar recordatorio como completado
+    function completeReminder(reminderId) {
+      let reminders = JSON.parse(localStorage.getItem('petCareReminders')) || [];
+      const reminderIndex = reminders.findIndex(reminder => reminder.id === reminderId);
+      
+      if (reminderIndex !== -1) {
+        reminders[reminderIndex].completed = true;
+        reminders[reminderIndex].completedDate = new Date().toISOString().split('T')[0];
+        localStorage.setItem('petCareReminders', JSON.stringify(reminders));
+        loadReminders();
+      }
+    }
+
+    // Obtener texto del tipo
+    function getTypeText(type) {
+      switch (type) {
+        case 'vacuna':
+          return 'Vacuna';
+        case 'medicamento':
+          return 'Medicamento';
+        case 'cita':
+          return 'Cita';
+        default:
+          return 'Otro';
+      }
+    }
+
+    // Manejar filtros
+    document.getElementById('apply-filters').addEventListener('click', function() {
+      const typeFilter = document.getElementById('filter-type').value;
+      const daysFilter = document.getElementById('filter-days').value;
+      
+      let reminders = JSON.parse(localStorage.getItem('petCareReminders')) || [];
+      
+      // Filtrar por no completados
+      reminders = reminders.filter(reminder => !reminder.completed);
+      
+      // Filtrar por tipo
+      if (typeFilter !== 'all') {
+        reminders = reminders.filter(reminder => reminder.type === typeFilter);
+      }
+      
+      // Filtrar por días
+      if (daysFilter !== 'all') {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const futureDate = new Date(today);
+        futureDate.setDate(today.getDate() + parseInt(daysFilter));
+        
+        reminders = reminders.filter(reminder => {
+          const reminderDate = new Date(reminder.date);
+          return reminderDate >= today && reminderDate <= futureDate;
+        });
+      }
+      
+      // Renderizar resultados filtrados
+      renderReminders('upcoming-reminders', reminders);
+    });
+
+    // Manejar ordenación
+    document.getElementById('apply-sort').addEventListener('click', function() {
+      const sortBy = document.getElementById('sort-by').value;
+      
+      let reminders = JSON.parse(localStorage.getItem('petCareReminders')) || [];
+      
+      switch (sortBy) {
+        case 'date-asc':
+          reminders.sort((a, b) => new Date(a.date) - new Date(b.date));
+          break;
+        case 'date-desc':
+          reminders.sort((a, b) => new Date(b.date) - new Date(a.date));
+          break;
+        case 'type':
+          reminders.sort((a, b) => a.type.localeCompare(b.type));
+          break;
+        case 'pet':
+          reminders.sort((a, b) => a.petName.localeCompare(b.petName));
+          break;
+      }
+      
+      // Renderizar resultados ordenados
+      renderReminders('all-reminders', reminders);
+    });
+
+    // Configurar fecha predeterminada en el formulario
+    document.querySelector('.tab[data-tab="new"]').addEventListener('click', function() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('reminder-date').value = today;
+    });
+  </script>
+</body>
+</html>

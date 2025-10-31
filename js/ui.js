@@ -13,9 +13,9 @@
 
   function getPreferredTheme() {
     const stored = getStoredTheme();
+    // Default explicitly to light unless the user chose dark before
     if (stored === 'dark' || stored === 'light') return stored;
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return prefersDark ? 'dark' : 'light';
+    return 'light';
   }
 
   function applyTheme(theme) {

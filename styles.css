@@ -225,34 +225,11 @@ body[data-theme="dark"] textarea { background: #122020; color: #e6f6f6; border-c
 /* Modals */
 body[data-theme="dark"] .modal-content { background: #142222; color: #e6f6f6; }
 
-/* Prefer system dark if user didn't set a preference */
-@media (prefers-color-scheme: dark) {
-  body:not([data-theme="light"]) {
-    color: #e6f6f6;
-    background: linear-gradient(135deg, #0b2929, #0f3a3a);
-  }
-  body:not([data-theme="light"]) .header { background: #0b3a3a; color: #e6f6f6; }
-  body:not([data-theme="light"]) .sidebar { background: #062e2e; }
-  body:not([data-theme="light"]) .main-content { background: rgba(16,24,24,0.92); color: #e6f6f6; }
-  body:not([data-theme="light"]) .menu-item { color: #bfe5e5; }
-  body:not([data-theme="light"]) .menu-item:hover,
-  body:not([data-theme="light"]) .menu-item.active { background: #0c4f4f; color: #fff; border-left-color: #00cccc; }
-  body:not([data-theme="light"]) .stat-card,
-  body:not([data-theme="light"]) .info-card,
-  body:not([data-theme="light"]) .welcome-section { background: #152020; color: #e6f6f6; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
-  body:not([data-theme="light"]) .tabs { background: #152020; }
-  body:not([data-theme="light"]) .tab { background: #1a2626; color: #d8eeee; }
-  body:not([data-theme="light"]) .tab.active { background: #0c4f4f; color: #fff; }
-  body:not([data-theme="light"]) .inventory-table th,
-  body:not([data-theme="light"]) .invoices-table th,
-  body:not([data-theme="light"]) .data-table th { background: #0f2f2f; color: #e6f6f6; }
-  body:not([data-theme="light"]) .inventory-table td,
-  body:not([data-theme="light"]) .invoices-table td,
-  body:not([data-theme="light"]) .data-table td { border-bottom: 1px solid rgba(255,255,255,0.1); }
-  body:not([data-theme="light"]) .inventory-table tr:hover { background: rgba(255,255,255,0.04); }
-  body:not([data-theme="light"]) .form-control,
-  body:not([data-theme="light"]) input,
-  body:not([data-theme="light"]) select,
-  body:not([data-theme="light"]) textarea { background: #122020; color: #e6f6f6; border-color: rgba(255,255,255,0.2); }
-  body:not([data-theme="light"]) .modal-content { background: #142222; color: #e6f6f6; }
-}
+/* Ensure readable text colors in dark theme (override page inline styles) */
+body[data-theme="dark"] :where(h1,h2,h3,h4,h5,h6,p,span,li,dt,dd,label,th,td,small) { color: #e6f6f6 !important; }
+body[data-theme="dark"] a { color: #8ed9d9; }
+body[data-theme="dark"] .stat-description,
+body[data-theme="dark"] .info-item-details,
+body[data-theme="dark"] .filter-label { color: #cfeaea !important; }
+body[data-theme="dark"] input::placeholder,
+body[data-theme="dark"] textarea::placeholder { color: #9ad0d0; }

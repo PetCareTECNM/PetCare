@@ -233,3 +233,19 @@ body[data-theme="dark"] .info-item-details,
 body[data-theme="dark"] .filter-label { color: #cfeaea !important; }
 body[data-theme="dark"] input::placeholder,
 body[data-theme="dark"] textarea::placeholder { color: #9ad0d0; }
+
+/* Dark theme polish: higher contrast and subtle borders */
+body[data-theme="dark"] .header-center .info { color: #d8f2f2 !important; }
+body[data-theme="dark"] .page-title { color: #eafafa !important; }
+body[data-theme="dark"] .stat-number { color: #ffffff !important; }
+body[data-theme="dark"] .stat-card,
+body[data-theme="dark"] .info-card,
+body[data-theme="dark"] .welcome-section { border: 1px solid rgba(255,255,255,0.06); }
+body[data-theme="dark"] .info-item { background: #142020; border-left-color: #00cccc; }
+body[data-theme="dark"] .info-item:hover { background: #1a2626; }
+
+/* Tables in dark: clearer headers and row hover */
+body[data-theme="dark"] .data-table { background: #121a1a; }
+body[data-theme="dark"] .data-table th { background: #0f2f2f; color: #eafafa; }
+body[data-theme="dark"] .data-table td { border-bottom: 1px solid rgba(255,255,255,0.08); }
+body[data-theme="dark"] .data-table tr:hover { background: rgba(255,255,255,0.04); }

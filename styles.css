@@ -99,3 +99,160 @@ table.responsive-table {
   .action-btn, .btn, .btn-primary, .search-btn { width: 100%; justify-content: center; }
   .header h1, .header-left h1 { font-size: 20px; }
 }
+
+/* ========== Mobile sidebar toggle (hamburger) ========== */
+.menu-toggle {
+  display: none;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 22px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.menu-toggle:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.backdrop { display: none; }
+
+@media (max-width: 1024px) {
+  .menu-toggle { display: inline-flex; align-items: center; justify-content: center; }
+
+  /* Make header layout resilient when button appears */
+  .header-left { gap: 10px; }
+
+  /* Sidebar as drawer */
+  .sidebar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 80%;
+    max-width: 320px;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1001;
+    background: #004d4d; /* keep existing color */
+    box-shadow: 2px 0 12px rgba(0,0,0,0.35);
+  }
+
+  body.nav-open .sidebar { display: block; }
+
+  .backdrop {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1000;
+  }
+
+  body.nav-open .backdrop { display: block; }
+  body.nav-open { overflow: hidden; }
+}
+
+/* ========== Theme toggle and Dark Mode ========== */
+/* Toggle button fixed to top-right so it doesn't break varied headers */
+.theme-toggle {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 1100;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.25);
+  color: #fff;
+  backdrop-filter: saturate(140%) blur(6px);
+  cursor: pointer;
+}
+
+.theme-toggle:hover { background: rgba(0,0,0,0.35); }
+.theme-toggle:focus { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Explicit dark theme via data-attribute */
+body[data-theme="dark"] {
+  color: #e6f6f6;
+  background: linear-gradient(135deg, #0b2929, #0f3a3a);
+}
+
+body[data-theme="dark"] .header { background: #0b3a3a; color: #e6f6f6; }
+body[data-theme="dark"] .sidebar { background: #062e2e; }
+body[data-theme="dark"] .main-content { background: rgba(16,24,24,0.92); color: #e6f6f6; }
+body[data-theme="dark"] .menu-item { color: #bfe5e5; }
+body[data-theme="dark"] .menu-item:hover, 
+body[data-theme="dark"] .menu-item.active { background: #0c4f4f; color: #fff; border-left-color: #00cccc; }
+
+/* Cards and surfaces */
+body[data-theme="dark"] .stat-card,
+body[data-theme="dark"] .info-card,
+body[data-theme="dark"] .welcome-section { background: #152020; color: #e6f6f6; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+
+/* Tabs */
+body[data-theme="dark"] .tabs { background: #152020; }
+body[data-theme="dark"] .tab { background: #1a2626; color: #d8eeee; }
+body[data-theme="dark"] .tab.active { background: #0c4f4f; color: #fff; }
+
+/* Tables */
+body[data-theme="dark"] table,
+body[data-theme="dark"] .inventory-table,
+body[data-theme="dark"] .invoices-table,
+body[data-theme="dark"] .items-table,
+body[data-theme="dark"] .vaccines-table,
+body[data-theme="dark"] .data-table { color: #e6f6f6; }
+
+body[data-theme="dark"] .inventory-table th,
+body[data-theme="dark"] .invoices-table th,
+body[data-theme="dark"] .data-table th { background: #0f2f2f; color: #e6f6f6; }
+
+body[data-theme="dark"] .inventory-table td,
+body[data-theme="dark"] .invoices-table td,
+body[data-theme="dark"] .data-table td { border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+body[data-theme="dark"] .inventory-table tr:hover { background: rgba(255,255,255,0.04); }
+
+/* Forms */
+body[data-theme="dark"] .form-control,
+body[data-theme="dark"] input,
+body[data-theme="dark"] select,
+body[data-theme="dark"] textarea { background: #122020; color: #e6f6f6; border-color: rgba(255,255,255,0.2); }
+
+/* Modals */
+body[data-theme="dark"] .modal-content { background: #142222; color: #e6f6f6; }
+
+/* Prefer system dark if user didn't set a preference */
+@media (prefers-color-scheme: dark) {
+  body:not([data-theme="light"]) {
+    color: #e6f6f6;
+    background: linear-gradient(135deg, #0b2929, #0f3a3a);
+  }
+  body:not([data-theme="light"]) .header { background: #0b3a3a; color: #e6f6f6; }
+  body:not([data-theme="light"]) .sidebar { background: #062e2e; }
+  body:not([data-theme="light"]) .main-content { background: rgba(16,24,24,0.92); color: #e6f6f6; }
+  body:not([data-theme="light"]) .menu-item { color: #bfe5e5; }
+  body:not([data-theme="light"]) .menu-item:hover,
+  body:not([data-theme="light"]) .menu-item.active { background: #0c4f4f; color: #fff; border-left-color: #00cccc; }
+  body:not([data-theme="light"]) .stat-card,
+  body:not([data-theme="light"]) .info-card,
+  body:not([data-theme="light"]) .welcome-section { background: #152020; color: #e6f6f6; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+  body:not([data-theme="light"]) .tabs { background: #152020; }
+  body:not([data-theme="light"]) .tab { background: #1a2626; color: #d8eeee; }
+  body:not([data-theme="light"]) .tab.active { background: #0c4f4f; color: #fff; }
+  body:not([data-theme="light"]) .inventory-table th,
+  body:not([data-theme="light"]) .invoices-table th,
+  body:not([data-theme="light"]) .data-table th { background: #0f2f2f; color: #e6f6f6; }
+  body:not([data-theme="light"]) .inventory-table td,
+  body:not([data-theme="light"]) .invoices-table td,
+  body:not([data-theme="light"]) .data-table td { border-bottom: 1px solid rgba(255,255,255,0.1); }
+  body:not([data-theme="light"]) .inventory-table tr:hover { background: rgba(255,255,255,0.04); }
+  body:not([data-theme="light"]) .form-control,
+  body:not([data-theme="light"]) input,
+  body:not([data-theme="light"]) select,
+  body:not([data-theme="light"]) textarea { background: #122020; color: #e6f6f6; border-color: rgba(255,255,255,0.2); }
+  body:not([data-theme="light"]) .modal-content { background: #142222; color: #e6f6f6; }
+}

@@ -7,10 +7,11 @@ const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3002; // Puerto de API
+const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || '').split(',').map(s => s.trim()).filter(Boolean);
 const DB_PROVIDER = (process.env.DB_PROVIDER || 'mssql').toLowerCase(); // 'mssql' | 'mongo'
 
 // Middleware
-app.use(cors());
+app.use(cors(ALLOWED_ORIGINS.length ? { origin: ALLOWED_ORIGINS } : {}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..')));
 

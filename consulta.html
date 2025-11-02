@@ -870,7 +870,7 @@
       
       // Cargar consultas desde API si disponible
       async function cargarConsultas() {
-        const tbody = document.querySelector('#tablaConsultas tbody');
+        const tbody = document.getElementById('tablaConsultas');
         if (!tbody) return;
         tbody.innerHTML = '';
         if (modoConexion !== 'api') return;
@@ -911,9 +911,11 @@
       
       // Función para cerrar sesión
       window.cerrarSesion = function() {
-        localStorage.removeItem('petCareSessionActive');
-        localStorage.removeItem('petCareUsername');
-        window.location.href = 'login.html';
+        if (confirm('¿Seguro que quieres cerrar sesión?')) {
+          localStorage.removeItem('petCareSessionActive');
+          localStorage.removeItem('petCareUsername');
+          window.location.href = 'login.html';
+        }
       }
 
       // Probar conexión a la API al cargar

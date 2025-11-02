@@ -2,6 +2,20 @@
 // Injects a menu button into the header on small screens and toggles the sidebar.
 
 (function () {
+  // ===================== DEMO SESSION (optional) =====================
+  // If the URL has ?demo=1, auto-create a local session so pages don't redirect to login
+  function ensureDemoSession() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const isDemo = params.get('demo');
+      if ((isDemo === '1' || isDemo === 'true') && localStorage.getItem('petCareSessionActive') !== 'true') {
+        localStorage.setItem('petCareSessionActive', 'true');
+        localStorage.setItem('petCareUsername', 'demo');
+        localStorage.setItem('petCareUserRole', 'admin');
+      }
+    } catch {}
+  }
+
   // ===================== THEME TOGGLE =====================
   function getStoredTheme() {
     try { return localStorage.getItem('petcare-theme'); } catch { return null; }
@@ -145,8 +159,9 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { initTheme(); initMobileNav(); });
+    document.addEventListener('DOMContentLoaded', () => { ensureDemoSession(); initTheme(); initMobileNav(); });
   } else {
+    ensureDemoSession();
     initTheme();
     initMobileNav();
   }

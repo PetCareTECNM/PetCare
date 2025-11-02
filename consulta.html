@@ -640,11 +640,32 @@
   </div>
 
   <script>
-    // === API CONFIG ===
+    // === API CONFIG (dinámica) ===
     const API_CONFIG = {
       baseUrl: 'http://localhost:3002',
       timeout: 5000
     };
+
+    function getApiBaseFromQuery() {
+      const params = new URLSearchParams(location.search);
+      const v = params.get('apiBase');
+      return v && v.trim() ? v.trim() : null;
+    }
+
+    async function loadApiConfig() {
+      const fromQuery = getApiBaseFromQuery();
+      if (fromQuery) { API_CONFIG.baseUrl = fromQuery; return; }
+      try {
+        const res = await fetch('config.json', { cache: 'no-store' });
+        if (res.ok) {
+          const cfg = await res.json();
+          if (cfg && cfg.apiBaseUrl) API_CONFIG.baseUrl = cfg.apiBaseUrl;
+        }
+      } catch (_) {}
+      if (location.hostname.endsWith('github.io') && API_CONFIG.baseUrl.startsWith('http://')) {
+        API_CONFIG.baseUrl = API_CONFIG.baseUrl.replace('http://', 'https://');
+      }
+    }
 
     async function apiFetch(endpoint, options = {}) {
       const controller = new AbortController();
@@ -664,14 +685,17 @@
       }
     }
 
-    async function apiTest() { return apiFetch('/test'); }
+  async function apiTest() { return apiFetch('/test'); }
     async function apiBuscarPacientePorId(id) { return apiFetch(`/pacientes?id=${encodeURIComponent(id)}`); }
     async function apiObtenerConsultas() { return apiFetch('/consultas'); }
     async function apiRegistrarConsulta(payload) { return apiFetch('/consultas', { method: 'POST', body: JSON.stringify(payload) }); }
 
     let modoConexion = 'local'; // 'api' | 'local'
 
-    document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', async function() {
+      // Cargar configuración de API antes de probar conexión
+      await loadApiConfig();
+
       // Verificar si el usuario ha iniciado sesión
       if (localStorage.getItem('petCareSessionActive') !== 'true') {
         window.location.href = 'login.html';

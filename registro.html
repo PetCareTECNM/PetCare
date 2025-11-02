@@ -630,12 +630,40 @@
   </div>
 
   <script>
-    // ========== CONFIGURACIÓN DE API ==========
+    // ========== CONFIGURACIÓN DE API (dinámica) ==========
     const API_CONFIG = {
-      // Base de la API Express (ver api/server.js). No usar sufijo /api y puerto 3002.
-      baseUrl: 'http://localhost:3002',
+      baseUrl: 'http://localhost:3002', // valor por defecto para desarrollo local
       timeout: 5000
     };
+
+    // Permite override por query param ?apiBase=...
+    function getApiBaseFromQuery() {
+      const params = new URLSearchParams(location.search);
+      const v = params.get('apiBase');
+      return v && v.trim() ? v.trim() : null;
+    }
+
+    async function loadApiConfig() {
+      // 1) query param gana
+      const fromQuery = getApiBaseFromQuery();
+      if (fromQuery) { API_CONFIG.baseUrl = fromQuery; return; }
+      // 2) config.json (para GitHub Pages u otros entornos)
+      try {
+        const res = await fetch('config.json', { cache: 'no-store' });
+        if (res.ok) {
+          const cfg = await res.json();
+          if (cfg && cfg.apiBaseUrl) {
+            API_CONFIG.baseUrl = cfg.apiBaseUrl;
+          }
+        }
+      } catch (e) {
+        // ignorar, se queda el valor por defecto
+      }
+      // 3) Si estamos en GitHub Pages, forzar HTTPS si quedó http
+      if (location.hostname.endsWith('github.io') && API_CONFIG.baseUrl.startsWith('http://')) {
+        API_CONFIG.baseUrl = API_CONFIG.baseUrl.replace('http://', 'https://');
+      }
+    }
 
     // ========== FUNCIONES DE API ==========
     async function hacerPeticionAPI(endpoint, options = {}) {
@@ -933,6 +961,8 @@
 
     // ========== INICIALIZACIÓN ==========
     document.addEventListener('DOMContentLoaded', async function() {
+      // Cargar configuración de API antes de cualquier request
+      await loadApiConfig();
       // Verificar sesión
       if (localStorage.getItem('petCareSessionActive') !== 'true') {
         window.location.href = 'login.html';

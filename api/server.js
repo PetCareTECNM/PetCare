@@ -74,7 +74,15 @@ app.get('/', (req, res) => res.redirect('/login.html'));
 app.get('/test', async (req, res) => {
   try {
     if (DB_PROVIDER === 'mongo') {
-      if (!mongoDb) await conectarMongo();
+      if (!MONGODB_URI) {
+        return res.status(500).json({ success: false, error: 'MONGODB_URI no configurado' });
+      }
+      if (!mongoDb) {
+        const ok = await conectarMongo();
+        if (!ok || !mongoDb) {
+          return res.status(500).json({ success: false, error: 'No se pudo conectar a MongoDB' });
+        }
+      }
       const total = await mongoDb.collection('pacientes').countDocuments();
       res.json({ success: true, proveedor: 'mongo', mensaje: 'Conexión exitosa', totalPacientes: total });
     } else {
@@ -85,6 +93,17 @@ app.get('/test', async (req, res) => {
   } catch (error) {
     res.json({ success: false, error: error.message });
   }
+});
+
+// Health / configuración (sanitizada)
+app.get('/healthz', (req, res) => {
+  res.json({
+    ok: true,
+    provider: DB_PROVIDER,
+    hasMongoUri: Boolean(MONGODB_URI),
+    mongoDbName: MONGODB_DB,
+    allowedOrigins: ALLOWED_ORIGINS,
+  });
 });
 
 // Login
@@ -247,6 +266,7 @@ app.get('/consultas', async (req, res) => {
 // Iniciar servidor
 async function iniciar() {
   console.log('🚀 Iniciando Pet Care API...');
+  console.log(`🔧 Config: provider=${DB_PROVIDER}, hasMongoUri=${Boolean(MONGODB_URI)}, mongoDb=${MONGODB_DB}`);
   let conectado = false;
   if (DB_PROVIDER === 'mongo') {
     conectado = await conectarMongo();

@@ -1,5 +1,6 @@
 // Configuración de la API - CONEXIÓN LOCAL
-const API_BASE_URL = 'http://localhost:3001';
+// Debe coincidir con el puerto configurado en api/server.js (por defecto 3002)
+const API_BASE_URL = 'http://localhost:3002';
 
 // Función para hacer peticiones HTTP
 async function apiRequest(endpoint, options = {}) {

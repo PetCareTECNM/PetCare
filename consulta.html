@@ -640,6 +640,37 @@
   </div>
 
   <script>
+    // === API CONFIG ===
+    const API_CONFIG = {
+      baseUrl: 'http://localhost:3002',
+      timeout: 5000
+    };
+
+    async function apiFetch(endpoint, options = {}) {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), API_CONFIG.timeout);
+      try {
+        const res = await fetch(`${API_CONFIG.baseUrl}${endpoint}` ,{
+          signal: controller.signal,
+          headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+          ...options
+        });
+        clearTimeout(id);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (e) {
+        clearTimeout(id);
+        throw e;
+      }
+    }
+
+    async function apiTest() { return apiFetch('/test'); }
+    async function apiBuscarPacientePorId(id) { return apiFetch(`/pacientes?id=${encodeURIComponent(id)}`); }
+    async function apiObtenerConsultas() { return apiFetch('/consultas'); }
+    async function apiRegistrarConsulta(payload) { return apiFetch('/consultas', { method: 'POST', body: JSON.stringify(payload) }); }
+
+    let modoConexion = 'local'; // 'api' | 'local'
+
     document.addEventListener('DOMContentLoaded', function() {
       // Verificar si el usuario ha iniciado sesión
       if (localStorage.getItem('petCareSessionActive') !== 'true') {
@@ -655,10 +686,8 @@
       // Establecer la fecha máxima como la fecha actual
       document.getElementById('fechaConsulta').setAttribute('max', fechaHoyISO);
       
-      // Generar ID automático (simulación)
-      function generarID() {
-        return Math.floor(Math.random() * 1000) + 1;
-      }
+      // Generar ID automático (simple)
+      function generarID() { return Math.floor(Math.random() * 1000) + 1; }
       
       // Función para limpiar formulario
       function limpiarFormulario() {
@@ -682,26 +711,21 @@
         }
       });
       
-      // Manejar la búsqueda de mascotas por ID
-      document.getElementById('idMascota').addEventListener('input', function() {
+      // Manejar la búsqueda de mascotas por ID (API si está online)
+      document.getElementById('idMascota').addEventListener('input', async function() {
         const id = this.value.trim();
-        if (id) {
-          // Datos de ejemplo (simulación de base de datos)
-          const mascotas = {
-            '1': 'Luke',
-            '2': 'Luke',
-            '3': 'Bonita',
-            '4': 'lulu',
-            '90': 'lulu'
-          };
-          
-          if (mascotas[id]) {
-            document.getElementById('nombrePaciente').value = mascotas[id];
+        const nombreEl = document.getElementById('nombrePaciente');
+        if (!id) { nombreEl.value = ''; return; }
+        if (modoConexion !== 'api') { nombreEl.value = ''; return; }
+        try {
+          const pacientes = await apiBuscarPacientePorId(id);
+          if (Array.isArray(pacientes) && pacientes.length > 0) {
+            nombreEl.value = pacientes[0].NOMBRE || '';
           } else {
-            document.getElementById('nombrePaciente').value = '';
+            nombreEl.value = '';
           }
-        } else {
-          document.getElementById('nombrePaciente').value = '';
+        } catch (e) {
+          nombreEl.value = '';
         }
       });
       
@@ -711,7 +735,7 @@
       }
       
       // Manejar el envío del formulario
-      document.getElementById('consultaForm').addEventListener('submit', function(e) {
+      document.getElementById('consultaForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
         // Validar datos
@@ -733,53 +757,53 @@
         const ahora = new Date();
         const esFutura = fechaConsulta > ahora;
         
-        // Agregar fila a la tabla
-        const tabla = document.getElementById('tablaConsultas');
-        const newRow = tabla.insertRow(0);
-        
-        // Agregar celdas con datos
-        newRow.innerHTML = `
-          <td>${document.getElementById('idConsulta').value}</td>
-          <td>${nombrePaciente}</td>
-          <td>${truncar(caracteristicas)}</td>
-          <td>${truncar(motivo)}</td>
-          <td>${new Date(fecha).toLocaleDateString('es-ES')} ${hora}</td>
-          <td>${diagnostico ? truncar(diagnostico) : (esFutura ? '⏳ Pendiente' : 'Sin diagnóstico')}</td>
-        `;
-        
-        // Animación de la nueva fila
-        newRow.style.backgroundColor = esFutura ? '#d1ecf1' : '#d4edda';
-        setTimeout(() => {
-          newRow.style.backgroundColor = '';
-        }, 2000);
-        
-        // Guardar cita en el calendario
+        if (modoConexion === 'api') {
+          try {
+            const fechaIso = new Date(`${fecha}T${hora || '00:00'}:00`).toISOString();
+            const payload = {
+              idConsulta: document.getElementById('idConsulta').value,
+              idMascota,
+              nombrePaciente,
+              detallesPaciente: caracteristicas,
+              motivo,
+              fecha: fechaIso,
+              diagnostico
+            };
+            const resp = await apiRegistrarConsulta(payload);
+            if (!resp || resp.success === false) throw new Error(resp?.error || 'Error API');
+            // recargar tabla desde API
+            await cargarConsultas();
+            // seguir guardando en calendario local como antes
+          } catch (err) {
+            alert('Error al registrar consulta en API: ' + err.message);
+            return;
+          }
+        } else {
+          // Modo local: solo calendario y tabla en memoria
+          const tabla = document.getElementById('tablaConsultas');
+          const newRow = tabla.insertRow(0);
+          newRow.innerHTML = `
+            <td>${document.getElementById('idConsulta').value}</td>
+            <td>${nombrePaciente}</td>
+            <td>${truncar(caracteristicas)}</td>
+            <td>${truncar(motivo)}</td>
+            <td>${new Date(fecha).toLocaleDateString('es-ES')} ${hora}</td>
+            <td>${diagnostico ? truncar(diagnostico) : (esFutura ? '⏳ Pendiente' : 'Sin diagnóstico')}</td>
+          `;
+        }
+
+        // Guardar cita en el calendario (siempre)
         let appointments = JSON.parse(localStorage.getItem('petCareAppointments')) || [];
         const notaCompleta = diagnostico ? `${motivo} - ${diagnostico}` : `${motivo} ${esFutura ? '(Consulta futura - sin diagnóstico aún)' : ''}`;
-        
-        const newAppointment = {
-          id: 'CONS-' + Date.now(),
-          type: 'consulta',
-          petName: nombrePaciente,
-          ownerName: idMascota,
-          date: fecha,
-          time: hora,
-          notes: notaCompleta
-        };
+        const newAppointment = { id: 'CONS-' + Date.now(), type: 'consulta', petName: nombrePaciente, ownerName: idMascota, date: fecha, time: hora, notes: notaCompleta };
         appointments.push(newAppointment);
         localStorage.setItem('petCareAppointments', JSON.stringify(appointments));
-        
-        // Incrementar el ID para la próxima consulta
+
+        // Incrementar el ID y limpiar
         const idActual = parseInt(document.getElementById('idConsulta').value);
         document.getElementById('idConsulta').value = idActual + 1;
-        
-        // Limpiar formulario
         limpiarFormulario();
-        
-        const mensaje = esFutura 
-          ? '✅ Consulta futura agendada en el calendario (sin diagnóstico)' 
-          : '✅ Consulta registrada y cita agendada en el calendario';
-        alert(mensaje);
+        alert(esFutura ? '✅ Consulta futura agendada (API/Local)' : '✅ Consulta registrada (API/Local)');
       });
       
       // Hacer filas de tabla seleccionables
@@ -820,6 +844,32 @@
         });
       });
       
+      // Cargar consultas desde API si disponible
+      async function cargarConsultas() {
+        const tbody = document.querySelector('#tablaConsultas tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        if (modoConexion !== 'api') return;
+        try {
+          const consultas = await apiObtenerConsultas();
+          consultas.slice().reverse().forEach(c => {
+            const tr = document.createElement('tr');
+            const fechaStr = c.Fecha ? new Date(c.Fecha).toLocaleDateString('es-ES') : '';
+            tr.innerHTML = `
+              <td>${c.Id_Consulta || ''}</td>
+              <td>${c.Nombre_Paciente || c.NombreMascota || ''}</td>
+              <td>${(c.Detalles_Paciente || '').slice(0,25)}</td>
+              <td>${(c.Motivo || '').slice(0,25)}</td>
+              <td>${fechaStr}</td>
+              <td>${(c.Diagnostico || '').slice(0,25)}</td>
+            `;
+            tbody.prepend(tr);
+          });
+        } catch (e) {
+          // ignorar
+        }
+      }
+
       // Animaciones escalonadas
       setTimeout(() => {
         document.querySelector('.form-container').classList.add('loading');
@@ -841,6 +891,19 @@
         localStorage.removeItem('petCareUsername');
         window.location.href = 'login.html';
       }
+
+      // Probar conexión a la API al cargar
+      (async () => {
+        try {
+          const t = await apiTest();
+          if (t && t.success) {
+            modoConexion = 'api';
+            await cargarConsultas();
+          }
+        } catch (_) {
+          modoConexion = 'local';
+        }
+      })();
     });
   </script>
   <script src="js/ui.js"></script>

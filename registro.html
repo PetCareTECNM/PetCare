@@ -632,7 +632,8 @@
   <script>
     // ========== CONFIGURACIÓN DE API ==========
     const API_CONFIG = {
-      baseUrl: 'http://localhost:3000/api',
+      // Base de la API Express (ver api/server.js). No usar sufijo /api y puerto 3002.
+      baseUrl: 'http://localhost:3002',
       timeout: 5000
     };
 
@@ -870,7 +871,7 @@
             <td>${paciente.NOMBRE}</td>
             <td>${paciente.ESPECIE}</td>
             <td>${paciente.RAZA}</td>
-            <td>${formatearFecha(paciente.NACIMEINTO)}</td>
+            <td>${formatearFecha(paciente.NACIMEINTO || paciente.NACIMIENTO)}</td>
             <td>${paciente.PROPIETARIO}</td>
           `;
 
@@ -882,7 +883,7 @@
             document.getElementById('nombre').value = paciente.NOMBRE;
             document.getElementById('especie').value = paciente.ESPECIE.toLowerCase();
             document.getElementById('raza').value = paciente.RAZA;
-            document.getElementById('fechaNacimiento').value = paciente.NACIMEINTO;
+            document.getElementById('fechaNacimiento').value = (paciente.NACIMEINTO || paciente.NACIMIENTO || '');
             document.getElementById('propietario').value = paciente.PROPIETARIO;
           });
         });

@@ -173,16 +173,10 @@
     </div>
   </div>
 
+  <script src="js/api.js"></script>
   <script>
     // ========== CONFIGURACIÓN DIRECTA ==========
-    const LOGIN_CONFIG = {
-      // Credenciales válidas (en producción esto debería estar en base de datos)
-      usuarios: {
-        'admin': 'admin123',
-        'veterinario': 'vet123',
-        'recepcion': 'rec123'
-      }
-    };
+    // Las credenciales válidas se validan ahora contra la API (POST /login)
 
     // ========== UTILIDADES ==========
     function mostrarNotificacion(mensaje, tipo = 'info') {
@@ -209,10 +203,6 @@
       setTimeout(() => notificacion.remove(), 4000);
     }
 
-    function validarCredenciales(usuario, password) {
-      return LOGIN_CONFIG.usuarios[usuario] === password;
-    }
-
     // ========== INICIALIZACIÓN ==========
     document.addEventListener('DOMContentLoaded', function() {
       const form = document.getElementById('loginForm');
@@ -226,13 +216,25 @@
         return;
       }
 
-      // Mostrar credenciales de prueba
-      mostrarNotificacion('Usuario: admin | Contraseña: admin123', 'info');
+      // Intentar detectar y mostrar estado de API
+      (async () => {
+        try {
+          await window.API?.ready; // asegurar baseUrl
+          const t = await window.API.testConexion();
+          if (t && t.success) {
+            mostrarNotificacion(`API online (${t.proveedor || 'desconocido'})`, 'success');
+          } else {
+            mostrarNotificacion('API fuera de línea, reintenta más tarde', 'warning');
+          }
+        } catch (e) {
+          mostrarNotificacion('No se pudo conectar con la API', 'warning');
+        }
+      })();
 
       // Enfocar el campo de usuario al cargar
       usuarioInput.focus();
       
-      form.addEventListener('submit', function(e) {
+      form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         const usuario = usuarioInput.value.trim();
@@ -247,30 +249,30 @@
         loginBtn.disabled = true;
         loginBtn.textContent = 'Validando...';
 
-        // Simular un pequeño delay para la validación
-        setTimeout(() => {
-          if (validarCredenciales(usuario, password)) {
+        try {
+          await window.API?.ready;
+          const resp = await window.API.loginUsuario(usuario, password);
+          if (resp && resp.success) {
             // Establecer sesión activa
             localStorage.setItem('petCareSessionActive', 'true');
             localStorage.setItem('petCareUsername', usuario);
             localStorage.setItem('petCareUserRole', 'admin');
-            
+
             mostrarNotificacion('¡Inicio de sesión exitoso!', 'success');
-            
-            // Redirigir después de un breve delay
-            setTimeout(() => {
-              window.location.href = 'inicio.html';
-            }, 1500);
+            setTimeout(() => { window.location.href = 'inicio.html'; }, 800);
           } else {
-            mostrarNotificacion('Usuario o contraseña incorrectos', 'error');
+            const msg = (resp && resp.message) ? resp.message : 'Usuario o contraseña incorrectos';
+            mostrarNotificacion(msg, 'error');
             passwordInput.value = '';
             passwordInput.focus();
           }
-          
+        } catch (err) {
+          mostrarNotificacion('Error comunicando con la API', 'error');
+        } finally {
           // Rehabilitar botón
           loginBtn.disabled = false;
           loginBtn.textContent = 'Ingresar';
-        }, 800);
+        }
       });
 
       // Agregar evento Enter en los campos

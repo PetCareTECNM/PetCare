@@ -1,17 +1,69 @@
-// Configuración de la API - CONEXIÓN LOCAL
-// Debe coincidir con el puerto configurado en api/server.js (por defecto 3002)
-const API_BASE_URL = 'http://localhost:3002';
+// Resolución dinámica del backend API
+// 1) ?apiBase=... en la URL
+// 2) config.json en el proyecto (para GitHub Pages)
+// 3) valor por defecto: Render público
+const API_CONFIG = {
+  baseUrl: 'https://petcare-api-94pp.onrender.com', // default público
+  timeout: 8000
+};
 
-// Función para hacer peticiones HTTP
+function getApiBaseFromQuery() {
+  try {
+    const params = new URLSearchParams(location.search);
+    const v = params.get('apiBase');
+    return v && v.trim() ? v.trim() : null;
+  } catch {
+    return null;
+  }
+}
+
+async function loadApiConfig() {
+  // 1) query param tiene prioridad
+  const fromQuery = getApiBaseFromQuery();
+  if (fromQuery) {
+    API_CONFIG.baseUrl = fromQuery;
+    // Forzar https en GitHub Pages si fuera necesario
+    if (location.hostname.endsWith('github.io') && API_CONFIG.baseUrl.startsWith('http://')) {
+      API_CONFIG.baseUrl = API_CONFIG.baseUrl.replace('http://', 'https://');
+    }
+    return;
+  }
+  // 2) config.json
+  try {
+    const res = await fetch('config.json', { cache: 'no-store' });
+    if (res.ok) {
+      const cfg = await res.json();
+      if (cfg && cfg.apiBaseUrl) {
+        API_CONFIG.baseUrl = cfg.apiBaseUrl;
+      }
+    }
+  } catch {}
+  // 3) GitHub Pages → https obligatorio
+  try {
+    if (location.hostname.endsWith('github.io') && API_CONFIG.baseUrl.startsWith('http://')) {
+      API_CONFIG.baseUrl = API_CONFIG.baseUrl.replace('http://', 'https://');
+    }
+  } catch {}
+}
+
+// Exponer una promesa de “ready” para garantizar que la config esté cargada
+const API_READY = (async () => { await loadApiConfig(); return true; })();
+
+// Función para hacer peticiones HTTP usando la base resuelta
 async function apiRequest(endpoint, options = {}) {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
+
+    const response = await fetch(`${API_CONFIG.baseUrl}${endpoint}`, {
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
         ...options.headers
       },
       ...options
     });
+    clearTimeout(timeoutId);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -196,6 +248,9 @@ async function testConexion() {
 
 // Exportar funciones
 window.API = {
+  // configuración
+  config: API_CONFIG,
+  ready: API_READY,
   loginUsuario,
   registrarPaciente,
   buscarPacientes,

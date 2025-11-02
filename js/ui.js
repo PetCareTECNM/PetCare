@@ -158,11 +158,47 @@
     });
   }
 
+  // ===================== PROPAGATE QUERY PARAMS (demo, apiBase) =====================
+  function propagateQueryParams() {
+    let params;
+    try { params = new URLSearchParams(window.location.search); } catch { return; }
+    const keep = {};
+    const demo = params.get('demo');
+    const apiBase = params.get('apiBase');
+    if (demo) keep.demo = demo;
+    if (apiBase) keep.apiBase = apiBase;
+    const keys = Object.keys(keep);
+    if (!keys.length) return;
+
+    const qs = new URLSearchParams();
+    keys.forEach(k => qs.set(k, keep[k]));
+    const qsStr = '?' + qs.toString();
+
+    // Append to internal links
+    document.querySelectorAll('a[href$=".html"]').forEach(a => {
+      try {
+        const href = a.getAttribute('href');
+        if (!href || href.startsWith('http')) return;
+        // Already has query?
+        if (href.includes('?')) {
+          // merge only missing keys
+          const [path, existing] = href.split('?');
+          const existingParams = new URLSearchParams(existing);
+          keys.forEach(k => { if (!existingParams.has(k)) existingParams.set(k, keep[k]); });
+          a.setAttribute('href', path + '?' + existingParams.toString());
+        } else {
+          a.setAttribute('href', href + qsStr);
+        }
+      } catch {}
+    });
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { ensureDemoSession(); initTheme(); initMobileNav(); });
+    document.addEventListener('DOMContentLoaded', () => { ensureDemoSession(); initTheme(); initMobileNav(); propagateQueryParams(); });
   } else {
     ensureDemoSession();
     initTheme();
     initMobileNav();
+    propagateQueryParams();
   }
 })();

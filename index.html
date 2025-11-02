@@ -69,11 +69,13 @@
   </div>
 
   <script>
-    // Redirige primero al login para asegurar que la sesión quede creada
+    // Redirige según exista sesión: si hay sesión → inicio.html, si no → login.html
     window.onload = function() {
-      setTimeout(function() {
-        window.location.href = 'login.html';
-      }, 1500);
+      const hasSession = (function(){
+        try { return localStorage.getItem('petCareSessionActive') === 'true'; } catch { return false; }
+      })();
+      const target = hasSession ? 'inicio.html' : 'login.html';
+      setTimeout(function() { window.location.href = target; }, 800);
     };
   </script>
   <script src="js/ui.js"></script>

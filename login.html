@@ -18,17 +18,18 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(to right, #008080, #00a3a3);
+      background: linear-gradient(135deg, var(--teal-600), var(--teal-500));
       overflow: hidden;
       position: relative;
+      padding: 1rem;
     }
 
     /* Huellas animadas */
     .paw {
       position: absolute;
-      font-size: 35px;
-      color: rgba(255, 255, 255, 0.25);
-      animation: fadePaw 5s infinite;
+      font-size: 2.5rem;
+      color: rgba(255, 255, 255, 0.2);
+      animation: fadePaw 5s infinite ease-in-out;
     }
 
     /* Distribución aleatoria de huellas */
@@ -46,95 +47,136 @@
     .paw:nth-child(12) { top: 5%; left: 40%; animation-delay: 1.2s; }
 
     @keyframes fadePaw {
-      0% { opacity: 0; transform: scale(0.7) rotate(0deg); }
-      50% { opacity: 1; transform: scale(1) rotate(15deg); }
-      100% { opacity: 0; transform: scale(0.7) rotate(0deg); }
+      0%, 100% { opacity: 0; transform: scale(0.7) rotate(0deg); }
+      50% { opacity: 0.8; transform: scale(1.1) rotate(15deg); }
     }
 
     .login-container {
-      background: #fff;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      width: 350px;
+      background: var(--color-bg);
+      padding: 2.5rem;
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-xl);
+      width: 400px;
+      max-width: 90%;
       text-align: center;
       position: relative;
       z-index: 1;
+      animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideUp {
+      0% { 
+        opacity: 0; 
+        transform: translateY(40px); 
+      }
+      100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
     }
 
     .login-container .logo {
-      font-size: 40px;
-      color: #008080;
-      margin-bottom: 10px;
+      font-size: 3.5rem;
+      color: var(--teal-600);
+      margin-bottom: 1rem;
+      animation: bounce 1s ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
     .login-container h2 {
-      margin-bottom: 25px;
-      color: #333;
+      margin-bottom: 2rem;
+      color: var(--text-primary);
+      font-size: 1.75rem;
+      font-weight: 600;
     }
 
     .input-group {
-      margin-bottom: 20px;
+      margin-bottom: 1.5rem;
       text-align: left;
     }
 
     .input-group label {
       display: block;
-      margin-bottom: 6px;
-      font-weight: bold;
-      color: #555;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.95rem;
     }
 
     .input-group input {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      padding: 0.875rem 1rem;
+      border: 2px solid var(--gray-300);
+      border-radius: var(--border-radius-md);
       outline: none;
-      transition: border 0.3s;
+      transition: all var(--transition-base);
+      font-size: 1rem;
+      background: var(--color-bg);
     }
 
     .input-group input:focus {
-      border-color: #008080;
-    }    .btn {
+      border-color: var(--teal-600);
+      box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.1);
+    }
+
+    .input-group input::placeholder {
+      color: var(--gray-500);
+    }
+
+    .btn {
       width: 100%;
-      padding: 12px;
-      background: linear-gradient(135deg, #008080, #00a3a3);
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--teal-600), var(--teal-500));
       border: none;
       border-radius: 25px;
       color: white;
-      font-size: 16px;
-      font-weight: bold;
+      font-size: 1.05rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 15px rgba(0,128,128,0.3);
+      transition: all var(--transition-base);
+      box-shadow: var(--shadow-md);
       transform: translateY(0);
+      margin-top: 0.5rem;
     }
 
     .btn:hover {
-      background: linear-gradient(135deg, #006666, #008080);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0,128,128,0.4);
+      background: linear-gradient(135deg, var(--teal-700), var(--teal-600));
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
     }
 
     .btn:active {
       transform: translateY(0);
-      box-shadow: 0 3px 10px rgba(0,128,128,0.3);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .extra-links {
-      margin-top: 15px;
-      font-size: 14px;
+      margin-top: 1.25rem;
+      font-size: 0.9rem;
     }
 
     .extra-links a {
-      color: #008080;
+      color: var(--teal-600);
       text-decoration: none;
+      font-weight: 500;
+      transition: color var(--transition-fast);
     }
 
     .extra-links a:hover {
+      color: var(--teal-700);
       text-decoration: underline;
-    }  </style>
+    }
+  </style>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
